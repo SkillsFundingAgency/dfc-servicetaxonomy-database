@@ -1,0 +1,45 @@
+variables:
+  - group: dfc-shared-dev
+  - group: KeyVault - dfc-dev-shared-kv
+
+resources:
+  repositories:
+  - repository: self
+
+trigger: 
+  branches:
+    include: 
+    - master
+  paths: 
+    include:
+    - Resources/Dockerfiles
+
+pr:
+  branches:
+    include: 
+    - master
+  paths: 
+    include:
+      Resources/Dockerfiles
+
+jobs:
+
+- job: BuildNCSServiceTaxonomyEscoDbContainer
+  displayName: Build and publish NCS.ServiceTaxonomy.EscoDb container
+  pool: 'Hosted Ubuntu 1604'
+  variables:
+    AppImageName: NCS.ServiceTaxonomy.EscoDb:$(Build.BuildNumber)
+
+  steps:
+  - script: |
+      cd ./Resources/Dockerfiles
+      AppImageName=$(AppImageName)
+      AppImageName=${AppImageName,,}
+      docker build -t $(ContainerRegistryAdminUser).azurecr.io/$AppImageName --file neo4jescodb.Dockerfile .
+    displayName: 'Build NCS.ServiceTaxonomy.EscoDb container'
+  - script: |
+      docker login -u $(ContainerRegistryAdminUser) -p $(ContainerRegistryPassword) $(ContainerRegistryAdminUser).azurecr.io
+      AppImageName=$(AppImageName)
+      AppImageName=${AppImageName,,}
+      docker push $(ContainerRegistryAdminUser).azurecr.io/$AppImageName
+    displayName: 'Publish NCS.ServiceTaxonomy.EscoDb container'
