@@ -20,7 +20,7 @@ pr:
     - master
   paths: 
     include:
-      Resources/Dockerfiles
+    - Resources/Dockerfiles
 
 jobs:
 
