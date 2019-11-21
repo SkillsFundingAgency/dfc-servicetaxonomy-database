@@ -89,4 +89,4 @@ stages:
               useClusterAdmin: true
               namespace: 'default'
               command: 'apply'
-              arguments: '--filename=$(System.DefaultWorkingDirectory)\Resources\Dockerfiles\neo4jescodb.yaml'
+              arguments: '--filename=.\Resources\Dockerfiles\neo4jescodb.yaml'
