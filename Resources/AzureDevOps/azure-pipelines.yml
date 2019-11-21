@@ -24,6 +24,7 @@ stages:
   variables:
     #TO DO: decide how to tag and publish image builds from branches
     - group: KeyVault - dfc-dev-shared-kv
+    - group: dfc-shared-dev
     - name: AppImageName
       value: NCS.ServiceTaxonomy.EscoDb:$(Build.BuildNumber)
   jobs:
