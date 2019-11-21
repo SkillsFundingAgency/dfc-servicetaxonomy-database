@@ -65,7 +65,7 @@ stages:
           steps:
             # create storage secret
           - task: Kubernetes@1
-            displayName: kubectl apply
+            displayName: kubectl create storage secret
             inputs:
               connectionType: Azure Resource Manager
               azureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
@@ -74,8 +74,6 @@ stages:
               ##TO DO: decide whether to use admin cred or if user account can be used if users are configured
               useClusterAdmin: true
               namespace: 'default'
-              command: 'create'
-              arguments: secret
               secretType: generic
               secretArguments: --from-literal=azurestorageaccountname=$(StaxSharedStorageAccountName) --from-literal=azurestorageaccountkey=$(dfcdevstaxsharedstr)
               secretName: $(StaxSharedStorageAccountName)-account-secret
