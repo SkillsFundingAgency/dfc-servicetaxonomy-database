@@ -55,7 +55,9 @@ stages:
     pool:
       name: 'NCS - CI and CD'
     variables:
-      group: dfc-shared-dev
+    - group: KeyVault - dfc-dev-shared-kv
+    - group: dfc-shared-dev
+    - group: dfc-stax-shared-dev
     environment: DEV_SERVICETAXONOMY
     strategy:
       runOnce:
@@ -72,6 +74,9 @@ stages:
               ##TO DO: decide whether to use admin cred or if user account can be used if users are configured
               useClusterAdmin: true
               namespace: 'default'
-              command: 'get'
-              arguments: 'nodes'
+              command: 'create'
+              arguments: secret
+              secretType: generic
+              secretArguments: --from-literal=azurestorageaccountname=$(StaxSharedStorageAccountName) --from-literal=azurestorageaccountkey=$(dfcdevstaxsharedstr)
+              secretName: $(StaxSharedStorageAccountName)-account-secret
             # deploy manifest
