@@ -47,6 +47,16 @@ stages:
         AppImageName=${AppImageName,,}
         docker push $(ContainerRegistryAdminUser).azurecr.io/$AppImageName
       displayName: 'Publish NCS.ServiceTaxonomy.EscoDb container'
+    - task: CopyFiles@2
+      displayName: 'Copy Manifest File to: $(Build.ArtifactStagingDirectory)\Manifest'
+      inputs:
+        Contents: 'Resources/Dockerfiles/neo4jescodb.yaml'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)\Manifest'
+    - task: PublishPipelineArtifact@0
+      displayName: Publish Pipeline Artifact
+      inputs:
+        targetPath: $(Build.ArtifactStagingDirectory)\Manifest
+        artifactName: NCS.ServiceTaxonomy.EscoDb.Manifest
 
 - stage: DeployToDev
   jobs:
@@ -89,4 +99,4 @@ stages:
               useClusterAdmin: true
               namespace: 'default'
               command: 'apply'
-              arguments: '--filename=.\Resources\Dockerfiles\neo4jescodb.yaml'
+              arguments: '--filename=$(Pipeline.Workspace)/NCS.ServiceTaxonomy.EscoDb.Manifest/neo4jescodb.yaml'
