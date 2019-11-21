@@ -28,7 +28,7 @@ jobs:
             namespace: 'default'
             secretType: generic
             secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxSharedStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxSharedStorageAccountKey }}
-            secretName: ${{ parameters.StaxSharedStorageAccountName }}-account-secret
+            secretName: staxsharedstr-account-secret
         # deploy manifest
         - task: Kubernetes@1
           displayName: kubectl deploy manifest
