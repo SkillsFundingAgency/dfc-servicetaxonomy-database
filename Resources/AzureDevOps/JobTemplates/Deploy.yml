@@ -1,0 +1,44 @@
+parameters:
+  AzureResourceGroup: ''
+  AzureSubscriptionEndpoint: ''
+  Environment: ''
+  KubernetesCluster: ''
+  StaxSharedStorageAccountKey: ''
+  StaxSharedStorageAccountName: ''
+
+jobs:
+- deployment: DeployToDev
+  pool:
+    name: 'NCS - CI and CD'
+  environment: ${{ parameters.Environment }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+          # create storage secret
+        - task: Kubernetes@1
+          displayName: kubectl create storage secret
+          inputs:
+            connectionType: Azure Resource Manager
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
+            azureResourceGroup: ${{ parameters.AzureResourceGroup }}
+            kubernetesCluster: ${{ parameters.KubernetesCluster }}
+            ##TO DO: decide whether to use admin cred or if user account can be used if users are configured
+            useClusterAdmin: true
+            namespace: 'default'
+            secretType: generic
+            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxSharedStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxSharedStorageAccountKey }}
+            secretName: ${{ parameters.StaxSharedStorageAccountName }-account-secret
+          # deploy manifest
+        - task: Kubernetes@1
+          displayName: kubectl deploy manifest
+          inputs:
+            connectionType: Azure Resource Manager
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
+            azureResourceGroup: ${{ parameters.AzureResourceGroup }}
+            kubernetesCluster: ${{ parameters.KubernetesCluster }}
+            ##TO DO: decide whether to use admin cred or if user account can be used if users are configured
+            useClusterAdmin: true
+            namespace: 'default'
+            command: 'apply'
+            arguments: '--filename=$(Pipeline.Workspace)/NCS.ServiceTaxonomy.EscoDb.Manifest/neo4jescodb.yaml'
