@@ -22,24 +22,54 @@ pr:
     include:
     - Resources/Dockerfiles
 
-jobs:
+stages:
 
-- job: BuildNCSServiceTaxonomyEscoDbContainer
-  displayName: Build and publish NCS.ServiceTaxonomy.EscoDb container
-  pool: 'Hosted Ubuntu 1604'
-  variables:
-    AppImageName: NCS.ServiceTaxonomy.EscoDb:$(Build.BuildNumber)
+- stage: Build
+  jobs:
 
-  steps:
-  - script: |
-      cd ./Resources/Dockerfiles
-      AppImageName=$(AppImageName)
-      AppImageName=${AppImageName,,}
-      docker build -t $(ContainerRegistryAdminUser).azurecr.io/$AppImageName --file neo4jescodb.Dockerfile .
-    displayName: 'Build NCS.ServiceTaxonomy.EscoDb container'
-  - script: |
-      docker login -u $(ContainerRegistryAdminUser) -p $(ContainerRegistryPassword) $(ContainerRegistryAdminUser).azurecr.io
-      AppImageName=$(AppImageName)
-      AppImageName=${AppImageName,,}
-      docker push $(ContainerRegistryAdminUser).azurecr.io/$AppImageName
-    displayName: 'Publish NCS.ServiceTaxonomy.EscoDb container'
+  - job: BuildNCSServiceTaxonomyEscoDbContainer
+    displayName: Build and publish NCS.ServiceTaxonomy.EscoDb container
+    pool: 'Hosted Ubuntu 1604'
+    variables:
+      #TO DO: decide how to tag and publish image builds from branches
+      AppImageName: NCS.ServiceTaxonomy.EscoDb:$(Build.BuildNumber)
+
+    steps:
+    - script: |
+        cd ./Resources/Dockerfiles
+        AppImageName=$(AppImageName)
+        AppImageName=${AppImageName,,}
+        docker build -t $(ContainerRegistryAdminUser).azurecr.io/$AppImageName --file neo4jescodb.Dockerfile .
+      displayName: 'Build NCS.ServiceTaxonomy.EscoDb container'
+    - script: |
+        docker login -u $(ContainerRegistryAdminUser) -p $(ContainerRegistryPassword) $(ContainerRegistryAdminUser).azurecr.io
+        AppImageName=$(AppImageName)
+        AppImageName=${AppImageName,,}
+        docker push $(ContainerRegistryAdminUser).azurecr.io/$AppImageName
+      displayName: 'Publish NCS.ServiceTaxonomy.EscoDb container'
+
+- stage: DeployToDev
+  jobs:
+
+  - deployment: DeployToDev
+    pool:
+      name: 'NCS - CI and CD'
+    variables:
+      group: dfc-shared-dev
+    environment: DEV_SERVICETAXONOMY
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            # create storage secret
+          - task: Kubernetes@1
+            displayName: kubectl apply
+            inputs:
+              connectionType: Azure Resource Manager
+              azureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+              azureResourceGroup: $(sharedResourceGroup)
+              kubernetesCluster: $(sharedAksCluster)
+              namespace: 'default'
+              command: 'get'
+              arguments: 'nodes'
+            # deploy manifest
