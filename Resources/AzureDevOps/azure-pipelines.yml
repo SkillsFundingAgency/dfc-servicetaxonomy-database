@@ -1,0 +1,52 @@
+resources:
+  repositories:
+  - repository: self
+
+trigger: 
+  branches:
+    include: 
+    - master
+  paths: 
+    include:
+    - Resources/Dockerfiles
+
+pr:
+  branches:
+    include: 
+    - master
+  paths: 
+    include:
+    - Resources/Dockerfiles
+
+stages:
+
+- stage: Build
+  variables:
+    #TO DO: decide how to tag and publish image builds from branches
+    - group: KeyVault - dfc-dev-shared-kv
+    - group: dfc-shared-dev
+    - name: AppImageName
+      value: NCS.ServiceTaxonomy.EscoDb:$(Build.BuildNumber)
+  jobs:
+  - template: JobTemplates/Build.yml
+    parameters:
+      AppImageName: $(AppImageName)
+      ContainerRegistryAdminUser: $(ContainerRegistryAdminUser)
+      ContainerRegistryPassword: $(ContainerRegistryPassword)
+
+- stage: DeployToDev
+  variables:
+    - group: KeyVault - dfc-dev-shared-kv
+    - group: dfc-shared-dev
+    - group: dfc-stax-shared-dev
+  jobs:
+  - template: JobTemplates/Deploy.yml
+    parameters:
+      AzureResourceGroup: $(sharedResourceGroup)
+      AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      Environment: DEV_SERVICETAXONOMY
+      KubernetesCluster: $(sharedAksCluster)
+      StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
+      StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+
+

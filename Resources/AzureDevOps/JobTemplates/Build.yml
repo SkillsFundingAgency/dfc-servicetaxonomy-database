@@ -1,0 +1,35 @@
+parameters:
+  AppImageName: ''
+  ContainerRegistryAdminUser: ''
+  ContainerRegistryPassword: ''
+
+jobs:
+- job: BuildNCSServiceTaxonomyEscoDbContainer
+  displayName: Build and publish NCS.ServiceTaxonomy.EscoDb container
+  pool: 'Hosted Ubuntu 1604'
+  steps:
+  - script: |
+      cd ./Resources/Dockerfiles
+      AppImageName=${{ parameters.AppImageName }}
+      # Lowercase the AppImage name to conform to Docker Image naming constraints
+      AppImageName=${AppImageName,,}
+      docker build -t ${{ parameters.ContainerRegistryAdminUser }}.azurecr.io/$AppImageName --file neo4jescodb.Dockerfile .
+    displayName: 'Build NCS.ServiceTaxonomy.EscoDb container'
+  - script: |
+      docker login -u ${{ parameters.ContainerRegistryAdminUser }} -p ${{ parameters.ContainerRegistryPassword }} ${{ parameters.ContainerRegistryAdminUser }}.azurecr.io
+      AppImageName=${{ parameters.AppImageName }}
+      # Lowercase the AppImage name to conform to Docker Image naming constraints
+      AppImageName=${AppImageName,,}
+      docker push ${{ parameters.ContainerRegistryAdminUser }}.azurecr.io/$AppImageName
+    displayName: 'Publish NCS.ServiceTaxonomy.EscoDb container'
+  - task: CopyFiles@2
+    displayName: 'Copy Manifest File to: $(Build.ArtifactStagingDirectory)\Manifest'
+    inputs:
+      Contents: 'Resources/Dockerfiles/neo4jescodb.yaml'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\Manifest'
+      flattenFolders: true
+  - task: PublishPipelineArtifact@0
+    displayName: Publish Pipeline Artifact
+    inputs:
+      targetPath: $(Build.ArtifactStagingDirectory)\Manifest
+      artifactName: NCS.ServiceTaxonomy.EscoDb.Manifest

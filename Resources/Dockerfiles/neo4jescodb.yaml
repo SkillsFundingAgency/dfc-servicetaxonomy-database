@@ -32,7 +32,7 @@ spec:
       volumes:
       - name: esco-rdf-files
         azureFile:
-          secretName: str-account-secret
+          secretName: staxsharedstr-account-secret
           shareName: esco-rdf-files
           readOnly: true
 ---
