@@ -1,6 +1,15 @@
+variables:
+  ArmTemplateRoot: '$(Build.SourcesDirectory)\Resources\ArmTemplates'
+  SolutionBaseName: DFC.ServiceTaxonomy.Database
+
 resources:
   repositories:
   - repository: self
+  - repository: dfc-devops
+    type: github
+    name: SkillsFundingAgency/dfc-devops
+    ref: refs/tags/v1.7.3
+    endpoint: 'GitHub (ESFA)'
 
 trigger: 
   branches:
@@ -31,11 +40,15 @@ stages:
   - template: JobTemplates/Build.yml
     parameters:
       AppImageName: $(AppImageName)
+      ArmTemplateRoot: ${{ parameters.ArmTemplateRoot }}
       ContainerRegistryAdminUser: $(ContainerRegistryAdminUser)
       ContainerRegistryPassword: $(ContainerRegistryPassword)
+      SolutionBaseName: ${{ parameters.SolutionBaseName }}
 
 - stage: DeployToDev
   variables:
+    - group: dfc-shared-all
+    - group: dfc-stax-shared-all
     - group: KeyVault - dfc-dev-shared-kv
     - group: dfc-shared-dev
     - group: dfc-stax-shared-dev
@@ -45,7 +58,10 @@ stages:
       AzureResourceGroup: $(sharedResourceGroup)
       AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
       Environment: DEV_SERVICETAXONOMY
+      EnvironmentTag: $(EnvironmentTag)
       KubernetesCluster: $(sharedAksCluster)
+      ParentBusinessTag: $(ParentBusiness)
+      ServiceOfferingTag: $(ServiceOffering)
       StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
 

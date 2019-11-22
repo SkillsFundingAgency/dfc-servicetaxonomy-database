@@ -1,13 +1,20 @@
 parameters:
   AppImageName: ''
+  ArmTemplateRoot: ''
   ContainerRegistryAdminUser: ''
   ContainerRegistryPassword: ''
+  SolutionBaseName: ''
 
 jobs:
 - job: BuildNCSServiceTaxonomyEscoDbContainer
   displayName: Build and publish NCS.ServiceTaxonomy.EscoDb container
   pool: 'Hosted Ubuntu 1604'
   steps:
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-arm-build.yml@dfc-devops
+    parameters:
+      ArmTemplateRoot: ${{ parameters.ArmTemplateRoot }}
+      SolutionBaseName: ${{ parameters.SolutionBaseName }}
+      PublishPipelineArtifact: true
   - script: |
       cd ./Resources/Dockerfiles
       AppImageName=${{ parameters.AppImageName }}

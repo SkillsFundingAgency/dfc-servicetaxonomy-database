@@ -1,8 +1,12 @@
 parameters:
+  ArmTemplateRoot: '$(Pipeline.Workspace)/Dfc.Shared.Resources.ArmTemplates'
   AzureResourceGroup: ''
   AzureSubscriptionEndpoint: ''
   Environment: ''
+  EnvironmentTag: ''
   KubernetesCluster: ''
+  ParentBusinessTag: ''
+  ServiceOfferingTag: ''
   StaxSharedStorageAccountKey: ''
   StaxSharedStorageAccountName: ''
 
@@ -15,6 +19,14 @@ jobs:
     runOnce:
       deploy:
         steps:
+        - template: AzureDevOpsTemplates/Deploy/StepTemplates/dfc-arm-deploy.yml@dfc-devops
+          parameters:
+            ArmTemplateRoot: ${{ parameters.ArmTemplateRoot }}
+            AzureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
+            EnvironmentTag: ${{ parameters.EnvironmentTag }}
+            ParentBusinessTag: ${{ parameters.ParentBusinessTag }}
+            ResourceGroup: ${{ parameters.AzureResourceGroup }}
+            ServiceOfferingTag: ${{ parameters.ServiceOfferingTag }}
         # create storage secret
         - task: Kubernetes@1
           displayName: kubectl create storage secret
