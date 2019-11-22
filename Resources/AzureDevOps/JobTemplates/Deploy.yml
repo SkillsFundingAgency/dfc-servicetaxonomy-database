@@ -1,5 +1,5 @@
 parameters:
-  ArmTemplateRoot: '$(Pipeline.Workspace)/Dfc.Shared.Resources.ArmTemplates'
+  ArmTemplateRoot: '$(Pipeline.Workspace)/Dfc.ServiceTaxonomy.Database.Resources.ArmTemplates'
   AzureResourceGroup: ''
   AzureSubscriptionEndpoint: ''
   Environment: ''
