@@ -31,19 +31,21 @@ stages:
 
 - stage: Build
   variables:
-    #TO DO: decide how to tag and publish image builds from branches
     - group: KeyVault - dfc-dev-shared-kv
     - group: dfc-shared-dev
+    #TO DO: decide how to tag and publish image builds from branches
     - name: AppImageName
       value: NCS.ServiceTaxonomy.EscoDb:$(Build.BuildNumber)
   jobs:
-  - template: JobTemplates/Build.yml
+  - template: JobTemplates/BuildResources.yml
+    parameters:
+      ArmTemplateRoot: ${{ variables.ArmTemplateRoot }}
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
+  - template: JobTemplates/BuildContainer.yml
     parameters:
       AppImageName: $(AppImageName)
-      ArmTemplateRoot: ${{ variables.ArmTemplateRoot }}
       ContainerRegistryAdminUser: $(ContainerRegistryAdminUser)
       ContainerRegistryPassword: $(ContainerRegistryPassword)
-      SolutionBaseName: ${{ variables.SolutionBaseName }}
 
 - stage: DeployToDev
   variables:
