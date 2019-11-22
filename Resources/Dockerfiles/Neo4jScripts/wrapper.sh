@@ -5,9 +5,6 @@
 # turn on bash's job control
 set -m
 
-# Inject Neo4j memory configuration
-export NEO4J_dbms_memory_pagecache_size=5600M
-
 # Start the primary process and put it in the background
 /docker-entrypoint.sh neo4j &
 
