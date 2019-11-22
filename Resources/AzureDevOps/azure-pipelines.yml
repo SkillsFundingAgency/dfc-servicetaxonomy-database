@@ -40,10 +40,10 @@ stages:
   - template: JobTemplates/Build.yml
     parameters:
       AppImageName: $(AppImageName)
-      ArmTemplateRoot: ${{ parameters.ArmTemplateRoot }}
+      ArmTemplateRoot: ${{ variables.ArmTemplateRoot }}
       ContainerRegistryAdminUser: $(ContainerRegistryAdminUser)
       ContainerRegistryPassword: $(ContainerRegistryPassword)
-      SolutionBaseName: ${{ parameters.SolutionBaseName }}
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
 
 - stage: DeployToDev
   variables:
