@@ -4,7 +4,7 @@
 
 # turn on bash's job control
 set -m
-env NEO4J_dbms_memory_pagecache_size=600M
+export NEO4J_dbms_memory_pagecache_size=612M
 # Start the primary process and put it in the background
 /docker-entrypoint.sh neo4j &
 
