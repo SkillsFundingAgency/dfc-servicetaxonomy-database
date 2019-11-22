@@ -1,6 +1,6 @@
 parameters:
   ArmTemplateRoot: '$(Pipeline.Workspace)/Dfc.ServiceTaxonomy.Database.Resources.ArmTemplates'
-  AzureResourceGroup: ''
+  AksResourceGroup: ''
   AzureSubscriptionEndpoint: ''
   Environment: ''
   EnvironmentTag: ''
@@ -9,6 +9,7 @@ parameters:
   ServiceOfferingTag: ''
   StaxSharedStorageAccountKey: ''
   StaxSharedStorageAccountName: ''
+  StaxSharedStorageResourceGroupName: ''
 
 jobs:
 - deployment: DeployToDev
@@ -25,7 +26,7 @@ jobs:
             AzureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
             EnvironmentTag: ${{ parameters.EnvironmentTag }}
             ParentBusinessTag: ${{ parameters.ParentBusinessTag }}
-            ResourceGroup: ${{ parameters.AzureResourceGroup }}
+            ResourceGroup: ${{ parameters.StaxSharedStorageResourceGroupName }}
             ServiceOfferingTag: ${{ parameters.ServiceOfferingTag }}
         # create storage secret
         - task: Kubernetes@1

@@ -57,7 +57,7 @@ stages:
   jobs:
   - template: JobTemplates/Deploy.yml
     parameters:
-      AzureResourceGroup: $(sharedResourceGroup)
+      AksResourceGroup: $(sharedResourceGroup)
       AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
       Environment: DEV_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
@@ -66,5 +66,6 @@ stages:
       ServiceOfferingTag: $(ServiceOffering)
       StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxSharedStorageResourceGroupName: $(StaxSharedResourceGroup)
 
 
