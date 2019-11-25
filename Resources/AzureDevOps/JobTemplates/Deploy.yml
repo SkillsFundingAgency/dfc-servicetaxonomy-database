@@ -28,6 +28,11 @@ jobs:
             ParentBusinessTag: ${{ parameters.ParentBusinessTag }}
             ResourceGroup: ${{ parameters.StaxSharedStorageResourceGroupName }}
             ServiceOfferingTag: ${{ parameters.ServiceOfferingTag }}
+        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
+          displayName: 'Tokenization: Transform file neo4jescodb.yaml'
+          inputs:
+            SourcePath: $(Pipeline.Workspace)/NCS.ServiceTaxonomy.EscoDb.Manifest
+            TargetFileNames: neo4jescodb.yaml
         # create storage secret
         - task: Kubernetes@1
           displayName: kubectl create storage secret

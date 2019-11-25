@@ -54,6 +54,8 @@ stages:
     - group: KeyVault - dfc-dev-shared-kv
     - group: dfc-shared-dev
     - group: dfc-stax-shared-dev
+    - name: DFC.ServiceTaxonomy.Database-Tag
+      value: $(Build.BuildNumber)
   jobs:
   - template: JobTemplates/Deploy.yml
     parameters:
