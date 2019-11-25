@@ -36,7 +36,7 @@
                         "value": "Basic"
                     },
                     "allocationMethod": {
-                        "value": "static"
+                        "value": "Static"
                     },
                     "publicDnsLabel": {
                         "value": "[variables('resourcePrefix')]"

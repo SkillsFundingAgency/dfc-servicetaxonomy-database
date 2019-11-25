@@ -9,7 +9,7 @@
             "value": "dfcfoostaxsharedstr"
         },
         "storageAccountResourceGroup": {
-            "value": "dfc-foo-stax-shared-rg"
+            "value": "dfc-test-template-rg"
         }
     }
 }
