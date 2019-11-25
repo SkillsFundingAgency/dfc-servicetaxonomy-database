@@ -24,10 +24,10 @@ spec:
         resources:
           requests:
             cpu: 4000m
-            memory: "16GB"
+            memory: "16G"
           limits:
             cpu: 4000m
-            memory: "16GB"
+            memory: "16G"
         volumeMounts:
           - name: esco-rdf-files
             mountPath: /var/lib/neo4j/import
