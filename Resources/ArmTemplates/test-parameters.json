@@ -7,6 +7,9 @@
         },
         "storageAccountName": {
             "value": "dfcfoostaxsharedstr"
+        },
+        "storageAccountResourceGroup": {
+            "value": "dfc-foo-stax-shared-rg"
         }
     }
 }

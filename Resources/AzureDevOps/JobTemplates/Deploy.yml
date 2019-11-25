@@ -6,10 +6,10 @@ parameters:
   EnvironmentTag: ''
   KubernetesCluster: ''
   ParentBusinessTag: ''
+  ResourceGroup: ''
   ServiceOfferingTag: ''
   StaxSharedStorageAccountKey: ''
   StaxSharedStorageAccountName: ''
-  StaxSharedStorageResourceGroupName: ''
 
 jobs:
 - deployment: DeployToDev
@@ -26,7 +26,7 @@ jobs:
             AzureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
             EnvironmentTag: ${{ parameters.EnvironmentTag }}
             ParentBusinessTag: ${{ parameters.ParentBusinessTag }}
-            ResourceGroup: ${{ parameters.StaxSharedStorageResourceGroupName }}
+            ResourceGroup: ${{ parameters.ResourceGroup }}
             ServiceOfferingTag: ${{ parameters.ServiceOfferingTag }}
         - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
           displayName: 'Tokenization: Transform file neo4jescodb.yaml'

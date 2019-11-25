@@ -54,6 +54,8 @@ stages:
     - group: KeyVault - dfc-dev-shared-kv
     - group: dfc-shared-dev
     - group: dfc-stax-shared-dev
+    - name: ResourceGroup
+      value: dfc-dev-stax-database-rg
     - name: DFCServiceTaxonomyDatabaseTag
       value: $(Build.BuildNumber)
   jobs:
@@ -65,9 +67,9 @@ stages:
       EnvironmentTag: $(EnvironmentTag)
       KubernetesCluster: $(sharedAksCluster)
       ParentBusinessTag: $(ParentBusiness)
+      ResourceGroup: $(ResourceGroup)
       ServiceOfferingTag: $(ServiceOffering)
       StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
-      StaxSharedStorageResourceGroupName: $(StaxSharedResourceGroup)
 
 
