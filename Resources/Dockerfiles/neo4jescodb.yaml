@@ -23,9 +23,11 @@ spec:
         - containerPort: 7474
         resources:
           requests:
-            cpu: 250m
+            cpu: 4000m
+            memory: "16GB"
           limits:
-            cpu: 500m
+            cpu: 4000m
+            memory: "16GB"
         volumeMounts:
           - name: esco-rdf-files
             mountPath: /var/lib/neo4j/import
