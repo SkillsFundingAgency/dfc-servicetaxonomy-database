@@ -42,6 +42,7 @@ metadata:
   name: neo4j-escodb
 spec:
   type: LoadBalancer
+  loadBalancerIP: __StaxDbPublicIpAddress__
   ports:
   - name: http 
     protocol: TCP
