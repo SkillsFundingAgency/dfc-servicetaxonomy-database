@@ -39,6 +39,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+      service.beta.kubernetes.io/azure-load-balancer-resource-group: __StaxDbPublicIpAddressResourceGroup__
   name: neo4j-escodb
 spec:
   type: LoadBalancer
