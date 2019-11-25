@@ -44,3 +44,15 @@ From the web interface of neo4j run match (n:ns1__Occupation) return n to confir
 ## How to use - Kubernetes
 
 The neo4jescodb.yaml contains the manifest for deploying a single instance of the image into a Kubernetes cluster.  Instructions for setting up the cluster can be found in Jira ticket NCSD-2037
+
+### Connecting to the Kubernetes cluster
+
+Assuming you've installed the az cli (instructions [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)) and kubectl ( after installing az cli `az aks install-cli`) connect to the DEV cluster with the following commands:
+
+```
+az login
+az account set --subscription SFA-CDH-Dev/Test
+az aks get-credentials --resource-group dfc-dev-shared-rg --name dfc-dev-shared-aks --admin
+```
+
+and test that you've connected successfully by running `kubectl get nodes`

@@ -1,0 +1,14 @@
+parameters:
+  ArmTemplateRoot: ''
+  SolutionBaseName: ''
+
+jobs:
+- job: TestAndPublishArmTemplates
+  displayName: Test and Publish Arm Templates
+  pool: 'NCS - CI and CD'
+  steps:
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-arm-build.yml@dfc-devops
+    parameters:
+      ArmTemplateRoot: ${{ parameters.ArmTemplateRoot }}
+      SolutionBaseName: ${{ parameters.SolutionBaseName }}
+      PublishPipelineArtifact: true
