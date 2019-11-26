@@ -6,4 +6,4 @@ variables:
 - name: ResourceGroup
   value: dfc-dev-stax-database-rg
 - name: StaxDbPublicIpAddressResourceGroup
-  value: $(ResourceGroup)
+  value: $(AksNodeResourceGroupName)
