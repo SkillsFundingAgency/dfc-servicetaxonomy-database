@@ -37,6 +37,13 @@ spec:
           secretName: staxsharedstr-account-secret
           shareName: esco-rdf-files
           readOnly: true
+      env:
+        - name: NEO4J_PWD
+          valueFrom:
+            secretKeyRef: 
+              name: neo4j-account-secret
+              key: password
+
 ---
 apiVersion: v1
 kind: Service

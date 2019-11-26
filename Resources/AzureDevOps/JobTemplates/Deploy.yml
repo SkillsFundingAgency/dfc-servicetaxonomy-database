@@ -5,6 +5,7 @@ parameters:
   Environment: ''
   EnvironmentTag: ''
   KubernetesCluster: ''
+  Neo4jPassword: ''
   ParentBusinessTag: ''
   ResourceGroup: ''
   ServiceOfferingTag: ''
@@ -41,12 +42,24 @@ jobs:
             azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
             azureResourceGroup: ${{ parameters.AksResourceGroup }}
             kubernetesCluster: ${{ parameters.KubernetesCluster }}
-            ##TO DO: decide whether to use admin cred or if user account can be used if users are configured
             useClusterAdmin: true
             namespace: 'default'
             secretType: generic
             secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxSharedStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxSharedStorageAccountKey }}
             secretName: staxsharedstr-account-secret
+        # create secret for neo4j default account password
+        - task: Kubernetes@1
+          displayName: kubectl create neo4j secret
+          inputs:
+            connectionType: Azure Resource Manager
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
+            azureResourceGroup: ${{ parameters.AksResourceGroup }}
+            kubernetesCluster: ${{ parameters.KubernetesCluster }}
+            useClusterAdmin: true
+            namespace: 'default'
+            secretType: generic
+            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }}
+            secretName: neo4j-account-secret
         # deploy manifest
         - task: Kubernetes@1
           displayName: kubectl deploy manifest
@@ -55,7 +68,6 @@ jobs:
             azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
             azureResourceGroup: ${{ parameters.AksResourceGroup }}
             kubernetesCluster: ${{ parameters.KubernetesCluster }}
-            ##TO DO: decide whether to use admin cred or if user account can be used if users are configured
             useClusterAdmin: true
             namespace: 'default'
             command: 'apply'
