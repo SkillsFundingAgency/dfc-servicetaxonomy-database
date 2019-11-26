@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "aksNodesResourceGroup": {
-            "value": "dfc-foo-shared-aksnodes-rg"
+            "value": "dfc-test-template-rg"
         },
         "environment": {
             "value": "FOO"
