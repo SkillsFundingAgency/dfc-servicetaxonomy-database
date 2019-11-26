@@ -19,6 +19,12 @@ spec:
       containers:
       - name: neo4j-escodb
         image: dfcdevsharedcr.azurecr.io/ncs.servicetaxonomy.escodb:__DFCServiceTaxonomyDatabaseTag__
+        env:
+        - name: NEO4J_PWD
+          valueFrom:
+            secretKeyRef: 
+              name: neo4j-account-secret
+              key: password
         ports:
         - containerPort: 7474
         resources:
@@ -29,20 +35,14 @@ spec:
             cpu: 1500m
             memory: "16G"
         volumeMounts:
-          - name: esco-rdf-files
-            mountPath: /var/lib/neo4j/import
+        - name: esco-rdf-files
+          mountPath: /var/lib/neo4j/import
       volumes:
       - name: esco-rdf-files
         azureFile:
           secretName: staxsharedstr-account-secret
           shareName: esco-rdf-files
           readOnly: true
-      env:
-        - name: NEO4J_PWD
-          valueFrom:
-            secretKeyRef: 
-              name: neo4j-account-secret
-              key: password
 
 ---
 apiVersion: v1
