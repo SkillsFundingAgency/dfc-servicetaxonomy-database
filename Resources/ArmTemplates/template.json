@@ -2,6 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "aksNodesResourceGroup": {
+            "type": "string"
+        },
         "environment": {
             "type": "string"
         },
@@ -21,6 +24,7 @@
         {
             "name": "staxDatabasePublicIp",
             "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('aksNodesResourceGroup')]",
             "apiVersion": "2017-05-10",
             "properties": {
                 "mode": "Incremental",
