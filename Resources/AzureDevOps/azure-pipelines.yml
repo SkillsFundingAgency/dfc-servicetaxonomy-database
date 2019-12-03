@@ -48,6 +48,7 @@ stages:
       ContainerRegistryPassword: $(ContainerRegistryPassword)
 
 - stage: DeployToDev
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   variables:
     - group: dfc-shared-all
     - group: dfc-stax-shared-all
