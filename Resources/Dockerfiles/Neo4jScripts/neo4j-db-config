@@ -18,3 +18,7 @@ CALL semantics.addNamespacePrefix("prov","http://www.w3.org/ns/prov#");
 CALL semantics.addNamespacePrefix("foaf","http://xmlns.com/foaf/0.1/");
 CALL semantics.addNamespacePrefix("qdr","http://data.europa.eu/esco/qdr#");
 CALL semantics.addNamespacePrefix("ncs","http://nationalcareers.service.gov.uk/taxonomy#");
+
+CREATE INDEX ON :esco__Skill(uri);
+CREATE INDEX ON :esco__Occupation(uri);
+CREATE INDEX ON :ncs__JobProfile(uri);
