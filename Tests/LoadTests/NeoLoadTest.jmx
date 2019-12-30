@@ -1,0 +1,2416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.1.1 r1855137">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="MaxResponseTime" elementType="Argument">
+            <stringProp name="Argument.name">MaxResponseTime</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="ThresholdResponseTime" elementType="Argument">
+            <stringProp name="Argument.name">ThresholdResponseTime</stringProp>
+            <stringProp name="Argument.value">500</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TargetThreshold" elementType="Argument">
+            <stringProp name="Argument.name">TargetThreshold</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="HostName" elementType="Argument">
+            <stringProp name="Argument.name">HostName</stringProp>
+            <stringProp name="Argument.value">${__P(HostName,localhost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="Protocol" elementType="Argument">
+            <stringProp name="Argument.name">Protocol</stringProp>
+            <stringProp name="Argument.value">${__P(Protocol,http)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </SetupThreadGroup>
+      <hashTree>
+        <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BeanShell Sampler" enabled="true">
+          <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import org.neo4j.driver.Config;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.time.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+log.info(&quot;*******************StartUp Thread Initialisation***********************&quot;); 
+log.info(&quot;*******************-----------------------------***********************&quot;); 
+// Driver driver = GraphDatabase.driver(&quot;bolt://localhost:7687&quot;, AuthTokens.basic(&quot;neo4j&quot;, &quot;escodb&quot;));
+
+ //bsh.shared.boltDriver = driver; 
+// log.info(&quot;one time bolt driver set up complete&quot;); 
+
+//PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(&quot;D:/jmeter.log&quot;)));
+//out.println(&quot;Start of Log&quot;);
+//out.println(&quot;-------------&quot;);
+
+//FileWriter fstream = new FileWriter(&quot;D:/jmeter.log&quot;,true);
+//BufferedWriter out = new BufferedWriter(fstream);
+
+//bsh.shared.log = out;
+//bsh.shared.nl = System.getProperty(&quot;line.separator&quot;);
+//bsh.shared.log.write(&quot;Start of log&quot; + props.get(&quot;TargetRate&quot;) +bsh.shared.nl);
+//bsh.shared.log.write(&quot;------------&quot; + props.get(&quot;TargetRate&quot;) +bsh.shared.nl);
+//out.write(outputLine);
+//out.write(System.getProperty(&quot;line.separator&quot;) );
+
+String[]  queries = 
+{
+	&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+			 &quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+			 &quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+			 &quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;
+	 ,
+&quot;MATCH (s:esco__Skill {uri:$uri})-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation )&quot; +
+	&quot;WITH s, collect( {occupation:o.skos__prefLabel,relationshipWithSkill:case type(r) when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end } ) &quot; + 
+	&quot;as Occupations RETURN s.skos__prefLabel,Occupations&quot;
+	,
+&quot;MATCH (o1:esco__Occupation)&lt;-[:esco__isEssentialSkillFor]-(s:esco__Skill), (o2:esco__Occupation)WHERE o1.uri = $uri1 AND o2.uri = $uri2 &quot; + 
+	  &quot;AND NOT (o2)&lt;-[:esco__isEssentialSkillFor]-(s) WITH o1, o2, COLLECT({skill:s.skos__prefLabel}) AS skillGap RETURN o1.skos__prefLabel, o2.skos__prefLabel, skillGap &quot;			 
+};
+
+bsh.shared.queries = queries;
+
+// build query 1
+String query = &quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+			 &quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+			 &quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+			 &quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;;
+
+bsh.shared.query1 = query;
+
+// build query 2
+query = &quot;MATCH (s:esco__Skill {uri:$uri})-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation )&quot; +
+	&quot;WITH s, collect( {occupation:o.skos__prefLabel,relationshipWithSkill:case type(r) when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end } ) &quot; + 
+	&quot;as Occupations RETURN s.skos__prefLabel,Occupations&quot;;
+
+bsh.shared.query2 = query;
+
+// build query 3
+query =&quot;MATCH (o1:esco__Occupation)&lt;-[:esco__isEssentialSkillFor]-(s:esco__Skill), (o2:esco__Occupation)WHERE o1.uri = $uri1 AND o2.uri = $uri2 &quot; + 
+	  &quot;AND NOT (o2)&lt;-[:esco__isEssentialSkillFor]-(s) WITH o1, o2, COLLECT({skill:s.skos__prefLabel}) AS skillGap RETURN o1.skos__prefLabel, o2.skos__prefLabel, skillGap &quot;;
+
+bsh.shared.query3 = query;
+
+
+		
+ if ( props.get(&quot;HostName&quot;) == null )
+ {
+ 	props.put(&quot;HostName&quot;,&quot;dfc-dev-stax-shared-neo4j-aci.westeurope.azurecontainer.io&quot;);
+ }
+//props.put(&quot;HostName&quot;,&quot;dfc-dev-stax-shared-neo4j-aci.westeurope.azurecontainer.io&quot;);
+//props.put(&quot;HostName&quot;,&quot;localhost&quot;);
+  if ( props.get(&quot;TargetRate&quot;) == null )
+ {
+ 	props.put(&quot;TargetRate&quot;,&quot;1&quot;);
+ }
+ //	props.put(&quot;TargetRate&quot;,&quot;8&quot;);
+ if ( props.get(&quot;NumberOfThreads&quot;) == null )
+ {
+ 	props.put(&quot;NumberOfThreads&quot;,&quot;20&quot;);
+ }
+//props.put(&quot;NumberOfThreads&quot;,&quot;5&quot;);
+ if ( props.get(&quot;Protocol&quot;) == null )
+ {
+ 	props.put(&quot;Protocol&quot;,&quot;bolt&quot;);
+ }
+
+ if ( props.get(&quot;Duration&quot;) == null )
+ {
+ 	props.put(&quot;Duration&quot;,&quot;120&quot;);
+ }
+
+int boltConnectionLifetime = 60;
+if ( props.get(&quot;BoltConnectionLifetime&quot;) != null)
+{
+   boltConnectionLifetime = Integer.parseInt( props.get(&quot;BoltConnectionLifetime&quot;) );
+}
+
+int boltConnectionPoolSize = 50;
+if ( props.get(&quot;BoltConnectionPoolSize&quot;) != null)
+{
+   boltConnectionPoolSize = Integer.parseInt( props.get(&quot;BoltConnectionPoolSize&quot;) );
+}
+
+
+int boltConnectionTimeout = 60;
+if ( props.get(&quot;BoltConnectionTimeout&quot;) != null)
+{
+   boltConnectionTimeout = Integer.parseInt( props.get(&quot;BoltConnectionTimeout&quot;) );
+}
+
+int boltRetries = 5;
+if ( props.get(&quot;BoltRetries&quot;) != null)
+{
+   boltRetries = Integer.parseInt( props.get(&quot;BoltRetries&quot;) );
+}
+else
+{
+   props.put(&quot;BoltRetries&quot;,String.valueOf(boltRetries));	
+}
+
+//
+//Map[] params = new Map[3];
+//params[0] = new HashMap();
+//
+// params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+ //local overrides
+/*props.put(&quot;Segment&quot;,&quot;0&quot;);
+props.put(&quot;TargetRate&quot;,&quot;1&quot;);
+//props.put(&quot;HostName&quot;,&quot;dfc-dev-stax-shared-neo4j-aci.westeurope.azurecontainer.io&quot;);
+props.put(&quot;HostName&quot;,&quot;localhost&quot;);
+props.put(&quot;NumberOfThreads&quot;,&quot;10&quot;);
+props.put(&quot;Protocol&quot;,&quot;http&quot;);
+props.put(&quot;Duration&quot;,&quot;60&quot;);
+props.put(&quot;ResultsFile&quot;,&quot;F:\bJmeter/boutput/bhttp_request_output.csv&quot;);
+props.put(&quot;SingleLabel&quot;,&quot;N&quot;);
+props.put(&quot;NumberOfConnections&quot;,&quot;1&quot;);
+*/
+ if ( props.get(&quot;SingleLabel&quot;).equals(&quot;Y&quot;) )
+ {
+ 	props.put(&quot;SegmentName&quot;,&quot;Tartget rate is &quot; + props.get(&quot;TargetRate&quot;) );
+ 	log.info(&quot;Single label mode&quot;); 
+ } 
+
+ int numberOfThreads = ${__P(NumberOfThreads)};
+ int numberOfConnections = ${__P(NumberOfConnections)};
+
+ props.put(&quot;TargetRateSeconds&quot;,String.valueOf(Integer.parseInt( props.get(&quot;TargetRate&quot;)) * 60));
+
+ log.info(&quot;Target Rate per sec for test is &quot; + props.get(&quot;TargetRate&quot;)); 
+ log.info(&quot;Target Rate per min for test is &quot; + props.get(&quot;TargetRateSeconds&quot;)); 
+
+ //bsh.shared.write(&quot;Target Rate per sec for test is &quot; + props.get(&quot;TargetRate&quot;) +System.getProperty(&quot;line.separator&quot;));
+ //bsh.shared.write(&quot;Target Rate per min for test is &quot; + props.get(&quot;TargetRateSeconds&quot;) + System.getProperty(&quot;line.separator&quot;));
+log.info(&quot;Number of threads is &quot; + props.get(&quot;NumberOfThreads&quot;) );
+log.info(&quot;Number of connections is &quot; + props.get(&quot;NumberOfConnections&quot;) );
+log.info(&quot;selected protocol is &quot; + props.get(&quot;Protocol&quot;) );
+log.info(&quot;selected host is &quot; + props.get(&quot;HostName&quot;) );
+log.info(&quot;Test duration is &quot; + props.get(&quot;Duration&quot;) );
+
+log.info(&quot;boltConnectionLifetime is &quot; + boltConnectionLifetime + &quot; minutes&quot; );
+log.info(&quot;boltConnectionPoolSize host is &quot; + boltConnectionPoolSize );
+log.info(&quot;boltConnectionTimeout is &quot; + boltConnectionTimeout + &quot; seconds&quot; );        
+log.info(&quot;boltRetries value  is &quot; + boltRetries );        
+
+//out.println(&quot;Target Rate per sec for test is &quot; + props.get(&quot;TargetRate&quot;));
+//out.println(&quot;Target Rate per min for test is &quot; + props.get(&quot;TargetRateSeconds&quot;));
+
+    String boltAddress = &quot;bolt://&quot; + props.get(&quot;HostName&quot;) + &quot;:7687&quot;;
+//  String boltAddress = &quot;bolt://localhost:7687&quot;;
+  
+  Driver[] drivers;
+  drivers = new Driver[ numberOfConnections ];
+
+String protocol = props.get(&quot;Protocol&quot;);
+
+if ( protocol.equals(&quot;bolt&quot;) )
+{
+  log.info(&quot;BOLT protcol selected so create connection pool and warm them up&quot;); 	
+  Map params = new HashMap();
+  Config config = Config.builder()
+            .withMaxConnectionLifetime( boltConnectionLifetime, TimeUnit.MINUTES )
+            .withMaxConnectionPoolSize( boltConnectionPoolSize )
+            .withConnectionAcquisitionTimeout( boltConnectionTimeout, TimeUnit.SECONDS )
+            .build();
+  params.put(&quot;uri&quot;, &quot;http://data.europa.eu/esco/occupation/0f845e64-de8b-431e-9fe3-1bccf8e1c5b9&quot;);//uri = &quot;werwer&quot;;
+ 
+ for (int i=0; i &lt; numberOfConnections; i++)
+ // for (int i=0; i &lt; 1; i++)
+  {
+    	  log.info(&quot;initiate Connection #&quot; + i+1); 
+  	  drivers[i] = GraphDatabase.driver(boltAddress, AuthTokens.basic(&quot;neo4j&quot;, &quot;escodb&quot;),config);
+
+  	  // warm up connection
+       try
+ 	 {
+    		  Session session = drivers[i].session();
+	       StatementResult rs = session.run( 
+								bsh.shared.query1
+                                      , params
+                                      );
+           log.info(&quot;warm up connection:&quot; + i); 
+	  }
+  	  catch (Throwable t)
+ 	  {
+   		 log.info(&quot;Exception during warm up request:&quot; + t); 
+	  }
+  }
+}
+ log.info(&quot;2: after connection pool&quot;);
+  
+
+bsh.shared.boltDriverPool = drivers;   
+
+
+// record start time
+
+Calendar cal = Calendar.getInstance();
+SimpleDateFormat dateFormatter = new SimpleDateFormat(&quot;MM/dd/yyyy HH:mm:ss.SSS&quot;);
+cal.setTime(new Date());
+int startTimeMS = cal.getTimeInMillis();	
+bsh.shared.StartTimeMS = startTimeMS;	 
+
+//set up initial rate
+int fNumber1 = 1;
+int fNumber2 = 1;
+
+bsh.shared.fNumber1 = fNumber1;
+bsh.shared.fNumber2 = fNumber2;
+ log.info(&quot;Set Up: store initial rate of:&quot; + fNumber2 * 10 ); 
+props.put(&quot;rate&quot;, String.valueOf(fNumber2 * 60)); 
+//props.put(&quot;rate&quot;, String.valueOf(fNumber2 * 10 * 60)); 
+
+ log.info(&quot;Check value&quot; + props.get(&quot;rate&quot;) ); 
+
+// set up max response var
+
+int maxResponse = 0;
+bsh.shared.maxResponse = maxResponse;
+
+
+ // load test data
+String[] testData = {
+&quot;http://data.europa.eu/esco/occupation/0f845e64-de8b-431e-9fe3-1bccf8e1c5b9&quot;,&quot;http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197&quot;,&quot;http://data.europa.eu/esco/occupation/e246eca2-2cec-45b4-ae76-aa1f37d07bc5&quot;,&quot;http://data.europa.eu/esco/occupation/1dd7c3cb-2d58-4dad-ae15-c9081174ab7e&quot;,&quot;http://data.europa.eu/esco/occupation/d907b046-682b-45fa-bdd0-d2ed7a382670&quot;,&quot;http://data.europa.eu/esco/occupation/bff7e8a3-6206-4d38-b25f-fcb6e634c7af&quot;,&quot;http://data.europa.eu/esco/occupation/38395ab3-766c-4c6c-8d96-430eff19ec8d&quot;,&quot;http://data.europa.eu/esco/occupation/d3fd0898-51f7-42a3-8f44-09408fc796f6&quot;,&quot;http://data.europa.eu/esco/occupation/03b55cb5-9735-4582-8e20-2b1cb76635cb&quot;,&quot;http://data.europa.eu/esco/occupation/27eb624c-6171-4c71-aa71-bb21e83381d4&quot;,&quot;http://data.europa.eu/esco/occupation/8a53f8d3-d995-4c7b-a70d-d79f76bdcb3f&quot;,&quot;http://data.europa.eu/esco/occupation/c2a29b8d-1042-4766-a162-e174c7a77421&quot;,&quot;http://data.europa.eu/esco/occupation/d1fc31d2-38e1-4000-85b7-3f82d2fbed9e&quot;,&quot;http://data.europa.eu/esco/occupation/6630d23f-4c8e-4855-abb0-8ca1e72c74ba&quot;,&quot;http://data.europa.eu/esco/occupation/4a375b68-88a0-4e5f-99ce-9b01341dfb81&quot;,&quot;http://data.europa.eu/esco/occupation/9a39a143-d93c-4093-ba3b-47fb67ade318&quot;,&quot;http://data.europa.eu/esco/occupation/4fa660b3-ab97-4a99-ad73-ce3c2612f2c3&quot;,&quot;http://data.europa.eu/esco/occupation/0b5e4142-90ad-48a6-8407-ed47b2664954&quot;,&quot;http://data.europa.eu/esco/occupation/ab762f91-d737-485f-a85c-67cab92dee01&quot;,&quot;http://data.europa.eu/esco/occupation/56fa783a-cca4-42ef-8862-1fb6e43f215c&quot;,&quot;http://data.europa.eu/esco/occupation/b6c851d1-bf09-40aa-aa50-47dde84e7d50&quot;,&quot;http://data.europa.eu/esco/occupation/3826cb92-27f5-40ac-8dad-70af5abd6036&quot;,&quot;http://data.europa.eu/esco/occupation/b4306d87-7992-47fc-914a-4485a4e7003c&quot;,&quot;http://data.europa.eu/esco/occupation/b31e404e-9af6-457d-a58a-208f612eeba3&quot;,&quot;http://data.europa.eu/esco/occupation/97467934-a220-41ca-96df-36fc85258c47&quot;,&quot;http://data.europa.eu/esco/occupation/eee68e13-8248-43bb-a9fb-959832a6c217&quot;,&quot;http://data.europa.eu/esco/occupation/0f2c04f1-9001-4a77-884f-1ea16949f6f6&quot;,&quot;http://data.europa.eu/esco/occupation/c011a88b-95ab-46ad-ad30-539e3fc56092&quot;,&quot;http://data.europa.eu/esco/occupation/57a12047-4f1e-40ed-add5-9736923f231b&quot;,&quot;http://data.europa.eu/esco/occupation/65beb253-61b0-4f8f-9c3c-49419913fd18&quot;,&quot;http://data.europa.eu/esco/occupation/3ac7fbb4-91b2-4d4d-abc8-7a6c55ed648f&quot;,&quot;http://data.europa.eu/esco/occupation/8f10ea9b-bfdf-4a4c-9fa7-b6e02daa93e5&quot;,&quot;http://data.europa.eu/esco/occupation/07bd65d7-c13f-443a-bdf6-88903f3822be&quot;,&quot;http://data.europa.eu/esco/occupation/a77bc925-c441-42f2-92d4-666b103fc025&quot;,&quot;http://data.europa.eu/esco/occupation/70b5896f-988e-4084-9c19-2c82bd5cc9a5&quot;,&quot;http://data.europa.eu/esco/occupation/fc1da244-880f-407d-bfa7-789a2f468ea0&quot;,&quot;http://data.europa.eu/esco/occupation/db25e659-d77c-4f4a-a8a2-ee199d060345&quot;,&quot;http://data.europa.eu/esco/occupation/5aeaea2f-6585-4d3d-8f3e-1fdd9903aa32&quot;,&quot;http://data.europa.eu/esco/occupation/53cdcc84-e5ee-488c-aa09-88084e06d6d7&quot;,&quot;http://data.europa.eu/esco/occupation/fd00e4bb-dcee-41d7-81d3-2cdebad8fe70&quot;,&quot;http://data.europa.eu/esco/occupation/920c22e1-10a1-4afa-86b3-c43da8488391&quot;,&quot;http://data.europa.eu/esco/occupation/444c9aa9-578d-4a9a-9949-99ef1bacb20e&quot;,&quot;http://data.europa.eu/esco/occupation/0f086907-96a6-4e88-bf00-a84295125a6a&quot;,&quot;http://data.europa.eu/esco/occupation/98e58946-3227-4f6c-a5d1-5892fe76883d&quot;,&quot;http://data.europa.eu/esco/occupation/a9a41b21-8dd4-476f-96c7-85733fa63d3b&quot;,&quot;http://data.europa.eu/esco/occupation/c3b82711-273d-4fa8-8de7-0ac3d99c16fc&quot;,&quot;http://data.europa.eu/esco/occupation/be3c021d-bd93-45a0-ad32-e8fa8e0d17ef&quot;,&quot;http://data.europa.eu/esco/occupation/4c313f2a-704e-4d3c-a7c2-98e1b93c9e94&quot;,&quot;http://data.europa.eu/esco/occupation/8b8ae0a5-342c-43ae-b856-e1fea6fd6d1c&quot;,&quot;http://data.europa.eu/esco/occupation/51c7015c-dc81-4fcb-b15f-619a4656a9fe&quot;,&quot;http://data.europa.eu/esco/occupation/38a7f453-a7f0-45d2-a74d-5b92506e4a21&quot;,&quot;http://data.europa.eu/esco/occupation/2c83f279-a1d1-4c9f-a6aa-5e5ee1850e46&quot;,&quot;http://data.europa.eu/esco/occupation/4daee8bd-8400-4da6-ba52-30d4c193d1a9&quot;,&quot;http://data.europa.eu/esco/occupation/6336c205-46bd-42f6-9e67-6b0be6e7618c&quot;,&quot;http://data.europa.eu/esco/occupation/2ce45b9f-ebfb-4105-8e12-690ba2bf00aa&quot;,&quot;http://data.europa.eu/esco/occupation/203ea2ee-bbee-4aaf-83d7-2f2225f916e3&quot;,&quot;http://data.europa.eu/esco/occupation/f7ddb68a-beba-4aa9-b5cb-d174d70ea724&quot;,&quot;http://data.europa.eu/esco/occupation/d00b4607-c4fe-4f3e-8974-29401e23223c&quot;,&quot;http://data.europa.eu/esco/occupation/3025dea4-1752-40a9-9431-fd874420386f&quot;,&quot;http://data.europa.eu/esco/occupation/b10dc548-10e1-4447-8406-5101ff170bbf&quot;,&quot;http://data.europa.eu/esco/occupation/7d9c060a-f280-441d-baf9-7d4a6b520a2a&quot;,&quot;http://data.europa.eu/esco/occupation/d36b66f8-c08a-4416-953b-62c271ca7509&quot;,&quot;http://data.europa.eu/esco/occupation/b6beb46d-9ed2-4a66-9117-7e3f21f234dd&quot;,&quot;http://data.europa.eu/esco/occupation/f34cad67-3cd9-4d31-8dde-e439ac720136&quot;,&quot;http://data.europa.eu/esco/occupation/8de99659-5b10-4825-ac67-0c50189bcc3c&quot;,&quot;http://data.europa.eu/esco/occupation/de74eb4e-c95e-425a-9b3a-7be805ec0321&quot;,&quot;http://data.europa.eu/esco/occupation/4a3f40a8-0587-494c-b8d3-7098b8c5992f&quot;,&quot;http://data.europa.eu/esco/occupation/6b0ad7c0-a37f-45c6-a486-ee943a11429e&quot;,&quot;http://data.europa.eu/esco/occupation/463558cd-6e02-43a8-a675-d4e65af70431&quot;,&quot;http://data.europa.eu/esco/occupation/8d586ee9-0ab1-4155-a3b0-2ca786c8e48c&quot;,&quot;http://data.europa.eu/esco/occupation/0959cd1d-f6c8-4362-939a-ad7d5f75d659&quot;,&quot;http://data.europa.eu/esco/occupation/54361270-bc5e-40fb-8f84-a0023a85cdf7&quot;,&quot;http://data.europa.eu/esco/occupation/0ee5a71a-3c85-48af-bf81-824d3561737a&quot;,&quot;http://data.europa.eu/esco/occupation/04f39bfa-bc03-4480-98bc-b18ce4fe4b4b&quot;,&quot;http://data.europa.eu/esco/occupation/269c47e7-9017-4aa6-bce8-49e89a696a64&quot;,&quot;http://data.europa.eu/esco/occupation/6e6839b6-099c-4802-906e-7f2c8203ee69&quot;,&quot;http://data.europa.eu/esco/occupation/56afc09a-75a0-49c7-a5cb-256df45d8f2d&quot;,&quot;http://data.europa.eu/esco/occupation/f643bff3-74ef-48d1-b033-820e2d8659e9&quot;,&quot;http://data.europa.eu/esco/occupation/189a337d-f6fb-44e2-9e7a-bc27b7b76e0e&quot;,&quot;http://data.europa.eu/esco/occupation/99ebf2c2-1811-4c77-b2e6-7008cba29ea0&quot;,&quot;http://data.europa.eu/esco/occupation/25829508-63f3-41c3-affc-ddbb5c077930&quot;,&quot;http://data.europa.eu/esco/occupation/605e58d6-ad27-4828-b1f5-16707f327fa0&quot;,&quot;http://data.europa.eu/esco/occupation/80a2aba7-ef7d-46ef-a8ec-15ff6131c0f1&quot;,&quot;http://data.europa.eu/esco/occupation/306e9867-cf55-446f-88c6-8adad5369f8c&quot;,&quot;http://data.europa.eu/esco/occupation/dc2a924c-653a-4922-9226-f6909dd64580&quot;,&quot;http://data.europa.eu/esco/occupation/9a7e780a-b778-4a5a-b4eb-309d394d313d&quot;,&quot;http://data.europa.eu/esco/occupation/1b5ccfe7-1cc3-4f02-974c-f852d3faf57e&quot;,&quot;http://data.europa.eu/esco/occupation/0bf5d25a-2b4d-43b5-b053-beeb210fa43a&quot;,&quot;http://data.europa.eu/esco/occupation/3a15ec1b-9250-41a0-9344-feb2956481b7&quot;,&quot;http://data.europa.eu/esco/occupation/4a1d28b0-eca5-4c0a-a49d-ce974e7d04ce&quot;,&quot;http://data.europa.eu/esco/occupation/a9c7a04d-807a-41b5-b441-87c73c73c9c5&quot;,&quot;http://data.europa.eu/esco/occupation/f6ca9392-708d-46cb-a2e9-51519595baa2&quot;,&quot;http://data.europa.eu/esco/occupation/99b096eb-a628-4e69-a79b-0563f2ed1b93&quot;,&quot;http://data.europa.eu/esco/occupation/bcc2c1db-f969-4355-bebf-4878ff6c2a94&quot;,&quot;http://data.europa.eu/esco/occupation/6e0e068b-cd5c-4400-8899-54056087fa14&quot;,&quot;http://data.europa.eu/esco/occupation/d7d986e1-7333-431b-9719-0c5c6939e360&quot;,&quot;http://data.europa.eu/esco/occupation/8e24c53a-9dc6-46d1-986b-48a93f20df2a&quot;,&quot;http://data.europa.eu/esco/occupation/0c041d1e-1841-4acb-b0a1-2c387a61bf65&quot;,&quot;http://data.europa.eu/esco/occupation/d9004a14-bda2-4c63-ab64-17ca163ac1bd&quot;,&quot;http://data.europa.eu/esco/occupation/718bba63-75b7-4b3a-9912-e201b729fe4c&quot;,&quot;http://data.europa.eu/esco/occupation/86e8e172-234d-4e85-b9ae-6a4aecc2c321&quot;,&quot;http://data.europa.eu/esco/occupation/1bbaf82c-67ae-4beb-9a55-7298acf5b2af&quot;,&quot;http://data.europa.eu/esco/occupation/6a7212c9-40da-4346-a190-3896bdd9a925&quot;,&quot;http://data.europa.eu/esco/occupation/fc85156e-4f0b-46c4-ba66-a3b17318d932&quot;,&quot;http://data.europa.eu/esco/occupation/068df7d1-516f-4829-b339-294cb0cf6318&quot;,&quot;http://data.europa.eu/esco/occupation/d26a941d-443a-4301-a648-3cb3a4427775&quot;,&quot;http://data.europa.eu/esco/occupation/fc81b573-e0ea-4466-8560-c2bb278c314a&quot;,&quot;http://data.europa.eu/esco/occupation/16bf6d6f-64ec-4f80-9070-f81a7b179d53&quot;,&quot;http://data.europa.eu/esco/occupation/374d925a-107b-4c99-bc8b-75483441f062&quot;,&quot;http://data.europa.eu/esco/occupation/6656337f-67eb-4f48-b1e4-ecccdfa44dd2&quot;,&quot;http://data.europa.eu/esco/occupation/e4ad2547-9188-4fbd-897a-c91b3c097779&quot;,&quot;http://data.europa.eu/esco/occupation/116b4c55-5bd0-41e9-9227-98d7ecffeaf6&quot;,&quot;http://data.europa.eu/esco/occupation/276a4ff1-a67c-4677-9f20-dc85f1060e1b&quot;,&quot;http://data.europa.eu/esco/occupation/6648103b-6984-4880-b8c3-eacb9b0d2bc9&quot;,&quot;http://data.europa.eu/esco/occupation/0f5cc4eb-925d-4b99-be6d-b0964a253a9a&quot;,&quot;http://data.europa.eu/esco/occupation/27e16eef-c7a6-4577-bc3f-727d01ec1958&quot;,&quot;http://data.europa.eu/esco/occupation/b73f4ce5-13fa-43a0-bbf6-01d7315849b8&quot;,&quot;http://data.europa.eu/esco/occupation/d43e9693-7087-412c-b54c-e9068012630a&quot;,&quot;http://data.europa.eu/esco/occupation/83b30677-6468-4a04-b20c-15daf6bc8fb5&quot;,&quot;http://data.europa.eu/esco/occupation/044d78cc-f62f-4532-83a5-8e04f2889652&quot;,&quot;http://data.europa.eu/esco/occupation/5a282a39-5346-454a-b1ef-c1217c50e156&quot;,&quot;http://data.europa.eu/esco/occupation/8b304664-ba25-45fe-a5bf-80c727943a86&quot;,&quot;http://data.europa.eu/esco/occupation/353a22a7-1c55-410c-a7a7-c531692b5e50&quot;,&quot;http://data.europa.eu/esco/occupation/1bb7c072-38c8-430a-b943-76bfa312a5f4&quot;,&quot;http://data.europa.eu/esco/occupation/02bd7cac-8263-4425-b03d-19001ffe8787&quot;,&quot;http://data.europa.eu/esco/occupation/e7970c7a-7769-4002-87d3-0a8ea94fdd6f&quot;,&quot;http://data.europa.eu/esco/occupation/326027fc-5408-47cd-9b32-fbe770dbbe80&quot;,&quot;http://data.europa.eu/esco/occupation/6d1e2801-3ab0-4d74-ac27-918339e8db64&quot;,&quot;http://data.europa.eu/esco/occupation/1aadb308-432a-4d01-b54b-b4f7f76dd419&quot;,&quot;http://data.europa.eu/esco/occupation/bc1c82a5-0fc3-453f-8537-9d1a6e9e85aa&quot;,&quot;http://data.europa.eu/esco/occupation/056f1849-7ff8-4d6f-9b8a-176a610bba44&quot;,&quot;http://data.europa.eu/esco/occupation/e937449a-d9e0-4ab7-9ea5-4d3ac673be6d&quot;,&quot;http://data.europa.eu/esco/occupation/42abcbcb-721b-4da6-9c06-f6951969d056&quot;,&quot;http://data.europa.eu/esco/occupation/9aa2a36f-296e-45fe-9798-b7839e0ed389&quot;,&quot;http://data.europa.eu/esco/occupation/31d0e6b8-64ae-4b04-b988-dbee03a4aaa9&quot;,&quot;http://data.europa.eu/esco/occupation/3e626058-f669-4503-84ec-6ae1a6077a61&quot;,&quot;http://data.europa.eu/esco/occupation/eb9479c6-5fdf-4f45-ace4-28b547b8c7e5&quot;,&quot;http://data.europa.eu/esco/occupation/7569f423-2c37-49aa-947e-41acb66ec909&quot;,&quot;http://data.europa.eu/esco/occupation/f272a521-1a38-4d34-a78e-3adeca95b977&quot;,&quot;http://data.europa.eu/esco/occupation/5d5fde2c-47ce-4dcd-99f0-ba651b7b908f&quot;,&quot;http://data.europa.eu/esco/occupation/a4dd6eae-ca75-456f-829d-333671a7c186&quot;,&quot;http://data.europa.eu/esco/occupation/1fc60ca6-c3ea-4aeb-bf3b-350c0c5e7f93&quot;,&quot;http://data.europa.eu/esco/occupation/16ec2281-b0b3-4cde-9888-2cb6cc492c25&quot;,&quot;http://data.europa.eu/esco/occupation/33cd8ff4-62f2-4a3f-b053-6e009ecef6da&quot;,&quot;http://data.europa.eu/esco/occupation/1b3e150f-8ec1-47e2-a2ef-d02632efe0d5&quot;,&quot;http://data.europa.eu/esco/occupation/b059d331-2dd9-4d7d-923e-1dd029d2e58c&quot;,&quot;http://data.europa.eu/esco/occupation/a4ab8347-782f-4ca1-940d-44ffea256ebf&quot;,&quot;http://data.europa.eu/esco/occupation/d20fd82a-9d99-4335-ad83-87484e297a46&quot;,&quot;http://data.europa.eu/esco/occupation/fe4a72af-6206-4d86-90c1-b5fb4b5ba2b2&quot;,&quot;http://data.europa.eu/esco/occupation/1092dd4c-b96b-4b3f-87fe-4a9e8d1937fb&quot;,&quot;http://data.europa.eu/esco/occupation/53d2052f-edc0-4f44-8be1-164526412bfe&quot;,&quot;http://data.europa.eu/esco/occupation/a98f93a6-b1df-4759-88a9-3234f334afad&quot;,&quot;http://data.europa.eu/esco/occupation/c40ef517-d4ab-4932-b184-9c2ea5b24fe2&quot;,&quot;http://data.europa.eu/esco/occupation/52b9e8dc-de6c-41dd-b29a-e1291c273f6f&quot;,&quot;http://data.europa.eu/esco/occupation/f5332f2d-3119-4194-8b5c-d0a5d97f55ef&quot;,&quot;http://data.europa.eu/esco/occupation/0ec62c2e-30c9-434e-bf36-5277a0840450&quot;,&quot;http://data.europa.eu/esco/occupation/61b859ed-24d8-48cf-9c1b-67d7a6c62bb5&quot;,&quot;http://data.europa.eu/esco/occupation/07d4a2fa-e278-4f32-8cf9-9c01fc660369&quot;,&quot;http://data.europa.eu/esco/occupation/3a55ef85-5abf-48e2-884b-5efaf881bfb1&quot;,&quot;http://data.europa.eu/esco/occupation/40517ed4-2769-4283-a15b-4b0d939bd2d3&quot;,&quot;http://data.europa.eu/esco/occupation/4a29eab1-5f02-4723-a863-e2d5a0614dfa&quot;,&quot;http://data.europa.eu/esco/occupation/0611f232-b30e-46c7-9c26-2d59b1448e79&quot;,&quot;http://data.europa.eu/esco/occupation/abc849b6-9e75-41ce-b1aa-4d488280a8a3&quot;,&quot;http://data.europa.eu/esco/occupation/64b136da-aedf-48a2-96a0-72eb850bfcd0&quot;,&quot;http://data.europa.eu/esco/occupation/98588703-5f5c-41c6-a240-3411b6518b83&quot;,&quot;http://data.europa.eu/esco/occupation/db3da11f-67a0-415f-b785-81f33d3be810&quot;,&quot;http://data.europa.eu/esco/occupation/7f0fe7d3-54c6-41e9-88ba-9d4f0f1a46b4&quot;,&quot;http://data.europa.eu/esco/occupation/9ab80ce6-504f-474f-bb91-98163e9d45fd&quot;,&quot;http://data.europa.eu/esco/occupation/789517fb-95ee-43d1-9530-c2860be1a439&quot;,&quot;http://data.europa.eu/esco/occupation/2b31f745-f04f-4d2c-9692-4715e1448f80&quot;,&quot;http://data.europa.eu/esco/occupation/b0ad8659-0410-4b5b-9466-a90f8b3cdac9&quot;,&quot;http://data.europa.eu/esco/occupation/31cc4199-703c-4f8a-9b46-a2070a6d35df&quot;,&quot;http://data.europa.eu/esco/occupation/3a8ac6cd-b59a-4b93-b071-0324e895b8e4&quot;,&quot;http://data.europa.eu/esco/occupation/6833077e-e521-4605-bc1a-893f4b3d811c&quot;,&quot;http://data.europa.eu/esco/occupation/825ab049-2f0c-4acf-b402-9c6bb51acca2&quot;,&quot;http://data.europa.eu/esco/occupation/84f20f5d-149a-4512-b319-18a81d3d6026&quot;,&quot;http://data.europa.eu/esco/occupation/c0a35355-be44-44c0-82d2-acf8363ed45e&quot;,&quot;http://data.europa.eu/esco/occupation/1f137f0b-7097-4583-9d1b-b69e57369319&quot;,&quot;http://data.europa.eu/esco/occupation/b66eb697-e65d-4bbb-b51c-d847f6875f1a&quot;,&quot;http://data.europa.eu/esco/occupation/632e61c8-4e4b-44c7-b213-6dd5a174b143&quot;,&quot;http://data.europa.eu/esco/occupation/6b5e5aa6-9bf7-47e6-90d2-4d2187d47d11&quot;,&quot;http://data.europa.eu/esco/occupation/c6a26e11-bdf1-47a1-849d-fdcf819d458d&quot;,&quot;http://data.europa.eu/esco/occupation/4ac3c3a0-eb56-491f-8d21-1e5539a05b54&quot;,&quot;http://data.europa.eu/esco/occupation/31808988-fc0a-4bc3-9e47-27216d6759f5&quot;,&quot;http://data.europa.eu/esco/occupation/05ebeb56-6ceb-488d-ba91-ed15088efc8e&quot;,&quot;http://data.europa.eu/esco/occupation/3a17bd32-8a00-47cb-82aa-2b5660cf1192&quot;,&quot;http://data.europa.eu/esco/occupation/5fe1b340-9b02-4c40-bbc9-ffd4d5fb5699&quot;,&quot;http://data.europa.eu/esco/occupation/7afeee90-5672-470d-b061-24ffaafb2fc9&quot;,&quot;http://data.europa.eu/esco/occupation/02f1ae71-f89c-47b7-af2c-50d7ab1d9b8a&quot;,&quot;http://data.europa.eu/esco/occupation/8914badc-df5e-4671-908e-de5bc795658b&quot;,&quot;http://data.europa.eu/esco/occupation/d5db9d5c-2ebf-4a54-a79a-1b7e7ff70471&quot;,&quot;http://data.europa.eu/esco/occupation/1ee1b792-4d5f-4555-be4e-ce7e4c05d1a9&quot;,&quot;http://data.europa.eu/esco/occupation/c92a4851-9418-4fb5-8201-c7e03cc2b6e2&quot;,&quot;http://data.europa.eu/esco/occupation/b674a89a-4439-4ad5-822d-518036415503&quot;,&quot;http://data.europa.eu/esco/occupation/35d41f4f-334b-452e-9e31-99f376302493&quot;,&quot;http://data.europa.eu/esco/occupation/d4edb527-2e5d-440c-9f8c-cd5caa9cc4d6&quot;,&quot;http://data.europa.eu/esco/occupation/289c7385-2342-4a4e-b0b1-7b2e977aea79&quot;,&quot;http://data.europa.eu/esco/occupation/ea3db1b3-7c03-4306-9e3d-7e20eb7f1826&quot;,&quot;http://data.europa.eu/esco/occupation/b65133db-b3de-44d1-88fa-1d3deda08245&quot;,&quot;http://data.europa.eu/esco/occupation/30058b71-fe16-45ea-a2b8-d5461c706372&quot;,&quot;http://data.europa.eu/esco/occupation/a7a74a05-3dd0-46c6-99af-92df8042520c&quot;,&quot;http://data.europa.eu/esco/occupation/5734feab-60be-4f11-8e3f-e983ca6fb07a&quot;,&quot;http://data.europa.eu/esco/occupation/69c24e54-567c-4415-b59b-cda97fdbc50c&quot;,&quot;http://data.europa.eu/esco/occupation/afcf9d03-6e51-4548-8cec-cfa50972929d&quot;,&quot;http://data.europa.eu/esco/occupation/1da55a33-09b3-4ac7-818e-2a0fea68cecc&quot;,&quot;http://data.europa.eu/esco/occupation/303a1e34-cb16-4054-b323-81e5eec17397&quot;,&quot;http://data.europa.eu/esco/occupation/b12b14fd-5b74-40c6-afd9-dd35b34e27ed&quot;,&quot;http://data.europa.eu/esco/occupation/edf2e989-d7c5-496e-b365-81fc5cb9eb39&quot;,&quot;http://data.europa.eu/esco/occupation/3c0af499-39f6-4468-9ba4-b13a26d5f888&quot;,&quot;http://data.europa.eu/esco/occupation/4311b9e0-064e-41bc-b120-5eb21f337780&quot;,&quot;http://data.europa.eu/esco/occupation/bbd1fe06-1b55-4937-9317-fc162311ab38&quot;,&quot;http://data.europa.eu/esco/occupation/87fd9791-0922-4da0-a984-f518aadf85ec&quot;,&quot;http://data.europa.eu/esco/occupation/ba1e5427-46e0-4b6c-b196-5312d136dd3b&quot;,&quot;http://data.europa.eu/esco/occupation/bf802371-4758-4268-a780-58e3d269831b&quot;,&quot;http://data.europa.eu/esco/occupation/05f321f8-055b-407d-bf19-e0ddabda56b7&quot;,&quot;http://data.europa.eu/esco/occupation/773e5ea3-235b-4e72-afc5-290dd841eed8&quot;,&quot;http://data.europa.eu/esco/occupation/631e504f-0db4-4e03-bf90-3f00d550170f&quot;,&quot;http://data.europa.eu/esco/occupation/4f5e4fb1-58bd-4abd-bb06-4af9203a1518&quot;,&quot;http://data.europa.eu/esco/occupation/ef909843-97c6-4c48-8038-2e7aefdfcad5&quot;,&quot;http://data.europa.eu/esco/occupation/2d6a1cc1-cd13-42c5-a2b1-f0183bd0d253&quot;,&quot;http://data.europa.eu/esco/occupation/3d616092-b4fd-4c14-b0e9-a9119bbbd171&quot;,&quot;http://data.europa.eu/esco/occupation/06ac0f53-431e-4bc6-acb8-2f5da041b5d3&quot;,&quot;http://data.europa.eu/esco/occupation/c44a118d-18c1-46ac-985f-3e802a064b73&quot;,&quot;http://data.europa.eu/esco/occupation/64421dde-df97-4c42-a25a-b3bc55b39ad6&quot;,&quot;http://data.europa.eu/esco/occupation/262f21a3-ae78-46f4-a5f9-5a1f502caa90&quot;,&quot;http://data.europa.eu/esco/occupation/d2db926b-8b14-4686-9c98-fb0dc3a38cbb&quot;,&quot;http://data.europa.eu/esco/occupation/cb932c74-c13b-47e9-9a85-318bd8eb2f96&quot;,&quot;http://data.europa.eu/esco/occupation/b8139469-92cc-4f57-9e69-a0d9f7fc3817&quot;,&quot;http://data.europa.eu/esco/occupation/763f82c2-81e3-48d2-9cdf-f532b5016a1f&quot;,&quot;http://data.europa.eu/esco/occupation/8db28ebf-8818-4639-aa49-30324901836e&quot;,&quot;http://data.europa.eu/esco/occupation/6cfba9ca-f9a0-4a50-a8d3-064d88c928b1&quot;,&quot;http://data.europa.eu/esco/occupation/0b15375e-dfdd-4047-9efb-096e0aaee7d2&quot;,&quot;http://data.europa.eu/esco/occupation/2a6784d7-c457-413d-ba99-e320de11fc98&quot;,&quot;http://data.europa.eu/esco/occupation/3288a2fe-4934-47c8-ad0b-11b16c9cd461&quot;,&quot;http://data.europa.eu/esco/occupation/de50b422-8700-4153-955c-131c3d277738&quot;,&quot;http://data.europa.eu/esco/occupation/0c849f7b-fa3b-4faf-8501-0e50cd200ba1&quot;,&quot;http://data.europa.eu/esco/occupation/76abbb82-c103-4d7a-a4c0-14dba4d6199a&quot;,&quot;http://data.europa.eu/esco/occupation/755c5c5f-2ee3-4487-94db-30ec2ba2e883&quot;,&quot;http://data.europa.eu/esco/occupation/f0e1cc13-48e0-4995-8699-ee43467bce0d&quot;,&quot;http://data.europa.eu/esco/occupation/6e6b62d7-4c9c-482a-9d59-7e20de0d8527&quot;,&quot;http://data.europa.eu/esco/occupation/7d092380-1c2e-48fe-81de-0d191b4e96d6&quot;,&quot;http://data.europa.eu/esco/occupation/73d77554-2016-46fa-ac3d-44a02e8d1a89&quot;,&quot;http://data.europa.eu/esco/occupation/c3dc576e-2a58-4481-9b6f-9853067af8ea&quot;,&quot;http://data.europa.eu/esco/occupation/f2cc5978-e45c-4f28-b859-7f89221b0505&quot;,&quot;http://data.europa.eu/esco/occupation/bfe142b9-a049-4d41-89c4-fd2f34ac56b6&quot;,&quot;http://data.europa.eu/esco/occupation/a655aff1-e5e9-4c64-bc85-b902568a3dfb&quot;,&quot;http://data.europa.eu/esco/occupation/e89e330c-daa3-48f0-b34e-04e3344ea8dc&quot;,&quot;http://data.europa.eu/esco/occupation/480d2853-db07-43d4-847f-7ffdd8d368f5&quot;,&quot;http://data.europa.eu/esco/occupation/c8505fa5-0a33-4143-bd87-f24f569e8813&quot;,&quot;http://data.europa.eu/esco/occupation/574f46e2-e48d-4cde-a7b1-877004ea4c52&quot;,&quot;http://data.europa.eu/esco/occupation/12142c2c-9b6f-4e4f-8153-f1a51554e4e0&quot;,&quot;http://data.europa.eu/esco/occupation/621b7aa1-b678-49ee-8caa-91b496f8bc5b&quot;,&quot;http://data.europa.eu/esco/occupation/cf74a14f-f1fe-4008-a935-5c173f246655&quot;,&quot;http://data.europa.eu/esco/occupation/c90a6ebe-adcc-4395-9f5b-ff3e96e93cef&quot;,&quot;http://data.europa.eu/esco/occupation/109e0a5d-203d-4af6-8f70-692111335ec3&quot;,&quot;http://data.europa.eu/esco/occupation/b49f95f8-c1c8-428f-9f1f-5f5abae55e51&quot;,&quot;http://data.europa.eu/esco/occupation/b87a7a27-ee74-4e5e-b274-84a3cab27bf4&quot;,&quot;http://data.europa.eu/esco/occupation/d3570716-cc0d-4a61-b9a0-9b3081050e9d&quot;,&quot;http://data.europa.eu/esco/occupation/5f50290d-f520-4a69-85c7-1390d2a4a8b6&quot;,&quot;http://data.europa.eu/esco/occupation/c8b296be-54ae-48cf-be21-031fa8457937&quot;,&quot;http://data.europa.eu/esco/occupation/cadbf9af-1da0-406f-8282-b6d27a7e1a74&quot;,&quot;http://data.europa.eu/esco/occupation/9e285322-2cfa-430f-9b66-41be57d698e2&quot;,&quot;http://data.europa.eu/esco/occupation/dc3cc282-488d-4d8f-be80-191c6b521823&quot;,&quot;http://data.europa.eu/esco/occupation/68f4fdd9-182c-4c0d-a73d-f767b8a8355e&quot;,&quot;http://data.europa.eu/esco/occupation/c593ded7-2e97-44a5-a5f3-f6115ff98233&quot;,&quot;http://data.europa.eu/esco/occupation/d3ac4c05-79e2-42da-b8c6-e55765aee381&quot;,&quot;http://data.europa.eu/esco/occupation/f634ce9b-68a5-4a8a-af4a-ed13fc0deba9&quot;,&quot;http://data.europa.eu/esco/occupation/9c57263e-a38f-4c45-9265-a3c3e7cc2c5c&quot;,&quot;http://data.europa.eu/esco/occupation/81f8d141-3f67-4fb0-a349-db0147ef7b3a&quot;,&quot;http://data.europa.eu/esco/occupation/f5e80af5-eebe-4133-878a-5dc5ef34fe93&quot;,&quot;http://data.europa.eu/esco/occupation/a04eedcf-8424-475a-8dc5-f30a9da4b151&quot;,&quot;http://data.europa.eu/esco/occupation/de31a27f-c6ba-4d4f-87cd-b405e1852121&quot;,&quot;http://data.europa.eu/esco/occupation/9bf4c8ea-e814-4772-ae31-0f29672dc497&quot;,&quot;http://data.europa.eu/esco/occupation/dc69f2ed-ebe9-43da-bf9d-31aac874d4c2&quot;,&quot;http://data.europa.eu/esco/occupation/6667bf29-a3e3-4513-a71b-82c67206045b&quot;,&quot;http://data.europa.eu/esco/occupation/983c2816-a339-4817-97f4-151a9ff3e64d&quot;,&quot;http://data.europa.eu/esco/occupation/8c0524b8-f878-4c68-8293-698d07c1807c&quot;,&quot;http://data.europa.eu/esco/occupation/f60dc59b-7681-45d4-8114-b3a646e02ab2&quot;,&quot;http://data.europa.eu/esco/occupation/b865693a-eb11-44cc-bf6c-38e5b4d7e169&quot;,&quot;http://data.europa.eu/esco/occupation/b560456a-bc4d-41a9-94c8-bf8636147246&quot;,&quot;http://data.europa.eu/esco/occupation/5b6c0c64-1321-4fe7-a274-3287c13b489c&quot;,&quot;http://data.europa.eu/esco/occupation/0d6bb2cc-06b0-481c-b553-2a973be03254&quot;,&quot;http://data.europa.eu/esco/occupation/8021f3a2-e3de-43c0-b366-075da74dc5b7&quot;,&quot;http://data.europa.eu/esco/occupation/865adac9-9bb7-4680-a13d-62b2942974ac&quot;,&quot;http://data.europa.eu/esco/occupation/c60ede09-b67b-4173-8991-b9b694149488&quot;,&quot;http://data.europa.eu/esco/occupation/26ce22fe-4018-4387-8e6b-c2555f5fc0ac&quot;,&quot;http://data.europa.eu/esco/occupation/862ed9e5-96ec-410d-a0fd-5206a05a7954&quot;,&quot;http://data.europa.eu/esco/occupation/a198de8c-24b1-4002-982f-a57ae6d6c19c&quot;,&quot;http://data.europa.eu/esco/occupation/d6a395eb-6664-47f1-9be5-91aa2e8ba87d&quot;,&quot;http://data.europa.eu/esco/occupation/d4d6842b-27f0-4222-85db-c542acf6d434&quot;,&quot;http://data.europa.eu/esco/occupation/74d47633-8e9e-4e08-9cba-d2292c211218&quot;,&quot;http://data.europa.eu/esco/occupation/7f0b46be-8b7a-4675-987d-89a8a7193730&quot;,&quot;http://data.europa.eu/esco/occupation/2a914d26-42aa-46b5-acf3-097d51ba4617&quot;,&quot;http://data.europa.eu/esco/occupation/7c132147-428b-4ea3-87e1-70f7abb691ce&quot;,&quot;http://data.europa.eu/esco/occupation/9a903a4a-282d-4724-a7de-1918b41d2965&quot;,&quot;http://data.europa.eu/esco/occupation/9487f835-b5a9-4742-8ecf-35520911e28c&quot;,&quot;http://data.europa.eu/esco/occupation/c706886d-5bc7-4430-9a72-051fc483235f&quot;,&quot;http://data.europa.eu/esco/occupation/7bf11599-d0bb-4789-9886-55c87f5da449&quot;,&quot;http://data.europa.eu/esco/occupation/a1d0eb6b-20ac-4a2c-a7c1-9b016ea92b24&quot;,&quot;http://data.europa.eu/esco/occupation/69bcbb0a-8d80-4ecd-b0a4-9adea2a40de2&quot;,&quot;http://data.europa.eu/esco/occupation/1978c6ff-37b4-48f1-9aa6-88b9c568f74f&quot;,&quot;http://data.europa.eu/esco/occupation/949ed945-f697-415e-b4c5-51d8abf7cfdf&quot;,&quot;http://data.europa.eu/esco/occupation/5ac377d2-e1d0-4911-a299-b4ef2782a0ba&quot;,&quot;http://data.europa.eu/esco/occupation/4e8a5d3e-66de-4661-9927-ef3123cc79e9&quot;,&quot;http://data.europa.eu/esco/occupation/9af5fd79-d76e-4343-bc13-ff2d172aec62&quot;,&quot;http://data.europa.eu/esco/occupation/0ab77768-9031-4ccc-9ab8-1f73cbb36bc7&quot;,&quot;http://data.europa.eu/esco/occupation/dd935705-d703-40ba-9ba7-2a8a2b7651b4&quot;,&quot;http://data.europa.eu/esco/occupation/a1b86a8b-ad91-4192-b386-bbf89bb11699&quot;,&quot;http://data.europa.eu/esco/occupation/9dbbeb2c-0d51-4c03-8ef6-8dfa7360db22&quot;,&quot;http://data.europa.eu/esco/occupation/c01cdf85-3ce0-4d12-ae86-e4e63493fafa&quot;,&quot;http://data.europa.eu/esco/occupation/0eebf6d2-af43-4a18-b4b7-668fb6433b42&quot;,&quot;http://data.europa.eu/esco/occupation/49713da4-4e97-4f82-bd1c-16ce7f9179b7&quot;,&quot;http://data.europa.eu/esco/occupation/ecfcf554-254f-4dd7-a20c-b60cc6b16054&quot;,&quot;http://data.europa.eu/esco/occupation/066a9d8f-3948-409c-a3cf-ed8ed37cfe22&quot;,&quot;http://data.europa.eu/esco/occupation/a10849c1-f0d8-4600-bca6-9549c2517650&quot;,&quot;http://data.europa.eu/esco/occupation/976cbfcc-8958-4800-a435-71d15405a42a&quot;,&quot;http://data.europa.eu/esco/occupation/16605833-c196-48d7-a6f5-bbdebdc353df&quot;,&quot;http://data.europa.eu/esco/occupation/264b00c9-84d0-4dc9-b590-aed2cea2b904&quot;,&quot;http://data.europa.eu/esco/occupation/2d92f7f5-d2b1-4223-92c4-23c33f8604fc&quot;,&quot;http://data.europa.eu/esco/occupation/3fa9a480-ceb3-4c2a-8a91-0508e1bb6ba5&quot;,&quot;http://data.europa.eu/esco/occupation/47e4135b-95d1-4462-920c-afcbd7c4d9be&quot;,&quot;http://data.europa.eu/esco/occupation/dab60fc6-c16e-4de7-b969-b323784f5a49&quot;,&quot;http://data.europa.eu/esco/occupation/15dfabf5-71e0-400e-af48-4c6f92ef4392&quot;,&quot;http://data.europa.eu/esco/occupation/caf7b8fb-b2d6-46b7-bffa-bea7f8e4aed8&quot;,&quot;http://data.europa.eu/esco/occupation/19f6634f-ec0c-4513-b0d9-d43f9ddeb82d&quot;,&quot;http://data.europa.eu/esco/occupation/5d9e63a2-8013-434e-9f92-3b3d54a0c320&quot;,&quot;http://data.europa.eu/esco/occupation/ac80b511-fd22-4edf-8570-e531704778bd&quot;,&quot;http://data.europa.eu/esco/occupation/5a551d36-0e14-40ab-84a2-7aa9b37dc528&quot;,&quot;http://data.europa.eu/esco/occupation/b7b75eb6-34bc-462d-b412-eed393cc1397&quot;,&quot;http://data.europa.eu/esco/occupation/f89b12a1-689f-4a4f-8695-abb620810f1e&quot;,&quot;http://data.europa.eu/esco/occupation/c5b45ebe-0e9f-4bc4-9563-7fdf31115e53&quot;,&quot;http://data.europa.eu/esco/occupation/158965f1-bd83-441c-bca8-1975b74dedc5&quot;,&quot;http://data.europa.eu/esco/occupation/fd8b68c0-7341-44bb-855d-9b1254eade33&quot;,&quot;http://data.europa.eu/esco/occupation/ad7c76e8-af96-42af-99a5-d579f707758c&quot;,&quot;http://data.europa.eu/esco/occupation/006cc1f9-2841-41c3-991a-dc3f2f3bd533&quot;,&quot;http://data.europa.eu/esco/occupation/bc1748c7-29d6-43d5-a304-6b74f317ac26&quot;,&quot;http://data.europa.eu/esco/occupation/d2d451cc-e839-4192-be54-d7724814aa03&quot;,&quot;http://data.europa.eu/esco/occupation/ad14ec64-128c-4a72-9c1a-257a5f3b180c&quot;,&quot;http://data.europa.eu/esco/occupation/c5c1c40f-d2b7-437f-b3e8-b9da48f6d728&quot;,&quot;http://data.europa.eu/esco/occupation/38240cc5-d1d9-4de9-9480-29c51da291eb&quot;,&quot;http://data.europa.eu/esco/occupation/34852729-a2f6-4063-aa90-18b3d16754f7&quot;,&quot;http://data.europa.eu/esco/occupation/6e102a30-2c0a-4a31-aee3-ae7b1fac5466&quot;,&quot;http://data.europa.eu/esco/occupation/f97dedb0-da68-4fc3-8bcc-3f4025ccacd3&quot;,&quot;http://data.europa.eu/esco/occupation/c418ed9a-132f-48cd-ae5c-dd375070ee0e&quot;,&quot;http://data.europa.eu/esco/occupation/52ded7d7-11df-42e3-b90a-d7f4b70fb4b9&quot;,&quot;http://data.europa.eu/esco/occupation/853698f5-0f1e-42ae-9301-e5411a26dae2&quot;,&quot;http://data.europa.eu/esco/occupation/7ef064b1-aab8-4818-a468-8f17acbfd995&quot;,&quot;http://data.europa.eu/esco/occupation/95d8f19e-f62b-443f-ac53-324ea8f98cf5&quot;,&quot;http://data.europa.eu/esco/occupation/3ae7c42b-7929-402f-bcbc-882b8679abf4&quot;,&quot;http://data.europa.eu/esco/occupation/65bd2342-f7de-4932-9164-eb480e35a791&quot;,&quot;http://data.europa.eu/esco/occupation/27c5097e-a2a3-4b2e-82a6-3b874ebfb092&quot;,&quot;http://data.europa.eu/esco/occupation/0dce2f9b-eda5-4dc4-ba74-36eeed8c9a44&quot;,&quot;http://data.europa.eu/esco/occupation/01a83071-6533-4675-b2da-f0c6d02669f5&quot;,&quot;http://data.europa.eu/esco/occupation/2cec9e4a-5a37-4cb1-a8b7-2e8d94766417&quot;,&quot;http://data.europa.eu/esco/occupation/137b1d11-c4bc-4016-89ba-45345d4c71f0&quot;,&quot;http://data.europa.eu/esco/occupation/187f063b-1002-4d46-9b79-c46b2caedbb3&quot;,&quot;http://data.europa.eu/esco/occupation/9d2aae3e-cbfe-409f-86cc-7cef9cd0435a&quot;,&quot;http://data.europa.eu/esco/occupation/8a451ae2-3c31-4f35-90af-6275b1b02f93&quot;,&quot;http://data.europa.eu/esco/occupation/ee5f8b2f-4b40-4426-8290-a6926ae4898b&quot;,&quot;http://data.europa.eu/esco/occupation/061f56c6-36eb-4aa7-b5ef-98b7a569da1c&quot;,&quot;http://data.europa.eu/esco/occupation/d6bffef4-f09a-4711-9ecb-92ec04353b21&quot;,&quot;http://data.europa.eu/esco/occupation/59207c91-eefa-4f26-baae-9ea215320ed0&quot;,&quot;http://data.europa.eu/esco/occupation/d9612966-e295-4d81-ba2b-9f36bad0b392&quot;,&quot;http://data.europa.eu/esco/occupation/8c0cc417-6b09-4082-8062-2f0f7123a573&quot;,&quot;http://data.europa.eu/esco/occupation/a8c7004a-e59c-4a4d-9092-2cb4533ffe58&quot;,&quot;http://data.europa.eu/esco/occupation/4a30b421-2fda-42d6-b7e1-1c31753f061d&quot;,&quot;http://data.europa.eu/esco/occupation/036dc42f-bd4d-4533-a3cc-fcd313227ce3&quot;,&quot;http://data.europa.eu/esco/occupation/ecac98ea-9fc3-4475-9b23-8af94f41603d&quot;,&quot;http://data.europa.eu/esco/occupation/5e5522c5-4b09-4586-a8f0-3b6d66d99969&quot;,&quot;http://data.europa.eu/esco/occupation/3b755cda-c4b0-4fa1-8621-372f28ccc2e9&quot;,&quot;http://data.europa.eu/esco/occupation/50b41847-6dad-4a2e-9427-a0374c2963fd&quot;,&quot;http://data.europa.eu/esco/occupation/e52b5707-7097-4dbc-ac61-054e917da241&quot;,&quot;http://data.europa.eu/esco/occupation/61e278a3-2c27-4c18-a827-11e2326b33ae&quot;,&quot;http://data.europa.eu/esco/occupation/58ff0ec2-08ba-4b21-b765-babb6d76ca36&quot;,&quot;http://data.europa.eu/esco/occupation/34e1c889-0fd1-4d1f-aba9-3b6263ae667a&quot;,&quot;http://data.europa.eu/esco/occupation/449f6aef-a8e6-4edc-aea4-802a7b773e00&quot;,&quot;http://data.europa.eu/esco/occupation/9ac10bde-93a0-4570-afc2-e2b6cf46d8d2&quot;,&quot;http://data.europa.eu/esco/occupation/50a66df6-c141-4b4a-937a-d3bc55737ae3&quot;,&quot;http://data.europa.eu/esco/occupation/6c3fd65e-2d24-47d8-bc22-9e93512bdcc2&quot;,&quot;http://data.europa.eu/esco/occupation/59c22779-4d89-4bc9-ba8b-d64bea236723&quot;,&quot;http://data.europa.eu/esco/occupation/7cd070f5-b5dd-4228-bdcf-0419dbacfcf4&quot;,&quot;http://data.europa.eu/esco/occupation/1a953e5a-f53f-461d-818b-6b2e655a751f&quot;,&quot;http://data.europa.eu/esco/occupation/b7744a45-a4ce-4037-b679-3d2377e17f31&quot;,&quot;http://data.europa.eu/esco/occupation/ba3bacd4-73e9-4861-a9c0-f89f1f28055a&quot;,&quot;http://data.europa.eu/esco/occupation/4eada7b3-5026-4030-936b-4a80aed37252&quot;,&quot;http://data.europa.eu/esco/occupation/3900b684-6b4b-4133-b134-e1d129d60383&quot;,&quot;http://data.europa.eu/esco/occupation/2a22ff9e-de3b-408d-b312-5034896cc4f4&quot;,&quot;http://data.europa.eu/esco/occupation/36494988-69d2-4420-9db4-eb56605ac983&quot;,&quot;http://data.europa.eu/esco/occupation/f4a25243-b06a-42a9-9c69-246853df63ad&quot;,&quot;http://data.europa.eu/esco/occupation/8edc768c-0bc6-4d65-b559-50f9fb2cc93f&quot;,&quot;http://data.europa.eu/esco/occupation/72d4b5a3-5458-41e5-8b4e-cb4fb3fd0fbc&quot;,&quot;http://data.europa.eu/esco/occupation/ddac39cf-5d8b-416a-b24b-9ce3a8a4a668&quot;,&quot;http://data.europa.eu/esco/occupation/5cc6d160-3864-43b0-b3eb-77d1208a51b4&quot;,&quot;http://data.europa.eu/esco/occupation/d8e5410b-5199-403f-8cbd-d32efb17a296&quot;,&quot;http://data.europa.eu/esco/occupation/20e39113-05f5-4184-94e2-f5e8e8c8d2ea&quot;,&quot;http://data.europa.eu/esco/occupation/c9a5f7c5-0f8b-4252-9729-5f19c105ef81&quot;,&quot;http://data.europa.eu/esco/occupation/9faaae26-804d-48f3-97b0-84f7e1aceae8&quot;,&quot;http://data.europa.eu/esco/occupation/63c92723-ee86-42cb-89bf-d93b65398bef&quot;,&quot;http://data.europa.eu/esco/occupation/f0e479d9-7afd-40b1-b60f-b68c400c15fb&quot;,&quot;http://data.europa.eu/esco/occupation/9ba74e8a-c40c-4228-9998-eb3c7a5c11df&quot;	
+	};
+
+String [] testDataSkills = {&quot;http://data.europa.eu/esco/skill/e3fcd642-5f9c-48ee-be58-258dd895d281&quot;,&quot;http://data.europa.eu/esco/skill/38509fa4-7c06-4a4b-9622-f521f03c37b8&quot;,&quot;http://data.europa.eu/esco/skill/d669af41-756c-48d9-a286-1443253f54b1&quot;,&quot;http://data.europa.eu/esco/skill/5bf7f85a-b080-4b27-8ddc-9f62af4643f5&quot;,&quot;http://data.europa.eu/esco/skill/96ec2d53-4f41-4172-8ef2-70742c4bb540&quot;,&quot;http://data.europa.eu/esco/skill/248894d1-42dc-474f-af6e-2da52ac0c679&quot;,&quot;http://data.europa.eu/esco/skill/095fdace-1cc3-4e80-b37b-268fe297904a&quot;,&quot;http://data.europa.eu/esco/skill/21c5790c-0930-4d74-b3b0-84caf5af12ea&quot;,&quot;http://data.europa.eu/esco/skill/9b1da480-3212-420d-9eae-aaa71427f698&quot;,&quot;http://data.europa.eu/esco/skill/8899ee6c-7df4-41dd-9dc5-36be940864ee&quot;,&quot;http://data.europa.eu/esco/skill/cbeb1221-10ed-4676-a2a1-576718977001&quot;,&quot;http://data.europa.eu/esco/skill/6bf4f085-82d2-4b21-9aa5-9c1f955becab&quot;,&quot;http://data.europa.eu/esco/skill/d8726a5a-0614-4dc6-ad03-cf5e3b3caaa5&quot;,&quot;http://data.europa.eu/esco/skill/dd504527-793b-4bd2-9ad1-a5024c4b4e1d&quot;,&quot;http://data.europa.eu/esco/skill/e97c0d89-2f81-4840-8602-e668a949482f&quot;,&quot;http://data.europa.eu/esco/skill/a1ded3c7-f3e2-45c9-aa01-e4e84d5f69c8&quot;,&quot;http://data.europa.eu/esco/skill/875eeec4-fc70-4e6a-80ef-4d18356976e3&quot;,&quot;http://data.europa.eu/esco/skill/e0b04224-52b4-44c4-9fae-26e9272dfe04&quot;,&quot;http://data.europa.eu/esco/skill/b7cd09b7-58d8-4f2e-87de-613ae629f270&quot;,&quot;http://data.europa.eu/esco/skill/90a4035a-f72e-48d3-9d4e-1c6be84c9ae5&quot;,&quot;http://data.europa.eu/esco/skill/3761780c-a40f-409e-9320-4de0ec25472a&quot;,&quot;http://data.europa.eu/esco/skill/94e7a22f-16b8-4eee-98ba-a5b09e9cdf96&quot;,&quot;http://data.europa.eu/esco/skill/58a15a33-2b41-4a7e-bb8a-777328b5d82a&quot;,&quot;http://data.europa.eu/esco/skill/ecc18804-a466-40d9-98b4-fba5cd67dd4b&quot;,&quot;http://data.europa.eu/esco/skill/6a025696-1aae-4904-9bf3-342dadb634a9&quot;,&quot;http://data.europa.eu/esco/skill/8ee6763c-ca7b-4c0d-9208-b8f26f100e72&quot;,&quot;http://data.europa.eu/esco/skill/1585fc98-bfe4-461f-97fc-734055a2c3ce&quot;,&quot;http://data.europa.eu/esco/skill/fdff4747-70f6-4f1a-8285-8d31eb3c11e1&quot;,&quot;http://data.europa.eu/esco/skill/be40c4c3-a855-4d67-9ca5-6f4428c34b0d&quot;,&quot;http://data.europa.eu/esco/skill/2facacc1-920c-45f4-9a69-5892e0d34fd8&quot;,&quot;http://data.europa.eu/esco/skill/3399cde5-6d0d-48a5-a7ac-53706648f283&quot;,&quot;http://data.europa.eu/esco/skill/54f8cc6e-7499-4062-949b-ab616b8efd26&quot;,&quot;http://data.europa.eu/esco/skill/59eb177a-2f30-4943-8b30-5f87dd51a80d&quot;,&quot;http://data.europa.eu/esco/skill/907039e2-5b33-4ea5-96ca-b6082711b491&quot;,&quot;http://data.europa.eu/esco/skill/a0d96ce8-aeeb-4ffb-bd78-21c0598179ff&quot;,&quot;http://data.europa.eu/esco/skill/43f0bfbb-8cda-4e31-8dcc-9ea479aae08c&quot;,&quot;http://data.europa.eu/esco/skill/4707da90-9cfc-46ca-8de0-38a0b7bfb137&quot;,&quot;http://data.europa.eu/esco/skill/1ad00ef7-dfdf-4b82-8324-5942986c9010&quot;,&quot;http://data.europa.eu/esco/skill/60ab2bf7-c812-4a88-86c0-7c81a9b2f77c&quot;,&quot;http://data.europa.eu/esco/skill/cbf01241-d126-402a-af28-2eb81e2e24e8&quot;,&quot;http://data.europa.eu/esco/skill/68aefa78-9a8c-4d5f-879a-abcfe1cd464f&quot;,&quot;http://data.europa.eu/esco/skill/45399c1f-2ea2-4a5a-8701-def168041e5b&quot;,&quot;http://data.europa.eu/esco/skill/b2bdd9ad-4ecb-4ced-80c3-623686ef5328&quot;,&quot;http://data.europa.eu/esco/skill/2d407c34-5699-42dc-ab58-373652d69aef&quot;,&quot;http://data.europa.eu/esco/skill/c291acb4-6992-46ff-bf72-681eb378daa5&quot;,&quot;http://data.europa.eu/esco/skill/493fb8bf-d880-4499-b374-b1ecb0df4b50&quot;,&quot;http://data.europa.eu/esco/skill/1f1d2ff8-c4c1-45cc-9812-6a7ee84a73cb&quot;,&quot;http://data.europa.eu/esco/skill/c1ce197d-6806-4a4b-871a-ac15451edda7&quot;,&quot;http://data.europa.eu/esco/skill/fa7d581b-da0e-47cf-bae8-4d07f267a225&quot;,&quot;http://data.europa.eu/esco/skill/9e14c1d8-72f2-45ba-815d-0d12e12d19fa&quot;,&quot;http://data.europa.eu/esco/skill/2a456cc5-683f-4eeb-ba20-5a523ac56112&quot;,&quot;http://data.europa.eu/esco/skill/45205440-fa65-44e0-a719-e89278dd723a&quot;,&quot;http://data.europa.eu/esco/skill/2a82241a-216e-44d8-bb50-6b9a0ef82084&quot;,&quot;http://data.europa.eu/esco/skill/6a526bbc-4b59-4662-8226-addc32e4be77&quot;,&quot;http://data.europa.eu/esco/skill/52a6ed58-d906-4905-a80c-4053247535a5&quot;,&quot;http://data.europa.eu/esco/skill/dea0250b-edf7-473e-bc12-b7869c19bdd5&quot;,&quot;http://data.europa.eu/esco/skill/7c02513e-c23b-4686-8bdd-1ad99de5a8eb&quot;,&quot;http://data.europa.eu/esco/skill/d08f7568-bdd8-4073-8a86-a65673f2b242&quot;,&quot;http://data.europa.eu/esco/skill/e843973c-23dd-416a-8a9c-9e89512542fb&quot;,&quot;http://data.europa.eu/esco/skill/56a46b02-ab98-4603-8816-c9daff1a119a&quot;,&quot;http://data.europa.eu/esco/skill/c55caed2-de9e-4a25-819e-a0b0e83fba1b&quot;,&quot;http://data.europa.eu/esco/skill/b4d7bea5-2d62-4d74-ace7-20ec98417cc0&quot;,&quot;http://data.europa.eu/esco/skill/44f6a65f-6be7-4818-9a66-73908797283f&quot;,&quot;http://data.europa.eu/esco/skill/2fd26ae6-bd98-46c7-b1ba-8a0b52734fac&quot;,&quot;http://data.europa.eu/esco/skill/453b6898-de72-4ff9-b217-4a3cd377e155&quot;,&quot;http://data.europa.eu/esco/skill/01819474-b960-4b8f-b020-2da26518d43a&quot;,&quot;http://data.europa.eu/esco/skill/23370aae-b3fa-4724-9b3f-6437747b5df8&quot;,&quot;http://data.europa.eu/esco/skill/dd6e5939-d19b-4e2f-a025-2014f0a2ec88&quot;,&quot;http://data.europa.eu/esco/skill/91be6910-bd67-4e1f-95b0-32513b399b24&quot;,&quot;http://data.europa.eu/esco/skill/272b53d5-8a03-43d1-b0ba-e93dcd9dbcdf&quot;,&quot;http://data.europa.eu/esco/skill/ce0d6a42-59c1-433e-ab62-adfc969c46bb&quot;,&quot;http://data.europa.eu/esco/skill/25a7fc25-f2fc-4bfd-9999-943c03d53372&quot;,&quot;http://data.europa.eu/esco/skill/16636767-c215-4cf0-b126-e144fea20926&quot;,&quot;http://data.europa.eu/esco/skill/0295b2a4-fb86-495f-9547-d479532fc4c2&quot;,&quot;http://data.europa.eu/esco/skill/206d0e14-25b4-4b2e-b5ac-24239df46282&quot;,&quot;http://data.europa.eu/esco/skill/6caaeece-8a4a-44b3-bc78-d9687676c015&quot;,&quot;http://data.europa.eu/esco/skill/b1272de4-1f5f-408b-8b26-061f2550fc72&quot;,&quot;http://data.europa.eu/esco/skill/31418b90-4ae2-4fa1-b57b-42e190c1a214&quot;,&quot;http://data.europa.eu/esco/skill/96a67da1-881f-4d09-927e-ac75fcff4d93&quot;,&quot;http://data.europa.eu/esco/skill/eb15dded-296d-4d7f-a5f4-549ece8b34fd&quot;,&quot;http://data.europa.eu/esco/skill/cfbde1b6-8e47-4b83-b430-3d5f7f38d69a&quot;,&quot;http://data.europa.eu/esco/skill/5d34adde-0b78-42b4-9d3d-69e9388d8398&quot;,&quot;http://data.europa.eu/esco/skill/78b26c92-da70-4c72-9f10-7a8c8b9db02e&quot;,&quot;http://data.europa.eu/esco/skill/98a0c718-40b1-4a4f-a366-b8155f238d9b&quot;,&quot;http://data.europa.eu/esco/skill/045df803-cbab-40a9-9ac0-3c4a81ab4b2c&quot;,&quot;http://data.europa.eu/esco/skill/bc401d18-9bea-4300-90fd-22bfa286bd77&quot;,&quot;http://data.europa.eu/esco/skill/ab986bc4-df92-4351-9ac1-aa75af943cf7&quot;,&quot;http://data.europa.eu/esco/skill/dc72ad0a-c5dc-4abd-bc0d-ca43e82162e1&quot;,&quot;http://data.europa.eu/esco/skill/db706041-f830-4799-9b11-c75ce2178e03&quot;,&quot;http://data.europa.eu/esco/skill/875217fb-fe22-4c2c-adf4-b57f2052626a&quot;,&quot;http://data.europa.eu/esco/skill/13e2378e-0d10-450d-843a-b3592575826e&quot;,&quot;http://data.europa.eu/esco/skill/85aa1871-db96-42f7-801f-c39f924de2d7&quot;,&quot;http://data.europa.eu/esco/skill/df487cde-38d4-4e7f-a9e7-d60711aa522f&quot;,&quot;http://data.europa.eu/esco/skill/82fc3feb-752b-4d49-803d-c08a717917aa&quot;,&quot;http://data.europa.eu/esco/skill/4fd95cb5-947b-434b-aa4b-23308af2f82c&quot;,&quot;http://data.europa.eu/esco/skill/1bd1b8e7-246d-4481-9f26-d62abb7edfb6&quot;,&quot;http://data.europa.eu/esco/skill/6b85a3ef-4518-42e1-84ff-55ff13c2641f&quot;,&quot;http://data.europa.eu/esco/skill/d648838c-2ccb-45bd-a4c3-1cf19f0b8733&quot;,&quot;http://data.europa.eu/esco/skill/0dcbf7c5-bedf-4485-b16b-23df54443864&quot;,&quot;http://data.europa.eu/esco/skill/06cf28f4-608d-4fb9-94c5-c0698d70ea71&quot;,&quot;http://data.europa.eu/esco/skill/df12fd50-55dc-4cfd-a021-818880668789&quot;,&quot;http://data.europa.eu/esco/skill/25d8dedb-a557-441a-8aeb-2d618b79abe9&quot;,&quot;http://data.europa.eu/esco/skill/54411e8e-d62f-46d8-b87b-fce23f8e3bc8&quot;,&quot;http://data.europa.eu/esco/skill/f5084a43-42c9-4bbb-b47c-b3029cf8381d&quot;,&quot;http://data.europa.eu/esco/skill/25ac3483-c459-4c46-8e6a-3f644a1d34a3&quot;,&quot;http://data.europa.eu/esco/skill/030de41b-bb8b-4e4b-859c-9afd4c17605b&quot;,&quot;http://data.europa.eu/esco/skill/fc511e12-fe90-40a0-bec8-227abb5e4255&quot;,&quot;http://data.europa.eu/esco/skill/280bfb86-e53a-45c7-80a5-f58f4a78ba25&quot;,&quot;http://data.europa.eu/esco/skill/cf9c8e73-105d-419e-86dd-4304cc6cd718&quot;,&quot;http://data.europa.eu/esco/skill/65cc8e37-ae2c-4b9e-8813-fc3c6deb6782&quot;,&quot;http://data.europa.eu/esco/skill/30a494f3-117e-4181-949f-9b11ef5da730&quot;,&quot;http://data.europa.eu/esco/skill/76dc6263-a4dc-4123-9aea-25b1fead6edd&quot;,&quot;http://data.europa.eu/esco/skill/ebfe7b18-1fad-463f-9509-8ef1a5736045&quot;,&quot;http://data.europa.eu/esco/skill/46786464-6c5b-4970-9a63-2f2fb29b4c12&quot;,&quot;http://data.europa.eu/esco/skill/97bcbb41-c42b-4777-ab26-1f8f7dcfafd8&quot;,&quot;http://data.europa.eu/esco/skill/08371fe9-c658-4f6a-966f-71dbb0ab683d&quot;,&quot;http://data.europa.eu/esco/skill/69bbd53f-fbb0-4476-b4b2-ef7844464e28&quot;,&quot;http://data.europa.eu/esco/skill/8efb6150-2c43-4109-b3cd-41c3451698ea&quot;,&quot;http://data.europa.eu/esco/skill/2618f336-8e71-4666-83b5-f368edb0906d&quot;,&quot;http://data.europa.eu/esco/skill/1b1c2d44-c487-4121-a2ed-dcda651f4d59&quot;,&quot;http://data.europa.eu/esco/skill/7b7a4d5c-f0d6-4e76-8eee-4c052efea07d&quot;,&quot;http://data.europa.eu/esco/skill/5a7cc454-3a22-4144-8d7a-686d542f7327&quot;,&quot;http://data.europa.eu/esco/skill/db4a5d3a-47f5-4ff2-bc79-e458ee58c3fe&quot;,&quot;http://data.europa.eu/esco/skill/86ff9a65-66eb-4c8f-93d8-22e0a467fc08&quot;,&quot;http://data.europa.eu/esco/skill/e64d28b8-9379-440b-ba77-2738486f8e4a&quot;,&quot;http://data.europa.eu/esco/skill/95930ceb-4d39-44d1-a361-b60bad7df2e5&quot;,&quot;http://data.europa.eu/esco/skill/064565c0-4a4c-4a1f-b014-09227ffd5a9f&quot;,&quot;http://data.europa.eu/esco/skill/bc038a0a-27af-4d9b-a6b5-93b9d9314d21&quot;,&quot;http://data.europa.eu/esco/skill/51e79cb4-fab3-404c-88f3-cd4a1bd5879e&quot;,&quot;http://data.europa.eu/esco/skill/51754b8a-3e2c-4cc1-86e6-cf510d9c6fe4&quot;,&quot;http://data.europa.eu/esco/skill/a554781e-d8d6-4777-bcf4-6d34fcc06ac3&quot;,&quot;http://data.europa.eu/esco/skill/3ca9b968-03ae-47c8-b428-f0e22861191b&quot;,&quot;http://data.europa.eu/esco/skill/3edfcb2b-2d0e-4673-87ce-f55c37eb5fca&quot;,&quot;http://data.europa.eu/esco/skill/46994031-5490-4a02-9937-c61f6e2d4fc9&quot;,&quot;http://data.europa.eu/esco/skill/4af2461d-02b4-4fca-a070-c6399a6f1fb4&quot;,&quot;http://data.europa.eu/esco/skill/8babf8e3-4187-4b8c-9594-82d69a598e89&quot;,&quot;http://data.europa.eu/esco/skill/de131ede-cbfe-4e34-aff4-96f16831c3c4&quot;,&quot;http://data.europa.eu/esco/skill/e4aea84e-6f33-41f9-a61c-53cf5125ea26&quot;,&quot;http://data.europa.eu/esco/skill/a7242a8d-3762-42b7-b430-3369351bbd7d&quot;,&quot;http://data.europa.eu/esco/skill/de857fbb-91a6-4a3f-8a47-93a9c1a616c8&quot;,&quot;http://data.europa.eu/esco/skill/4e373bb6-b9e1-4400-ba59-0313e88e8f94&quot;,&quot;http://data.europa.eu/esco/skill/1fc580ca-9adc-46af-8a88-61e871273b49&quot;,&quot;http://data.europa.eu/esco/skill/4cc05029-c110-423b-a7bf-1fac965a8353&quot;,&quot;http://data.europa.eu/esco/skill/9b242812-7d88-4219-bac7-1195ecc4db51&quot;,&quot;http://data.europa.eu/esco/skill/8bc1c7da-c832-4896-a441-30d087c46aad&quot;,&quot;http://data.europa.eu/esco/skill/377861af-f966-4c87-a2db-7e99904312b9&quot;,&quot;http://data.europa.eu/esco/skill/1d0de98f-c5a6-4607-aea9-d432794f144b&quot;,&quot;http://data.europa.eu/esco/skill/106a62be-ce97-4053-9fd6-6615be25d7ae&quot;,&quot;http://data.europa.eu/esco/skill/e921279a-1a7e-4900-9720-bde93ae3e70e&quot;,&quot;http://data.europa.eu/esco/skill/05e5e14f-ffa6-4106-b311-c6335ccc2bd2&quot;,&quot;http://data.europa.eu/esco/skill/9889b795-d755-41b2-8afd-2e3c87a65a38&quot;,&quot;http://data.europa.eu/esco/skill/29e20150-b7f0-46ef-8175-ff6f103bfb74&quot;,&quot;http://data.europa.eu/esco/skill/f0ab5d57-4be7-411b-afce-b4a76a142302&quot;,&quot;http://data.europa.eu/esco/skill/71d441c3-163a-41b6-b713-074d69362c27&quot;,&quot;http://data.europa.eu/esco/skill/95013213-ee67-493b-86d0-e383e0f72482&quot;,&quot;http://data.europa.eu/esco/skill/1cf20c3c-027e-45f4-bad1-c91b98726d28&quot;,&quot;http://data.europa.eu/esco/skill/1d21f6ad-340f-45da-a0a3-4e83867f47a6&quot;,&quot;http://data.europa.eu/esco/skill/ef983998-fa85-4214-91ba-fb4b2f1e0cd5&quot;,&quot;http://data.europa.eu/esco/skill/5aa90e70-f661-4c2d-aaa2-70ac38c1ace9&quot;,&quot;http://data.europa.eu/esco/skill/f7e7ccb6-fadc-4c35-935d-e1040be40dfe&quot;,&quot;http://data.europa.eu/esco/skill/574bf430-50a1-4734-9719-a823e7d80b10&quot;,&quot;http://data.europa.eu/esco/skill/dfd158e3-dc56-4415-b24b-3d3554347863&quot;,&quot;http://data.europa.eu/esco/skill/a65fb963-6faf-47b2-a3d9-c4e5e4d833c5&quot;,&quot;http://data.europa.eu/esco/skill/bf942c60-8539-4951-83ee-63f770da1cb8&quot;,&quot;http://data.europa.eu/esco/skill/b34e2ba1-9080-48c9-9b42-ee9192a4d3f1&quot;,&quot;http://data.europa.eu/esco/skill/62d34066-f07a-4437-914b-0548ba8bbe59&quot;,&quot;http://data.europa.eu/esco/skill/a0991e1f-4e02-4340-87b7-e0881e4ff865&quot;,&quot;http://data.europa.eu/esco/skill/7dda0798-1fb5-40ed-982a-ebd2825082b2&quot;,&quot;http://data.europa.eu/esco/skill/d5fd84ba-8200-4b29-8802-857017575b18&quot;,&quot;http://data.europa.eu/esco/skill/d63c2bad-817d-4116-b4d8-b927cb01212d&quot;,&quot;http://data.europa.eu/esco/skill/e525ee2b-3c85-4b94-b07e-c79dda267b7b&quot;,&quot;http://data.europa.eu/esco/skill/5e9de344-2bea-40dc-8410-f940121330e4&quot;,&quot;http://data.europa.eu/esco/skill/1d4b74b0-1a48-48ec-a3cd-26cca0c212a3&quot;,&quot;http://data.europa.eu/esco/skill/b979d9ae-37c2-4d1f-b8b8-7539f913cb19&quot;,&quot;http://data.europa.eu/esco/skill/455a7133-cf0f-4c74-a91f-fd35c0d25b79&quot;,&quot;http://data.europa.eu/esco/skill/89f88666-e7cf-4659-9f6f-3a6ff65789b7&quot;,&quot;http://data.europa.eu/esco/skill/c3da8380-7049-4159-af65-3eff63ed9caf&quot;,&quot;http://data.europa.eu/esco/skill/5fb8be43-79b8-4418-9d68-61bf3f1b7948&quot;,&quot;http://data.europa.eu/esco/skill/81513fdf-5ea9-4375-9bc4-67ad959ac5de&quot;,&quot;http://data.europa.eu/esco/skill/3cd569a2-4f88-4c1e-9995-8dce8c5e51a7&quot;,&quot;http://data.europa.eu/esco/skill/d58a48d1-5b7f-4028-ae11-b051d13ee1a8&quot;,&quot;http://data.europa.eu/esco/skill/5641a2af-9eb2-4209-9fc6-856f78f2d2f2&quot;,&quot;http://data.europa.eu/esco/skill/47d0c7cb-fa5b-4cee-a35f-0bbbeac974ea&quot;,&quot;http://data.europa.eu/esco/skill/f15b591a-2522-44e4-a4ed-3b3a3e9801eb&quot;,&quot;http://data.europa.eu/esco/skill/2e62b29d-3aa8-4e58-8aca-f3b48c8deefd&quot;,&quot;http://data.europa.eu/esco/skill/2a2fa8e8-aaf3-4abf-a60b-af6415f1c6d4&quot;,&quot;http://data.europa.eu/esco/skill/c1013d55-b503-428f-aa58-f45412350e28&quot;,&quot;http://data.europa.eu/esco/skill/3dc6fd8e-6ff7-432e-a262-04d487858efb&quot;,&quot;http://data.europa.eu/esco/skill/644209ac-8452-4e81-959a-2b10050023cc&quot;,&quot;http://data.europa.eu/esco/skill/70198e4e-86ad-4acc-a9eb-e24e2c107d18&quot;,&quot;http://data.europa.eu/esco/skill/880c54f9-866e-4f37-b5fa-25ef8a7d49b6&quot;,&quot;http://data.europa.eu/esco/skill/7d092d81-d1e2-4c34-b3cb-c1c9f2e68b7d&quot;,&quot;http://data.europa.eu/esco/skill/4b973dcf-3ffc-4c70-b84a-8360e63db7cd&quot;,&quot;http://data.europa.eu/esco/skill/216f5c68-d45c-404a-9e1e-4374687d7471&quot;,&quot;http://data.europa.eu/esco/skill/bf7a45c4-0d72-4e6e-9da7-127b2b6656b7&quot;,&quot;http://data.europa.eu/esco/skill/63095511-1841-4483-8224-f31a30bcdb85&quot;,&quot;http://data.europa.eu/esco/skill/45530616-8275-4a9a-9bf1-3e0df737d199&quot;,&quot;http://data.europa.eu/esco/skill/b011c8b4-76e1-4bbc-8bb9-1d205e7b618a&quot;,&quot;http://data.europa.eu/esco/skill/188048ff-18bf-43c4-a1a0-7adb6e68f421&quot;,&quot;http://data.europa.eu/esco/skill/064018ab-0192-441b-92a5-43c2328e9be2&quot;,&quot;http://data.europa.eu/esco/skill/3ed71257-d3ca-4ccf-96ae-3b448da8c6d3&quot;,&quot;http://data.europa.eu/esco/skill/2c24c001-686d-456b-aab1-96668f1f9983&quot;,&quot;http://data.europa.eu/esco/skill/8296eb2d-c9bf-41fc-be72-781383c51298&quot;,&quot;http://data.europa.eu/esco/skill/a3a19fc8-8aa5-4a30-8f6b-ddae40927ebd&quot;,&quot;http://data.europa.eu/esco/skill/4d3f3068-9b6a-4f33-bfa5-a7b298bfd303&quot;,&quot;http://data.europa.eu/esco/skill/34ff3561-8eac-43c0-82cc-ed9089ee54e7&quot;,&quot;http://data.europa.eu/esco/skill/2fb8480e-de3c-462b-b169-e8bbb344da68&quot;,&quot;http://data.europa.eu/esco/skill/979fdc05-7bfe-41f8-b071-7d3ec4c9540b&quot;,&quot;http://data.europa.eu/esco/skill/20e16be3-80b0-46bd-8b5e-ad9aa1ddf608&quot;,&quot;http://data.europa.eu/esco/skill/4381b317-c2c9-48a4-be25-f89b6291b0bf&quot;,&quot;http://data.europa.eu/esco/skill/4d614c92-0c48-4a11-a5ed-416b34fd50d2&quot;,&quot;http://data.europa.eu/esco/skill/7a6f50a7-d876-461a-8336-f85a01af4c5f&quot;,&quot;http://data.europa.eu/esco/skill/7372ea5d-5d77-4a1b-85fc-f419d4a764e1&quot;,&quot;http://data.europa.eu/esco/skill/2b7a79e5-84d8-4880-be66-3d9bb05bea17&quot;,&quot;http://data.europa.eu/esco/skill/415cb0c2-e169-4f99-ba3e-d1c433b75368&quot;,&quot;http://data.europa.eu/esco/skill/fe39d4db-4cb5-4299-bb9f-896c8fd6ab13&quot;,&quot;http://data.europa.eu/esco/skill/94506271-00d8-481b-9359-739ce2a06cde&quot;,&quot;http://data.europa.eu/esco/skill/16be151c-c501-43cf-82b1-59df7e32974b&quot;,&quot;http://data.europa.eu/esco/skill/d9c7afc0-2c34-4757-b9f1-cc9137f11a29&quot;,&quot;http://data.europa.eu/esco/skill/5dd58980-cec1-4bd3-ae57-df9e554dd5ab&quot;,&quot;http://data.europa.eu/esco/skill/49dd67a9-d0a6-4375-b856-85e09032fdac&quot;,&quot;http://data.europa.eu/esco/skill/bf1f763e-c505-46e7-8af3-e48f13ec5f44&quot;,&quot;http://data.europa.eu/esco/skill/824828a8-393d-4195-8b4f-862fe1cb6da5&quot;,&quot;http://data.europa.eu/esco/skill/bd17a64e-a9bd-439d-9b87-01c6bb1b7e09&quot;,&quot;http://data.europa.eu/esco/skill/60fbed03-0ce8-4bb0-9f01-af6467e954ec&quot;,&quot;http://data.europa.eu/esco/skill/2bbdea06-a265-42b5-bb4f-7241b661f069&quot;,&quot;http://data.europa.eu/esco/skill/03bc85d5-78f0-4409-86ed-87dc35345760&quot;,&quot;http://data.europa.eu/esco/skill/9a9e28ad-4d03-4a06-ac8e-26938a3767b3&quot;,&quot;http://data.europa.eu/esco/skill/2a3807d3-fb29-44cf-8f6c-6a2c36201284&quot;,&quot;http://data.europa.eu/esco/skill/d4789070-2ff7-4bbb-94ca-8bb1739826a9&quot;,&quot;http://data.europa.eu/esco/skill/88de5ff4-310a-4f4f-9b47-349eb5589902&quot;,&quot;http://data.europa.eu/esco/skill/1697d506-a82b-45aa-9a2f-2b71d71e1789&quot;,&quot;http://data.europa.eu/esco/skill/e0ded9a1-372d-46c8-80b5-ad994d606ef2&quot;,&quot;http://data.europa.eu/esco/skill/f43ee9cc-7284-406f-b23f-3eedb0581141&quot;,&quot;http://data.europa.eu/esco/skill/09e7cd13-ea36-4694-afe5-f34373759392&quot;,&quot;http://data.europa.eu/esco/skill/ef59f2b1-66d6-4a10-a775-00714fc4f2dc&quot;,&quot;http://data.europa.eu/esco/skill/d6d3fee7-47e2-47f4-a0ec-6c75f28c6abd&quot;,&quot;http://data.europa.eu/esco/skill/6d97bf55-6fb6-4795-8282-3ef915ae0bb8&quot;,&quot;http://data.europa.eu/esco/skill/499323d7-8f52-4195-9766-f59e61118574&quot;,&quot;http://data.europa.eu/esco/skill/5de0599a-8fca-4cdd-a72d-f5d21af8eeb3&quot;,&quot;http://data.europa.eu/esco/skill/71152876-b629-4a99-b9ea-0f25a0d07e4e&quot;,&quot;http://data.europa.eu/esco/skill/1b957e3d-0017-42b0-9bfe-49a1cdd31de7&quot;,&quot;http://data.europa.eu/esco/skill/f2d9677b-ba41-4b02-9db9-b2e05a462830&quot;,&quot;http://data.europa.eu/esco/skill/cc9b4fbb-65f1-4c92-9229-1392d03b6e20&quot;,&quot;http://data.europa.eu/esco/skill/1a6c7e0d-fc13-41d7-a5c0-8ca00606de89&quot;,&quot;http://data.europa.eu/esco/skill/2b8d193d-4e87-41d0-8221-979c274b935c&quot;,&quot;http://data.europa.eu/esco/skill/68316932-0577-4b0b-973f-0bf28941d650&quot;,&quot;http://data.europa.eu/esco/skill/50f8b1de-747c-4967-9732-3db89c365261&quot;,&quot;http://data.europa.eu/esco/skill/d0f2f8a7-d935-4a6d-8e54-dcc3e5e2cbeb&quot;,&quot;http://data.europa.eu/esco/skill/1dae8445-12e5-423a-bb26-824010e299b9&quot;,&quot;http://data.europa.eu/esco/skill/76395873-7fe2-4f9a-b4b6-9932f8cbd0b4&quot;,&quot;http://data.europa.eu/esco/skill/2973b3bc-5893-4b3d-8953-22ef677a162f&quot;,&quot;http://data.europa.eu/esco/skill/b16200f4-4f39-4b8b-aa9d-3568054d6bdb&quot;,&quot;http://data.europa.eu/esco/skill/ad1a9aae-1edc-4863-bf5a-72864e127ff4&quot;,&quot;http://data.europa.eu/esco/skill/a59708e3-e654-4e37-8b8a-741c3b756eee&quot;,&quot;http://data.europa.eu/esco/skill/69282ad4-8793-421e-a42c-636b75f32aac&quot;,&quot;http://data.europa.eu/esco/skill/c5e8abde-d2ba-4e8e-a65e-720b71180666&quot;,&quot;http://data.europa.eu/esco/skill/f13bcfba-84b9-44a0-974f-a3d5b470ea9a&quot;,&quot;http://data.europa.eu/esco/skill/1619f337-77d4-401c-a090-277a7b7253fb&quot;,&quot;http://data.europa.eu/esco/skill/cd5efa8c-e44d-4cbc-91c6-796018dbed68&quot;,&quot;http://data.europa.eu/esco/skill/0e13adb5-f135-429b-94c3-24cc1cf1b1ac&quot;,&quot;http://data.europa.eu/esco/skill/68823c35-3033-45df-931c-7b01646006c8&quot;,&quot;http://data.europa.eu/esco/skill/4f4afd0b-07e5-48fd-a7d4-0e8746c608df&quot;,&quot;http://data.europa.eu/esco/skill/09f159aa-2745-4ab0-a050-96722a2269b9&quot;,&quot;http://data.europa.eu/esco/skill/978a76ca-0d14-43b5-a69d-1996dfeb22de&quot;,&quot;http://data.europa.eu/esco/skill/c2e7273c-f15d-4ef3-be3c-4fa7da33396e&quot;,&quot;http://data.europa.eu/esco/skill/49071d69-cd74-42ed-8f54-8d66a0623950&quot;,&quot;http://data.europa.eu/esco/skill/a56dec32-05ef-45de-a256-ee6741f356db&quot;,&quot;http://data.europa.eu/esco/skill/c1b0bfc2-4932-4e03-9077-92bc56042511&quot;,&quot;http://data.europa.eu/esco/skill/24f57882-6f11-4699-b7cd-62faa1fdd871&quot;,&quot;http://data.europa.eu/esco/skill/13724e7d-b946-4773-915e-9621340237bc&quot;,&quot;http://data.europa.eu/esco/skill/afdb41dd-5dd5-4fbb-bf9e-e041422698b4&quot;,&quot;http://data.europa.eu/esco/skill/4bd422bb-6ea3-4161-a908-53c0f5a1bb00&quot;,&quot;http://data.europa.eu/esco/skill/43965b8b-327f-425f-a370-75336f2e2a6f&quot;,&quot;http://data.europa.eu/esco/skill/8ab0f769-f06e-4d57-ba9c-1470230236d4&quot;,&quot;http://data.europa.eu/esco/skill/b31ccede-907f-49de-8047-4d851bd4add3&quot;,&quot;http://data.europa.eu/esco/skill/8881a9c2-bd07-4954-bf27-c1f8acca9af0&quot;,&quot;http://data.europa.eu/esco/skill/c5e3bd7d-670b-4579-beab-a2c66e72e9b5&quot;,&quot;http://data.europa.eu/esco/skill/f5f5b244-6cea-4fbc-8a50-8f712791bc09&quot;,&quot;http://data.europa.eu/esco/skill/4b2db903-cd8e-48ce-97fb-a92db4def54e&quot;,&quot;http://data.europa.eu/esco/skill/4af56376-7b2f-4ced-ac58-0c3967bd1e83&quot;,&quot;http://data.europa.eu/esco/skill/4d97e3c3-f335-47cc-a4ee-0d779fd42222&quot;,&quot;http://data.europa.eu/esco/skill/2ad081e6-0a3f-4612-ac15-7ace75d39e26&quot;,&quot;http://data.europa.eu/esco/skill/cb4c6d77-0444-49f9-9264-39fc4585bc0e&quot;,&quot;http://data.europa.eu/esco/skill/6a72c057-499f-4fe4-b425-0fbe2a50ce07&quot;,&quot;http://data.europa.eu/esco/skill/c267819f-35d3-45be-8354-b3b2ad7e1f04&quot;,&quot;http://data.europa.eu/esco/skill/1ff53c92-370d-414b-b758-b0a1b8026853&quot;,&quot;http://data.europa.eu/esco/skill/e38cbdd2-cd6c-451a-a9bd-9bc6355dafe8&quot;,&quot;http://data.europa.eu/esco/skill/5ed83764-c32f-402d-b5b3-168cddfbe4c5&quot;,&quot;http://data.europa.eu/esco/skill/52743af8-ab5d-4ce3-b877-13d349394456&quot;,&quot;http://data.europa.eu/esco/skill/573d3f91-c81c-407e-a56d-0f3a63272b43&quot;,&quot;http://data.europa.eu/esco/skill/e54ff029-1ce9-447d-a5b2-eb7283a23e6e&quot;,&quot;http://data.europa.eu/esco/skill/a6d85c13-4703-4d5c-b826-1d7e867eb645&quot;,&quot;http://data.europa.eu/esco/skill/b1f71b18-4ccb-4334-bdd7-32b60c2aa272&quot;,&quot;http://data.europa.eu/esco/skill/faf8943c-72ff-4736-a587-25508695d6f0&quot;,&quot;http://data.europa.eu/esco/skill/02e235f4-a30a-412a-a06e-1c471ad28678&quot;,&quot;http://data.europa.eu/esco/skill/e671c957-b998-49df-b630-7908806966f1&quot;,&quot;http://data.europa.eu/esco/skill/c50dc8c9-24b2-47c8-9e1a-894521f5b248&quot;,&quot;http://data.europa.eu/esco/skill/b4dc6e4f-dc7d-445f-8ce2-d7b9d225e282&quot;,&quot;http://data.europa.eu/esco/skill/a125a4c2-3b0a-4996-9a63-57043d4d9159&quot;,&quot;http://data.europa.eu/esco/skill/cb108a0a-88e6-4579-885d-b1e794ada512&quot;,&quot;http://data.europa.eu/esco/skill/c82f9319-cf46-4257-a8ce-542d0a7fed8f&quot;,&quot;http://data.europa.eu/esco/skill/52eadbe6-db74-421a-a7f1-356567dc8248&quot;,&quot;http://data.europa.eu/esco/skill/e6c20084-4b2a-4583-a983-9988fa084bba&quot;,&quot;http://data.europa.eu/esco/skill/c438aa25-949e-47e6-a79c-a805d774946e&quot;,&quot;http://data.europa.eu/esco/skill/a97353c8-f2a3-47be-86e1-f7c301fca630&quot;,&quot;http://data.europa.eu/esco/skill/8cb74cda-060e-4a86-b763-92527caa029c&quot;,&quot;http://data.europa.eu/esco/skill/5dc193da-e018-457a-b7b2-c8b315660e16&quot;,&quot;http://data.europa.eu/esco/skill/ca8c5849-2655-44b3-b2fa-c4c0e2a04aeb&quot;,&quot;http://data.europa.eu/esco/skill/b99ffdda-699d-4d55-b361-23036da33f1e&quot;,&quot;http://data.europa.eu/esco/skill/75d73a0d-d26d-4520-896b-0fcb8c384ece&quot;,&quot;http://data.europa.eu/esco/skill/a49fdda1-abd1-40e0-a824-3c545d98f32e&quot;,&quot;http://data.europa.eu/esco/skill/7f7756fc-d89d-41d5-93ef-85991603f4ad&quot;,&quot;http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f&quot;,&quot;http://data.europa.eu/esco/skill/5ec3f184-8f2c-46a8-85cd-6931e6dc4877&quot;,&quot;http://data.europa.eu/esco/skill/2de4572a-4724-4f76-afc2-72a568a264ac&quot;,&quot;http://data.europa.eu/esco/skill/4fd7909c-9600-476d-b1f0-615f9cc1260e&quot;,&quot;http://data.europa.eu/esco/skill/63bd12f5-d580-415c-9137-8e58008398e7&quot;,&quot;http://data.europa.eu/esco/skill/95c35c3a-035f-47c2-90cf-7e934d20fc08&quot;,&quot;http://data.europa.eu/esco/skill/f2c63b7a-ed6c-4890-9f8c-7685d172624c&quot;,&quot;http://data.europa.eu/esco/skill/07469451-ae47-49af-98ea-99f8ef9d283c&quot;,&quot;http://data.europa.eu/esco/skill/4334037f-c1d8-4241-b82e-8db7e469327b&quot;,&quot;http://data.europa.eu/esco/skill/c57fbedb-6e0b-49cf-9ba2-cf431d61972e&quot;,&quot;http://data.europa.eu/esco/skill/2b57ba73-7fe3-4410-bda4-a3429e4ddab7&quot;,&quot;http://data.europa.eu/esco/skill/1835a7c1-600e-4b16-a0af-fb4f7d8d77b9&quot;,&quot;http://data.europa.eu/esco/skill/65c4ee04-319d-417c-8f45-8594408d0d24&quot;,&quot;http://data.europa.eu/esco/skill/86504425-1b0b-472e-8b85-ff7431d60f7e&quot;,&quot;http://data.europa.eu/esco/skill/d1a2b81b-a3b5-4e4c-958f-e361254c295e&quot;,&quot;http://data.europa.eu/esco/skill/a9661351-4d11-477e-9f8c-e22dab6596d6&quot;,&quot;http://data.europa.eu/esco/skill/91abe492-18be-4cce-93c7-0dca07072363&quot;,&quot;http://data.europa.eu/esco/skill/e50e10e0-33df-4045-9cc1-8f09e09ec81a&quot;,&quot;http://data.europa.eu/esco/skill/13d96098-2ff0-46b8-b326-b7c0e18cc1f1&quot;,&quot;http://data.europa.eu/esco/skill/496932f1-0b6b-4f73-9432-d95c7ddcd43b&quot;,&quot;http://data.europa.eu/esco/skill/b73bda36-9c32-4045-ad4b-168b81d44662&quot;,&quot;http://data.europa.eu/esco/skill/f4e02d83-0a70-4195-b84c-989040fab081&quot;,&quot;http://data.europa.eu/esco/skill/0af062de-eb43-41e9-9b96-249e2cd22d26&quot;,&quot;http://data.europa.eu/esco/skill/339ac029-066a-4985-9f9d-b3d7c8fea0bb&quot;,&quot;http://data.europa.eu/esco/skill/d88cb3f1-8e02-4618-bf32-4b0488066934&quot;,&quot;http://data.europa.eu/esco/skill/f6c10ed9-763a-40ea-b92c-3fbda4dbd2a0&quot;,&quot;http://data.europa.eu/esco/skill/5b69bfea-5138-409d-b614-9c20d10679c0&quot;,&quot;http://data.europa.eu/esco/skill/d0c425c6-e3de-465e-923d-d4d30ec4be9b&quot;,&quot;http://data.europa.eu/esco/skill/52f6fca4-1ab6-4588-983d-15a278148961&quot;,&quot;http://data.europa.eu/esco/skill/bb62b926-73ff-437d-aac1-5f8af6cc8e52&quot;,&quot;http://data.europa.eu/esco/skill/ad59afe4-6f8a-4bc4-acfd-0f228277508a&quot;,&quot;http://data.europa.eu/esco/skill/791fa659-3382-49f8-a8dd-505226d0da48&quot;,&quot;http://data.europa.eu/esco/skill/dc298fac-7ab4-4feb-9b43-33d947d7703e&quot;,&quot;http://data.europa.eu/esco/skill/cafc2723-c308-4058-9921-61306b5de924&quot;,&quot;http://data.europa.eu/esco/skill/7c3865d1-e5a9-4043-a7a4-2e9e30468c0b&quot;,&quot;http://data.europa.eu/esco/skill/eb13f8c5-8300-4422-a51f-475a7edb09ef&quot;,&quot;http://data.europa.eu/esco/skill/4c831013-9027-4ec6-83de-c5c19e68d083&quot;,&quot;http://data.europa.eu/esco/skill/c09bf6d4-f8a7-40f3-aead-ef01643f2352&quot;,&quot;http://data.europa.eu/esco/skill/1de548e0-9535-4d2e-9d20-d4474c1ea813&quot;,&quot;http://data.europa.eu/esco/skill/077fb5d5-a9a2-4e27-b1b0-fe3149ba3da0&quot;,&quot;http://data.europa.eu/esco/skill/49f6c9f1-49a6-4737-8bb0-0f6ab3558211&quot;,&quot;http://data.europa.eu/esco/skill/d1972916-b734-4f0b-8070-ef410a771335&quot;,&quot;http://data.europa.eu/esco/skill/f75b740c-b36c-495e-bc67-efe347bbc6b5&quot;,&quot;http://data.europa.eu/esco/skill/e23c32a2-eff1-4d77-b2b0-724a3a600a95&quot;,&quot;http://data.europa.eu/esco/skill/ee4a78d4-af84-42df-8ca0-039c0999e87c&quot;,&quot;http://data.europa.eu/esco/skill/763635b2-a9f0-4192-9656-0412a9d57488&quot;,&quot;http://data.europa.eu/esco/skill/163f98f3-a8a7-4008-be49-87f4c7d27738&quot;,&quot;http://data.europa.eu/esco/skill/fde186df-c9c4-49f5-b2a5-d66adc7c43a5&quot;,&quot;http://data.europa.eu/esco/skill/eba85523-6ad2-4cd9-9b27-a0b6a39b8cfa&quot;,&quot;http://data.europa.eu/esco/skill/465ff64a-1271-4064-8ed1-e969cb68d8b4&quot;,&quot;http://data.europa.eu/esco/skill/8599fe11-e263-4e6c-a4a2-d6e8d2498b5a&quot;,&quot;http://data.europa.eu/esco/skill/8d4271ca-c9fd-40b3-875f-15f78332a49e&quot;,&quot;http://data.europa.eu/esco/skill/89f6560b-2194-45c9-9ece-d33049a73eef&quot;,&quot;http://data.europa.eu/esco/skill/16b1f191-eafd-4821-a08a-9f0cc4e5a71a&quot;,&quot;http://data.europa.eu/esco/skill/14728ad1-fe4a-4921-8962-ab10a585c521&quot;,&quot;http://data.europa.eu/esco/skill/95cdf47d-293f-4837-824d-6bc567fb0e7b&quot;,&quot;http://data.europa.eu/esco/skill/7e71fbcf-ebf8-4164-829b-e16b68aa9432&quot;,&quot;http://data.europa.eu/esco/skill/7ff9cce1-6518-48db-8f59-2beb81508fb2&quot;,&quot;http://data.europa.eu/esco/skill/7b3717e4-e963-44e0-b94f-1088a7242da0&quot;,&quot;http://data.europa.eu/esco/skill/2806b5cb-964b-4148-84aa-7efdbeffe9e3&quot;,&quot;http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d&quot;,&quot;http://data.europa.eu/esco/skill/dcc96a49-0bac-4a9c-8f8e-a32b4e47e6eb&quot;,&quot;http://data.europa.eu/esco/skill/37520413-563e-4d99-a14c-1c6dca3cf833&quot;,&quot;http://data.europa.eu/esco/skill/6bf6b5bd-6658-4338-b0ee-dc143e68e6d3&quot;,&quot;http://data.europa.eu/esco/skill/5598739b-6718-4cff-8402-91d7f65b1505&quot;,&quot;http://data.europa.eu/esco/skill/a9622bbb-3a6f-4819-a3fe-cd6a447a78e9&quot;,&quot;http://data.europa.eu/esco/skill/f2836f4d-e797-49fe-94ec-c237c84df76d&quot;,&quot;http://data.europa.eu/esco/skill/370ebe1f-55a5-424f-a44e-f3c19222d63b&quot;,&quot;http://data.europa.eu/esco/skill/a95e0f9f-726e-4b0a-97c5-fa7a9d40ae8f&quot;,&quot;http://data.europa.eu/esco/skill/2313b15d-a9a7-4830-9bcc-fd7df79d842b&quot;,&quot;http://data.europa.eu/esco/skill/728ad40d-4a79-4b4d-b77b-a48d094d73fa&quot;,&quot;http://data.europa.eu/esco/skill/60571d44-dfd4-4d57-bab2-e8598cc825e5&quot;,&quot;http://data.europa.eu/esco/skill/f7464f30-662b-4177-85a0-3df9693e9e58&quot;,&quot;http://data.europa.eu/esco/skill/2aa6039e-c747-4f74-a61e-e96a195f3260&quot;,&quot;http://data.europa.eu/esco/skill/b0132abb-7e1f-4b03-ae15-c7de85e6e8ca&quot;,&quot;http://data.europa.eu/esco/skill/7832b684-580c-4eaf-a8b3-322164b041ab&quot;,&quot;http://data.europa.eu/esco/skill/628664ec-a63b-4486-8d65-02aba81c82a0&quot;,&quot;http://data.europa.eu/esco/skill/aed3e0e3-772c-43d8-a56e-26a769fc0aa2&quot;,&quot;http://data.europa.eu/esco/skill/8ab0d202-a908-4442-b562-32b1c684908d&quot;,&quot;http://data.europa.eu/esco/skill/045f71e6-0699-4169-8a54-9c6b96f3174d&quot;,&quot;http://data.europa.eu/esco/skill/afdee309-07f9-464e-ad3b-29f4e539da88&quot;,&quot;http://data.europa.eu/esco/skill/510dc744-330b-42f0-ad67-ef865df9e772&quot;,&quot;http://data.europa.eu/esco/skill/3d69b305-4051-4c1d-ba1e-d8c5b35e22db&quot;,&quot;http://data.europa.eu/esco/skill/4c58528e-bdaa-43ad-8f5a-8ad0b8cd4bbb&quot;,&quot;http://data.europa.eu/esco/skill/66c88f8d-b73e-4f9d-8cf3-15d9c68b5384&quot;,&quot;http://data.europa.eu/esco/skill/b1d83178-01ba-4802-bcdd-48c2715030cf&quot;,&quot;http://data.europa.eu/esco/skill/9ccecb58-e720-4465-b309-46e362ca6f75&quot;};
+
+bsh.shared.testDataOccupations = testData;
+bsh.shared.testDataSkills = testDataSkills;
+
+
+
+//out.close();
+//fstream.close();
+
+
+log.info(&quot;*******************End Of Initialisation***********************&quot;); 
+log.info(&quot;*******************---------------------***********************&quot;); </stringProp>
+          <stringProp name="BeanShellSampler.filename"></stringProp>
+          <stringProp name="BeanShellSampler.parameters"></stringProp>
+          <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+        </BeanShellSampler>
+        <hashTree/>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="false">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="script">import org.neo4j.driver.internal.retry.RetrySettings;
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import org.neo4j.driver.Config;
+
+ log.info(&quot;one time bolt driver set up&quot;); 
+ Driver driver = GraphDatabase.driver(&quot;bolt://localhost:7687&quot;, AuthTokens.basic(&quot;neo4j&quot;, &quot;escodb&quot;));
+ bsh.shared.boltDriver = driver; 
+ log.info(&quot;one time bolt driver set up complete&quot;); </stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${__P(NumberOfThreads)}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(NumberOfThreads)}</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${__P(Duration)}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept-Charset</stringProp>
+              <stringProp name="Header.value">charset=UTF-8</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Basic bmVvNGo6ZXNjb2Ri</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${__P(HostName)}</stringProp>
+          <stringProp name="HTTPSampler.port">17474</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">db/data/transaction/commit</stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">6</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <JDBCDataSource guiclass="TestBeanGUI" testclass="JDBCDataSource" testname="JDBC Connection Configuration" enabled="false">
+          <boolProp name="autocommit">true</boolProp>
+          <stringProp name="checkQuery"></stringProp>
+          <stringProp name="connectionAge">5000</stringProp>
+          <stringProp name="dataSource">neo4j</stringProp>
+          <stringProp name="dbUrl">jdbc:neo4j:bolt://localhost:7687</stringProp>
+          <stringProp name="driver">org.neo4j.jdbc.Driver</stringProp>
+          <stringProp name="initQuery"></stringProp>
+          <boolProp name="keepAlive">true</boolProp>
+          <stringProp name="password">escodb</stringProp>
+          <stringProp name="poolMax">0</stringProp>
+          <stringProp name="timeout">10000</stringProp>
+          <stringProp name="transactionIsolation">DEFAULT</stringProp>
+          <stringProp name="trimInterval">60000</stringProp>
+          <stringProp name="username">neo4j</stringProp>
+        </JDBCDataSource>
+        <hashTree/>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="false">
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="script">
+import org.neo4j.driver.internal.retry.RetrySettings;
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import org.neo4j.driver.Config;
+
+  try
+  {
+      //Driver driver = GraphDatabase.driver(&quot;bolt://localhost:7687&quot;, AuthTokens.basic(&quot;neo4j&quot;, &quot;escodb&quot;));
+      // bsh.shared.boltDriver = driver; 
+      Session session = bsh.shared.boltDriver.session();
+      StatementResult rs = session.run(&quot;CREATE (n) RETURN n&quot;);
+      driver.close();
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Message:&quot; + t); 
+  }
+
+
+
+</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="false">
+          <stringProp name="dataSource">neo4j</stringProp>
+          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="query">MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:${URI}}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills 
+return {occupation:o.skos__prefLabel, skills:Skills}</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="variableNames"></stringProp>
+          <stringProp name="resultVariable"></stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="resultSetHandler">Store as String</stringProp>
+        </JDBCSampler>
+        <hashTree>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="false">
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="script">vars.put(&quot;URI&quot;,bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)]);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+        </hashTree>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="false">
+          <stringProp name="IfController.condition">${__groovy(vars.get(&quot;Protocol&quot;) == &quot;bolt&quot; )}</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+          <boolProp name="IfController.useExpression">true</boolProp>
+        </IfController>
+        <hashTree>
+          <InterleaveControl guiclass="InterleaveControlGui" testclass="InterleaveControl" testname="Interleave Controller" enabled="true">
+            <intProp name="InterleaveControl.style">1</intProp>
+            <boolProp name="InterleaveControl.accrossThreads">false</boolProp>
+          </InterleaveControl>
+          <hashTree>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="false">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query1
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+   SampleResult.setResponseCode(&quot;500&quot;);   
+    IsSuccess = false;
+    
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="false">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataSkills[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query2
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+    SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    SampleResult.setResponseCode(&quot;500&quot;);
+    IsSuccess = false;
+ 
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="false">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+ String uri2 = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri1&quot;, uri);//uri = &quot;werwer&quot;;
+ params.put(&quot;uri2&quot;, uri2);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query3
+                                      , params
+                                      );
+
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   	 SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+   	 SampleResult.setResponseCode(&quot;500&quot;);
+    IsSuccess = false;
+
+
+  }
+
+ 
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Monitor Throughput" enabled="false">
+              <stringProp name="filename"></stringProp>
+              <stringProp name="parameters"></stringProp>
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="script">
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.time.*;
+
+// determine which mode we are running in
+// i - interleve labelled
+// i - interleve discrete
+
+
+Calendar cal = Calendar.getInstance();
+SimpleDateFormat dateFormatter = new SimpleDateFormat(&quot;MM/dd/yyyy HH:mm:ss.SSS&quot;);
+cal.setTime(new Date());
+int currentTime = cal.getTimeInMillis();	
+int elapsedTime = currentTime - bsh.shared.StartTimeMS;
+
+if (elapsedTime &gt; 300000)
+{
+	// increment pacer and rest timer
+	int numberTemp = bsh.shared.fNumber1 + bsh.shared.fNumber2;
+	bsh.shared.fNumber1 = bsh.shared.fNumber2;
+	bsh.shared.fNumber2 = numberTemp;
+	log.info(&quot;Update throughput:&quot; + bsh.shared.fNumber2 );//* 10 ); 
+	props.put(&quot;rate&quot;, String.valueOf(bsh.shared.fNumber2 * 60 ));//* 10)); 
+	bsh.shared.StartTimeMS = currentTime;	 
+	bsh.shared.maxResponse = 0;
+}
+else
+{
+	// record max time across all threads
+	long rt = prev.getTime();
+	log.info(&quot;Last Response time:&quot; + rt ); 
+	
+	if ( rt &gt; bsh.shared.maxResponse &amp;&amp; vars.getIteration() &gt; 1 )
+	{
+		bsh.shared.maxResponse = rt;
+		vars.put(&quot;MaxResponseTime&quot;,String.valueOf(rt) );	
+		log.info(&quot;New Max Response time:&quot; + rt ); 
+	}
+	if ( Integer.parseInt(vars.get(&quot;MaxResponseTime&quot;)) &lt; bsh.shared.maxResponse)
+	{
+		vars.put(&quot;MaxResponseTime&quot;,String.valueOf(bsh.shared.maxResponse) );	
+	}
+	
+}
+
+//if ( Integer.parseInt(vars.get(&quot;TargetThreshold&quot;)) &lt; Integer.parseInt(props.get(&quot;rate&quot;))  )
+//{
+//	vars.put( &quot;TargetThreshold&quot;,props.get(&quot;rate&quot;) );
+//}
+
+ 
+ 
+</stringProp>
+            </BeanShellPostProcessor>
+            <hashTree/>
+          </hashTree>
+          <InterleaveControl guiclass="InterleaveControlGui" testclass="InterleaveControl" testname="Interleave Controller" enabled="false">
+            <intProp name="InterleaveControl.style">1</intProp>
+            <boolProp name="InterleaveControl.accrossThreads">false</boolProp>
+          </InterleaveControl>
+          <hashTree>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Bolt Request 2 -Skills" enabled="true">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataSkills[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query2
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+     SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    IsSuccess = false;
+ 
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Bolt Request 3 - Skills Gap" enabled="true">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+ String uri2 = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri1&quot;, uri);//uri = &quot;werwer&quot;;
+ params.put(&quot;uri2&quot;, uri2);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query3
+                                      , params
+                                      );
+
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   	 SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    IsSuccess = false;
+
+
+  }
+
+ 
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Monitor Throughput" enabled="true">
+              <stringProp name="filename"></stringProp>
+              <stringProp name="parameters"></stringProp>
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="script">
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.time.*;
+
+
+Calendar cal = Calendar.getInstance();
+SimpleDateFormat dateFormatter = new SimpleDateFormat(&quot;MM/dd/yyyy HH:mm:ss.SSS&quot;);
+cal.setTime(new Date());
+int currentTime = cal.getTimeInMillis();	
+int elapsedTime = currentTime - bsh.shared.StartTimeMS;
+
+if (elapsedTime &gt; 300000)
+{
+	// increment pacer and rest timer
+	int numberTemp = bsh.shared.fNumber1 + bsh.shared.fNumber2;
+	bsh.shared.fNumber1 = bsh.shared.fNumber2;
+	bsh.shared.fNumber2 = numberTemp;
+	log.info(&quot;Update throughput:&quot; + bsh.shared.fNumber2 );//* 10 ); 
+	props.put(&quot;rate&quot;, String.valueOf(bsh.shared.fNumber2 * 60 ));//* 10)); 
+	bsh.shared.StartTimeMS = currentTime;	 
+	bsh.shared.maxResponse = 0;
+}
+else
+{
+	// record max time across all threads
+	long rt = prev.getTime();
+	log.info(&quot;Last Response time:&quot; + rt ); 
+	
+	if ( rt &gt; bsh.shared.maxResponse &amp;&amp; vars.getIteration() &gt; 1 )
+	{
+		bsh.shared.maxResponse = rt;
+		vars.put(&quot;MaxResponseTime&quot;,String.valueOf(rt) );	
+		log.info(&quot;New Max Response time:&quot; + rt ); 
+	}
+	if ( Integer.parseInt(vars.get(&quot;MaxResponseTime&quot;)) &lt; bsh.shared.maxResponse)
+	{
+		vars.put(&quot;MaxResponseTime&quot;,String.valueOf(bsh.shared.maxResponse) );	
+	}
+	
+}
+
+//if ( Integer.parseInt(vars.get(&quot;TargetThreshold&quot;)) &lt; Integer.parseInt(props.get(&quot;rate&quot;))  )
+//{
+//	vars.put( &quot;TargetThreshold&quot;,props.get(&quot;rate&quot;) );
+//}
+
+ 
+ 
+</stringProp>
+            </BeanShellPostProcessor>
+            <hashTree/>
+          </hashTree>
+          <SwitchController guiclass="SwitchControllerGui" testclass="SwitchController" testname="Switch Controller" enabled="false">
+            <stringProp name="SwitchController.value">${__P(Segment)}</stringProp>
+          </SwitchController>
+          <hashTree>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="true">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query1
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    IsSuccess = false;
+    
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="true">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query1
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    IsSuccess = false;
+    
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="true">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query1
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    IsSuccess = false;
+    
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="true">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query1
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    IsSuccess = false;
+    
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="true">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query1
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    IsSuccess = false;
+    
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="true">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query1
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    IsSuccess = false;
+    
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="true">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query1
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    IsSuccess = false;
+    
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="true">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query1
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    IsSuccess = false;
+    
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="true">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query1
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    IsSuccess = false;
+    
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="true">
+              <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query1
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    IsSuccess = false;
+    
+  }
+
+
+
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <InterleaveControl guiclass="InterleaveControlGui" testclass="InterleaveControl" testname="Interleave Controller - no connection pool" enabled="false">
+              <intProp name="InterleaveControl.style">1</intProp>
+              <boolProp name="InterleaveControl.accrossThreads">false</boolProp>
+            </InterleaveControl>
+            <hashTree>
+              <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="true">
+                <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+   String boltAddress = &quot;bolt://&quot; + props.get(&quot;HostName&quot;) + &quot;:7687&quot;;
+  try
+  {
+      Driver driver = GraphDatabase.driver(boltAddress, AuthTokens.basic(&quot;neo4j&quot;, &quot;escodb&quot;));
+
+      Session session = driver.session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query1
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+	driver.close();
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+   SampleResult.setResponseCode(&quot;500&quot;);   
+    IsSuccess = false;
+    
+  }
+
+
+
+</stringProp>
+                <stringProp name="BeanShellSampler.filename"></stringProp>
+                <stringProp name="BeanShellSampler.parameters"></stringProp>
+                <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+              </BeanShellSampler>
+              <hashTree/>
+              <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="false">
+                <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataSkills[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query2
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+    SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+    SampleResult.setResponseCode(&quot;500&quot;);
+    IsSuccess = false;
+ 
+  }
+
+
+
+</stringProp>
+                <stringProp name="BeanShellSampler.filename"></stringProp>
+                <stringProp name="BeanShellSampler.parameters"></stringProp>
+                <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+              </BeanShellSampler>
+              <hashTree/>
+              <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="${__P(SegmentName)}" enabled="false">
+                <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+ String uri2 = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+
+ Map params = new HashMap();
+ params.put(&quot;uri1&quot;, uri);//uri = &quot;werwer&quot;;
+ params.put(&quot;uri2&quot;, uri2);//uri = &quot;werwer&quot;;
+
+  try
+  {
+      Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+	 log.info(&quot;Make call to BOLT : Thread &quot; + ${__threadNum}); 
+	 StatementResult rs = session.run( 
+	// 							&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
+	//							&quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
+	//							&quot;when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills &quot; + 
+	//							&quot;return {occupation:o.skos__prefLabel, skills:Skills}&quot;                                                     
+								bsh.shared.query3
+                                      , params
+                                      );
+
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+   	 SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+   	 SampleResult.setResponseCode(&quot;500&quot;);
+    IsSuccess = false;
+
+
+  }
+
+ 
+
+
+
+</stringProp>
+                <stringProp name="BeanShellSampler.filename"></stringProp>
+                <stringProp name="BeanShellSampler.parameters"></stringProp>
+                <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+              </BeanShellSampler>
+              <hashTree/>
+              <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Monitor Throughput" enabled="false">
+                <stringProp name="filename"></stringProp>
+                <stringProp name="parameters"></stringProp>
+                <boolProp name="resetInterpreter">false</boolProp>
+                <stringProp name="script">
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.time.*;
+
+
+Calendar cal = Calendar.getInstance();
+SimpleDateFormat dateFormatter = new SimpleDateFormat(&quot;MM/dd/yyyy HH:mm:ss.SSS&quot;);
+cal.setTime(new Date());
+int currentTime = cal.getTimeInMillis();	
+int elapsedTime = currentTime - bsh.shared.StartTimeMS;
+
+if (elapsedTime &gt; 300000)
+{
+	// increment pacer and rest timer
+	int numberTemp = bsh.shared.fNumber1 + bsh.shared.fNumber2;
+	bsh.shared.fNumber1 = bsh.shared.fNumber2;
+	bsh.shared.fNumber2 = numberTemp;
+	log.info(&quot;Update throughput:&quot; + bsh.shared.fNumber2 );//* 10 ); 
+	props.put(&quot;rate&quot;, String.valueOf(bsh.shared.fNumber2 * 60 ));//* 10)); 
+	bsh.shared.StartTimeMS = currentTime;	 
+	bsh.shared.maxResponse = 0;
+}
+else
+{
+	// record max time across all threads
+	long rt = prev.getTime();
+	log.info(&quot;Last Response time:&quot; + rt ); 
+	
+	if ( rt &gt; bsh.shared.maxResponse &amp;&amp; vars.getIteration() &gt; 1 )
+	{
+		bsh.shared.maxResponse = rt;
+		vars.put(&quot;MaxResponseTime&quot;,String.valueOf(rt) );	
+		log.info(&quot;New Max Response time:&quot; + rt ); 
+	}
+	if ( Integer.parseInt(vars.get(&quot;MaxResponseTime&quot;)) &lt; bsh.shared.maxResponse)
+	{
+		vars.put(&quot;MaxResponseTime&quot;,String.valueOf(bsh.shared.maxResponse) );	
+	}
+	
+}
+
+//if ( Integer.parseInt(vars.get(&quot;TargetThreshold&quot;)) &lt; Integer.parseInt(props.get(&quot;rate&quot;))  )
+//{
+//	vars.put( &quot;TargetThreshold&quot;,props.get(&quot;rate&quot;) );
+//}
+
+ 
+ 
+</stringProp>
+              </BeanShellPostProcessor>
+              <hashTree/>
+            </hashTree>
+          </hashTree>
+        </hashTree>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
+          <stringProp name="IfController.condition">${__groovy(vars.get(&quot;Protocol&quot;) == &quot;bolt&quot; )}</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+          <boolProp name="IfController.useExpression">true</boolProp>
+        </IfController>
+        <hashTree>
+          <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname=" ${__P(SegmentName,${label})}" enabled="true">
+            <stringProp name="BeanShellSampler.query">import org.neo4j.driver.internal.retry.RetrySettings;
+
+import org.neo4j.driver.*;
+import org.neo4j.driver.Values;
+import java.util.HashMap;
+import java.util.Map;
+
+
+ String uri1 = &quot;&quot;;
+ String uri2 = &quot;&quot;;
+ //= bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+ int numberOfConnections = ${__P(NumberOfConnections)};
+ int numberOfThreads = ${__P(NumberOfThreads)};
+ int boltRetries =  ${__P(BoltRetries)};
+ int retryCount = 0;
+ boolean success = false;
+ //int connectionToUse = (int)(numberOfConnections / numberOfThreads) * ${__threadNum} -1;
+ int connectionToUse = (int)((int) Math.floor(numberOfConnections / numberOfThreads)) * ${__threadNum};
+ 
+ int query  = Integer.parseInt(vars.get(&quot;query&quot;));
+ Map params = new HashMap();
+
+ switch (query)
+ {
+ 	case 0:
+	 	uri1 = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+	 	params.put(&quot;uri&quot;, uri1);
+ 	break;
+ 	case 1:
+	     uri1 = bsh.shared.testDataSkills[ Math.floor(Math.random() * 400)];
+	     params.put(&quot;uri&quot;, uri1);
+ 	break;
+ 	case 2:
+ 		uri1 = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+ 		uri2 = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+ 		params.put(&quot;uri1&quot;, uri1);
+ 		params.put(&quot;uri2&quot;, uri2);
+ 	break;
+ }
+ //params.put(&quot;uri&quot;, uri);//uri = &quot;werwer&quot;;
+
+
+while ( retryCount &lt;= boltRetries &amp;&amp; !success )
+{
+  retryCount ++;
+  try
+  {
+      log.info(&quot;Make call to BOLT (&quot; + retryCount + &quot;): Connection: &quot; + connectionToUse + &quot; Thread: &quot; + ${__threadNum}  +System.getProperty(&quot;line.separator&quot;)); 
+     // Session session = bsh.shared.boltDriverPool[ ( ${__threadNum} - 1 ) ].session();
+      Session session = bsh.shared.boltDriverPool[  connectionToUse  ].session();
+    //  Session session = bsh.shared.boltDriverPool[ 0 ].session();
+
+	 StatementResult rs = session.run(                                           
+								bsh.shared.queries[query]
+                                      , params
+                                      );
+	if ( rs.hasNext() )
+	{
+      Record record = rs.next();
+   	 log.info(&quot;DONE: &quot; + record.toString().substring(0,25) + &quot;...&quot;); 
+   	 SampleResult.setResponseData(record.toString(),null);
+	 //SampleResult.setResponseData(record.toString());
+	 //log.info(&quot;ElapsedTime: &quot; + SampleResult.getTime()); 
+	}
+	else
+	{
+		SampleResult.setResponseData(&quot;No data&quot;,null);
+	}
+     IsSuccess = true;
+  }
+  catch (Throwable t)
+  {
+    log.info(&quot;Exception during request:&quot; + t); 
+    log.info(&quot;... Query# &quot; + query);
+    log.info(&quot;... URI1: &quot; + uri1 );
+    log.info(&quot;... URI2: &quot; + uri2 );
+   SampleResult.setResponseData(&quot;Exception encountered: &quot; + t.toString(),null);
+   SampleResult.setResponseCode(&quot;500&quot;);   
+    IsSuccess = false;
+    
+  }
+  success = IsSuccess;
+}
+
+
+</stringProp>
+            <stringProp name="BeanShellSampler.filename"></stringProp>
+            <stringProp name="BeanShellSampler.parameters"></stringProp>
+            <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+          </BeanShellSampler>
+          <hashTree>
+            <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="script">
+
+	log.info(&quot;Determine query to run&quot;); 
+	log.info(&quot;Determine label for step&quot;); 
+	String queryFlagValue = vars.get(&quot;query&quot;);
+	String label;
+	int queryFlag = Integer.parseInt((queryFlagValue == null? &quot;-1&quot; : queryFlagValue ));	
+	log.info(&quot;Curr query flag value is:&quot; + queryFlag ); 
+	queryFlag ++;
+	queryFlag = ( queryFlag &gt; 2 ? 0 : queryFlag );
+	vars.put(&quot;query&quot;,String.valueOf(queryFlag)); 
+	log.info(&quot;New query flag value is:&quot; + vars.get(&quot;query&quot;) ); 
+
+
+ switch (queryFlag)
+ {
+ 	case 0:
+	 	label = &quot;BOLT Request - 1 Occupations&quot;;
+ 	break;
+ 	case 1:
+	     label = &quot;BOLT Request - 2 Skills&quot;;
+ 	break;
+ 	case 2:
+ 		label = &quot;BOLT Request - 3 Skills Gap&quot;;
+ 	break;
+ }
+
+ vars.put(&quot;label&quot;,label);</stringProp>
+            </BeanShellPreProcessor>
+            <hashTree/>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Monitor Throughput" enabled="false">
+              <stringProp name="filename"></stringProp>
+              <stringProp name="parameters"></stringProp>
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="script">
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.time.*;
+
+// determine which mode we are running in
+// i - interleve labelled
+// i - interleve discrete
+
+
+Calendar cal = Calendar.getInstance();
+SimpleDateFormat dateFormatter = new SimpleDateFormat(&quot;MM/dd/yyyy HH:mm:ss.SSS&quot;);
+cal.setTime(new Date());
+int currentTime = cal.getTimeInMillis();	
+int elapsedTime = currentTime - bsh.shared.StartTimeMS;
+
+if (elapsedTime &gt; 300000)
+{
+	// increment pacer and rest timer
+	int numberTemp = bsh.shared.fNumber1 + bsh.shared.fNumber2;
+	bsh.shared.fNumber1 = bsh.shared.fNumber2;
+	bsh.shared.fNumber2 = numberTemp;
+	log.info(&quot;Update throughput:&quot; + bsh.shared.fNumber2 );//* 10 ); 
+	props.put(&quot;rate&quot;, String.valueOf(bsh.shared.fNumber2 * 60 ));//* 10)); 
+	bsh.shared.StartTimeMS = currentTime;	 
+	bsh.shared.maxResponse = 0;
+}
+else
+{
+	// record max time across all threads
+	long rt = prev.getTime();
+	log.info(&quot;Last Response time:&quot; + rt ); 
+	
+	if ( rt &gt; bsh.shared.maxResponse &amp;&amp; vars.getIteration() &gt; 1 )
+	{
+		bsh.shared.maxResponse = rt;
+		vars.put(&quot;MaxResponseTime&quot;,String.valueOf(rt) );	
+		log.info(&quot;New Max Response time:&quot; + rt ); 
+	}
+	if ( Integer.parseInt(vars.get(&quot;MaxResponseTime&quot;)) &lt; bsh.shared.maxResponse)
+	{
+		vars.put(&quot;MaxResponseTime&quot;,String.valueOf(bsh.shared.maxResponse) );	
+	}
+	
+}
+
+//if ( Integer.parseInt(vars.get(&quot;TargetThreshold&quot;)) &lt; Integer.parseInt(props.get(&quot;rate&quot;))  )
+//{
+//	vars.put( &quot;TargetThreshold&quot;,props.get(&quot;rate&quot;) );
+//}
+
+ 
+ 
+</stringProp>
+            </BeanShellPostProcessor>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
+          <stringProp name="IfController.condition">${__groovy(vars.get(&quot;Protocol&quot;) == &quot;http&quot; )}</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+          <boolProp name="IfController.useExpression">true</boolProp>
+        </IfController>
+        <hashTree>
+          <InterleaveControl guiclass="InterleaveControlGui" testclass="InterleaveControl" testname="Interleave Controller" enabled="true">
+            <intProp name="InterleaveControl.style">1</intProp>
+            <boolProp name="InterleaveControl.accrossThreads">false</boolProp>
+          </InterleaveControl>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname=" ${__P(SegmentName,${label})}" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
+  &quot;statements&quot; : [ {&#xd;
+    &quot;statement&quot; : &quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end}) as Skills return {occupation:o.skos__prefLabel, skills:Skills}&quot;,&#xd;
+    &quot;parameters&quot; : {&#xd;
+    	&quot;uri&quot; : &quot;${uri1}&quot;&#xd;
+       }&#xd;
+  } ]&#xd;
+}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path"></stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="false">
+                <stringProp name="filename"></stringProp>
+                <stringProp name="parameters"></stringProp>
+                <boolProp name="resetInterpreter">false</boolProp>
+                <stringProp name="script">vars.put(&quot;URI&quot;,bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)]);
+vars.put(&quot;QUERY&quot;,bsh.shared.query1);</stringProp>
+              </BeanShellPreProcessor>
+              <hashTree/>
+            </hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname=" ${__P(SegmentName,${label})}" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
+  &quot;statements&quot; : [ {&#xd;
+    &quot;statement&quot; : &quot;MATCH (s:esco__Skill {uri:$uri})-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation ) WITH s, collect( {occupation:o.skos__prefLabel,relationshipWithSkill:case type(r) when &apos;esco__isEssentialSkillFor&apos; then &apos;essential&apos; when &apos;esco__isOptionalSkillFor&apos; then &apos;optional&apos; end } ) as Occupations RETURN s.skos__prefLabel,Occupations&quot;,&#xd;
+    &quot;parameters&quot; : {&#xd;
+    	&quot;uri&quot; : &quot;${uri1}&quot;&#xd;
+       }&#xd;
+  } ]&#xd;
+}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path"></stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="false">
+                <stringProp name="filename"></stringProp>
+                <stringProp name="parameters"></stringProp>
+                <boolProp name="resetInterpreter">false</boolProp>
+                <stringProp name="script">vars.put(&quot;URI&quot;,bsh.shared.testDataSkills[ Math.floor(Math.random() * 400)]);
+vars.put(&quot;QUERY&quot;,bsh.shared.query2);</stringProp>
+              </BeanShellPreProcessor>
+              <hashTree/>
+            </hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname=" ${__P(SegmentName,${label})}" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
+  &quot;statements&quot; : [ {&#xd;
+    &quot;statement&quot; : &quot;MATCH (o1:esco__Occupation)&lt;-[:esco__isEssentialSkillFor]-(s:esco__Skill), (o2:esco__Occupation)WHERE o1.uri = $uri1 AND o2.uri = $uri2 AND NOT (o2)&lt;-[:esco__isEssentialSkillFor]-(s) WITH o1, o2, COLLECT({skill:s.skos__prefLabel}) AS skillGap RETURN o1.skos__prefLabel, o2.skos__prefLabel, skillGap &quot;,&#xd;
+    &quot;parameters&quot; : {&#xd;
+    	&quot;uri1&quot; : &quot;${uri1}&quot;,&#xd;
+    	&quot;uri2&quot; : &quot;${uri2}&quot;&#xd;
+       }&#xd;
+  } ]&#xd;
+}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path"></stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="false">
+                <stringProp name="filename"></stringProp>
+                <stringProp name="parameters"></stringProp>
+                <boolProp name="resetInterpreter">false</boolProp>
+                <stringProp name="script">vars.put(&quot;URI1&quot;,bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)]);
+vars.put(&quot;URI2&quot;,bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)]);
+vars.put(&quot;QUERY&quot;,bsh.shared.query3);</stringProp>
+              </BeanShellPreProcessor>
+              <hashTree/>
+            </hashTree>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Monitor Throughput" enabled="false">
+              <stringProp name="filename"></stringProp>
+              <stringProp name="parameters"></stringProp>
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="script">
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.time.*;
+
+
+Calendar cal = Calendar.getInstance();
+SimpleDateFormat dateFormatter = new SimpleDateFormat(&quot;MM/dd/yyyy HH:mm:ss.SSS&quot;);
+cal.setTime(new Date());
+int currentTime = cal.getTimeInMillis();	
+int elapsedTime = currentTime - bsh.shared.StartTimeMS;
+
+if (elapsedTime &gt; 300000)
+{
+	// increment pacer and rest timer
+	int numberTemp = bsh.shared.fNumber1 + bsh.shared.fNumber2;
+	bsh.shared.fNumber1 = bsh.shared.fNumber2;
+	bsh.shared.fNumber2 = numberTemp;
+	log.info(&quot;Update throughput:&quot; + bsh.shared.fNumber2 );//* 10 ); 
+	props.put(&quot;rate&quot;, String.valueOf(bsh.shared.fNumber2 * 60 ));//* 10)); 
+	bsh.shared.StartTimeMS = currentTime;	 
+	bsh.shared.maxResponse = 0;
+}
+else
+{
+	// record max time across all threads
+	long rt = prev.getTime();
+	if ( rt &gt; bsh.shared.maxResponse &amp;&amp; vars.getIteration() &gt; 1 )
+	{
+		bsh.shared.maxResponse = rt;
+		vars.put(&quot;MaxResponseTime&quot;,String.valueOf(rt) );	
+		log.info(&quot;New Max Response time:&quot; + rt ); 
+	}
+	if ( Integer.parseInt(vars.get(&quot;MaxResponseTime&quot;)) &lt; bsh.shared.maxResponse)
+	{
+		vars.put(&quot;MaxResponseTime&quot;,String.valueOf(bsh.shared.maxResponse) );	
+	}
+	
+}
+
+//if ( Integer.parseInt(vars.get(&quot;TargetThreshold&quot;)) &lt; Integer.parseInt(props.get(&quot;rate&quot;))  )
+//{
+//	vars.put( &quot;TargetThreshold&quot;,props.get(&quot;rate&quot;) );
+//}
+
+ 
+ 
+</stringProp>
+            </BeanShellPostProcessor>
+            <hashTree/>
+            <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="script"> String uri1 = &quot;&quot;;
+ String uri2 = &quot;&quot;;
+
+//	log.info(&quot;Determine query to run&quot;); 
+//	log.info(&quot;Determine label for step&quot;); 
+	String queryFlagValue = vars.get(&quot;query&quot;);
+	String label;
+	int queryFlag = Integer.parseInt((queryFlagValue == null? &quot;-1&quot; : queryFlagValue ));	
+//	log.info(&quot;Curr query flag value is:&quot; + queryFlag ); 
+	queryFlag ++;
+	queryFlag = ( queryFlag &gt; 2 ? 0 : queryFlag );
+	vars.put(&quot;query&quot;,String.valueOf(queryFlag)); 
+//	log.info(&quot;New query flag value is:&quot; + vars.get(&quot;query&quot;) ); 
+
+ 		
+ switch (queryFlag)
+ {
+ 	case 0:
+	 	label = &quot;HTTP Request - 1 Occupations&quot;;
+		uri1 = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+ 	break;
+ 	case 1:
+	     label = &quot;HTTP Request - 2 Skills&quot;;
+	     uri1 = bsh.shared.testDataSkills[ Math.floor(Math.random() * 400)];
+ 	break;
+ 	case 2:
+ 		label = &quot;HTTP Request - 3 Skills Gap&quot;;
+ 		uri1 = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+ 		uri2 = bsh.shared.testDataOccupations[ Math.floor(Math.random() * 400)];
+ 	break;
+ }
+
+vars.put(&quot;label&quot;,label);
+vars.put(&quot;uri1&quot;, uri1);
+vars.put(&quot;uri2&quot;, uri2);</stringProp>
+            </BeanShellPreProcessor>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="false">
+          <intProp name="calcMode">1</intProp>
+          <stringProp name="throughput">${__P(rate)}</stringProp>
+        </ConstantThroughputTimer>
+        <hashTree/>
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="false">
+          <intProp name="calcMode">1</intProp>
+          <doubleProp>
+            <name>throughput</name>
+            <value>45.0</value>
+            <savedValue>0.0</savedValue>
+          </doubleProp>
+        </ConstantThroughputTimer>
+        <hashTree/>
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
+          <intProp name="calcMode">1</intProp>
+          <stringProp name="throughput">${__P(TargetRateSeconds)}</stringProp>
+        </ConstantThroughputTimer>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Simple Data Writer" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename">${__P(ResultsFile)}</stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Simple Data Writer" enabled="false">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename">F:\Jmeter\output\results.csv</stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename">F:\Jmeter\output\results.csv</stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="false">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename">F:\Jmeter\output\results.csv</stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results" enabled="false">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename">F:\Jmeter\output\results.csv</stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="RespTimeGraphVisualizer" testclass="ResultCollector" testname="Response Time Graph" enabled="false">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <PostThreadGroup guiclass="PostThreadGroupGui" testclass="PostThreadGroup" testname="tearDown Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </PostThreadGroup>
+      <hashTree>
+        <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BeanShell Sampler" enabled="true">
+          <stringProp name="BeanShellSampler.query">import org.neo4j.driver.*;
+
+log.info(&quot;TEARDOWN: Close connection pool&quot;); 
+//bsh.shared.boltDriverPool[0].close();
+//bsh.shared.boltDriverPool[1].close();
+//bsh.shared.boltDriverPool[2].close();
+//bsh.shared.boltDriverPool[3].close();
+//bsh.shared.boltDriverPool[4].close();
+
+int numberOfConnections = ${__P(NumberOfConnections)};
+String protocol = props.get(&quot;Protocol&quot;);
+if ( protocol.equals(&quot;bolt&quot;) )
+{
+	 for (int i=0; i&lt; numberOfConnections; i++)
+//	 for (int i=0; i&lt; 1; i++)
+	 {
+	 	bsh.shared.boltDriverPool[i].close();
+	 }
+}</stringProp>
+          <stringProp name="BeanShellSampler.filename"></stringProp>
+          <stringProp name="BeanShellSampler.parameters"></stringProp>
+          <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+        </BeanShellSampler>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
