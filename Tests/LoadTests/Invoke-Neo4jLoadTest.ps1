@@ -20,14 +20,14 @@ param
 )
 
 
-Write-Output "Protocol:" + $Protocol;
-Write-Output "ServerName:" + $ServerName;
-Write-Output "Durations:" + $Duration;
-Write-Output "NumberOfThreads:" + $NumberOfThreads;
-Write-Output "iterations:" + $interations;
-Write-Output "Single Label:" + $SingleLabel;
-Write-Output "hitRate override:" + $HitRate;
-Write-Output "number of connections:" + $NumberOfConnections;
+Write-Output "Protocol: $Protocol"
+Write-Output "ServerName: $ServerName"
+Write-Output "Durations: $Duration"
+Write-Output "NumberOfThreads: $NumberOfThreads"
+Write-Output "iterations: $interations"
+Write-Output "Single Label: $SingleLabel"
+Write-Output "hitRate override: $HitRate"
+Write-Output "number of connections: $NumberOfConnections"
 
 #exit;
 function Out-FileUtf8NoBom {
@@ -95,14 +95,14 @@ if ( $Protocol -eq "http" ) {
 }
 
 # set paths
-$JMeterBinDir = $BaseDir + "\apache-jmeter-5.1.1\bin"
+$JMeterBinDir = $BaseDir + "/apache-jmeter-5.2.1/bin"
 $OutputBaseDir = $BaseDir + "\output"
 $OutputDir = $OutputBaseDir + "\" + $OutputFolder
-$ScriptFullName = $BaseDir + "\Neo4j\" + $JmxTestFileName #NeoLoadTestPortableSingleDriverWithPool.jmx"
+$ScriptFullName = "/tests/$JmxTestFileName"
 $OutFilename = $OutputDir + "\neo_request_output.csv"
 
-Write-Output "output_dir:" + $OutputDir
-Write-Output "scriptName:" + $ScriptFullName
+Write-Output "output_dir: $OutputDir"
+Write-Output "scriptName: $ScriptFullName"
 
 # set output filenames
 $OverallResultsSummary = "neo_results_full.csv"
@@ -131,22 +131,23 @@ While ( $LoopCount -lt $Iterations ) {
 	Remove-Item $OutFilename
 
 	# run test
-	Write-Output "Running JMETER  Test: " + $ScriptFullName + "  Server:" + serverName + " Protocol:" + $Protocol + " TargerRate: " + $CurrentTargetHitRate
-	cmd.exe /c $JMeterBinDir\jmeter -n -t $ScriptFullName -J HostName=$ServerName -J Protocol=$Protocol -J TargetRate=$CurrentTargetHitRate -J NumberOfThreads=$NumberOfThreads -J Duration=$Duration -j $OutputDir/logfile$LoopCount.log -J SingleLabel=$SingleLabel -J ResultsFile=$OutFilename -J NumberOfConnections=$NumberOfConnections -J BoltRetries=$BoltRetries -J BoltConnectionTimeout=$BoltConnectionTimeout
+	Write-Output "Running jMeter  Test: $ScriptFullName Server: $ServerName Protocol: $Protocol TargerRate: $CurrentTargetHitRate ..."
+	Invoke-Expression -Command "jmeter -n -t $ScriptFullName -J HostName=$ServerName -J Protocol=$Protocol -J TargetRate=$CurrentTargetHitRate -J NumberOfThreads=$NumberOfThreads -J Duration=$Duration -j $OutputDir/logfile$LoopCount.log -J SingleLabel=$SingleLabel -J ResultsFile=$OutFilename -J NumberOfConnections=$NumberOfConnections -J BoltRetries=$BoltRetries -J BoltConnectionTimeout=$BoltConnectionTimeout"
 
 	# generate aggregation report
-	cmd.exe /c $JMeterBinDir\PluginsManagerCMD.bat --tool Reporter --generate-csv $OutputDir\Aggregate_Report_$CurrentTargetHitRate.csv --input-jtl $OutFilename --plugin-type AggregateReport
+	Write-Output "Generating aggregation report ..."
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.bat --tool Reporter --generate-csv $OutputDir\Aggregate_Report_$CurrentTargetHitRate.csv --input-jtl $OutFilename --plugin-type AggregateReport"
 
 	# generate graphs??
-	cmd.exe /c  $JMeterBinDir\PluginsManagerCMD.bat --tool Reporter --generate-png $OutputDir\hits_per_second_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type HitsPerSecond --width 800 --height 400 --granulation 10000
-	cmd.exe /c  $JMeterBinDir\PluginsManagerCMD.bat --tool Reporter --generate-png $OutputDir\ResponseTimesOverTime_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type ResponseTimesOverTime --width 800 --height 400 --granulation 10000
-	cmd.exe /c  $JMeterBinDir\PluginsManagerCMD.bat --tool Reporter --generate-png $OutputDir\TransactionsPerSecond_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type TransactionsPerSecond --width 800 --height 400 --granulation 10000
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.bat --tool Reporter --generate-png $OutputDir\hits_per_second_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type HitsPerSecond --width 800 --height 400 --granulation 10000"
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.bat --tool Reporter --generate-png $OutputDir\ResponseTimesOverTime_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type ResponseTimesOverTime --width 800 --height 400 --granulation 10000"
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.bat --tool Reporter --generate-png $OutputDir\TransactionsPerSecond_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type TransactionsPerSecond --width 800 --height 400 --granulation 10000"
 
     
-	cmd.exe /c  $JMeterBinDir\PluginsManagerCMD.bat --tool Reporter --generate-png $OutputDir\hits_per_second_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type HitsPerSecond --width 800 --height 600 --granulation 20000
-	cmd.exe /c  $JMeterBinDir\PluginsManagerCMD.bat --tool Reporter --generate-png $OutputDir\ResponseTimesOverTime_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type ResponseTimesOverTime --width 600 --height 400 --granulation 20000
-	cmd.exe /c  $JMeterBinDir\PluginsManagerCMD.bat --tool Reporter --generate-png $OutputDir\TransactionsPerSecond_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type TransactionsPerSecond --width 600 --height 400 --granulation 20000
-	#cmd.exe /v $JMeterBinDir\PluginsManagerCMD.bat --tool Reporter --generate-png "F:\Jmeter\output\ResponseTimesOverTime_TEST.png" --input-jtl "F:\Jmeter\output\http_request_output.csv" --plugin-type ResponseTimesOverTime
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.bat --tool Reporter --generate-png $OutputDir\hits_per_second_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type HitsPerSecond --width 800 --height 600 --granulation 20000"
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.bat --tool Reporter --generate-png $OutputDir\ResponseTimesOverTime_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type ResponseTimesOverTime --width 600 --height 400 --granulation 20000"
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.bat --tool Reporter --generate-png $OutputDir\TransactionsPerSecond_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type TransactionsPerSecond --width 600 --height 400 --granulation 20000"
+	#cmd.exe /v $JMeterBinDir\$JMeterBinDir/PluginsManagerCMD.bat --tool Reporter --generate-png "F:\Jmeter\output\ResponseTimesOverTime_TEST.png" --input-jtl "F:\Jmeter\output\http_request_output.csv" --plugin-type ResponseTimesOverTime
 	# add to / initialise overarching results file
 	$Output = get-content $OutFilename 
 	if ( $LoopCount -eq 1 ) {
@@ -179,4 +180,4 @@ While ( $LoopCount -lt $Iterations ) {
 # generate overarching test report
 Remove-Item  -Recurse $OutputDir\report
 
-cmd.exe /c $JMeterBinDir\jmeter -g $OutputDir\$OverallResultsSummary -o $OutputDir\report
+Invoke-Expression -Command "jmeter -g $OutputDir\$OverallResultsSummary -o $OutputDir\report"
