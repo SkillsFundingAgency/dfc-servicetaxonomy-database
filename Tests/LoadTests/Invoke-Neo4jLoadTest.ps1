@@ -1,27 +1,92 @@
 ﻿<#
+.SYNOPSIS
+Orchestrates a jMeter tests against the dfc-servicetaxonomy-database.
+
+.DESCRIPTION
+Orchestrates a jMeter tests against the dfc-servicetaxonomy-database.  Runs the test for a specified number of iterations and aggregates the output.
+
+.PARAMETER JMeterBinDir
+The path to the bin directory of the jMeter Java application.  On the dfc-devops jMeter-agent container this is /opt/apache-jmeter-5.2.1/bin (version number correct at time of writing)
+
+.PARAMETER ServerName
+The hostname of the Neo4j server to run the test against
+
+.PARAMETER BoltRetries
+TBC
+
+.PARAMETER BoltConnectionTimeout
+TBC
+
+.PARAMETER Duration
+TBC
+
+.PARAMETER HitRate
+TBC
+
+.PARAMETER Iterations
+TBC
+
+.PARAMETER JmxTestFileName
+TBC
+
+.PARAMETER NumberOfThreads
+TBC
+
+.PARAMETER NumberOfConnections
+TBC
+
+.PARAMETER OutputFolder
+TBC
+
+.PARAMETER Protocol
+TBC
+
+.PARAMETER Seed1
+TBC
+
+.PARAMETER Seed2
+TBC
+
+.PARAMETER SingleLabel
+TBC
+
 . EXAMPLE
 . ./Invoke-Neo4jLoadTest.ps1 -ServerName dfc-dev-stax-database.westeurope.cloudapp.azure.com -JMeterBinDir "/opt/apache-jmeter-5.2.1/bin"
 #>
 [CmdletBinding()]
 param
 (
-	[string]$Protocol = "http",
-	[string]$ServerName = "localhost",
-	[int]$Duration = 120,
-	[int]$NumberOfThreads = 1,
-	[int]$NumberOfConnections = 1,
-	[int]$Iterations = 1,
-	[string]$OutputFolder = "test1",
-	[int]$HitRate = 0,
-	[string]$SingleLabel = "N",
-	[string]$JMeterBinDir = "F:\Jmeter",
-	[string]$JmxTestFileName = "NeoLoadTest.jmx",
-	[int]$Seed1 = 1,
-	[int]$Seed2 = 1,
+	[Parameter(Mandatory=$true)]
+	[string]$JMeterBinDir,
+	[Parameter(Mandatory=$true)]
+	[string]$ServerName,
+	[Parameter(Mandatory=$false)]
 	[int]$BoltRetries = 2,
-	[int]$BoltConnectionTimeout = 60
+	[Parameter(Mandatory=$false)]
+	[int]$BoltConnectionTimeout = 60,
+	[Parameter(Mandatory=$false)]
+	[int]$Duration = 120,
+	[Parameter(Mandatory=$false)]
+	[int]$HitRate = 0,
+	[Parameter(Mandatory=$false)]
+	[int]$Iterations = 1,
+	[Parameter(Mandatory=$false)]
+	[string]$JmxTestFileName = "NeoLoadTest.jmx",
+	[Parameter(Mandatory=$false)]
+	[int]$NumberOfThreads = 1,
+	[Parameter(Mandatory=$false)]
+	[int]$NumberOfConnections = 1,
+	[Parameter(Mandatory=$false)]
+	[string]$OutputFolder = "test1",
+	[Parameter(Mandatory=$false)]
+	[string]$Protocol = "http",
+	[Parameter(Mandatory=$false)]
+	[int]$Seed1 = 1,
+	[Parameter(Mandatory=$false)]
+	[int]$Seed2 = 1,
+	[Parameter(Mandatory=$false)]
+	[string]$SingleLabel = "N"
 )
-
 
 Write-Output "Protocol: $Protocol"
 Write-Output "ServerName: $ServerName"
