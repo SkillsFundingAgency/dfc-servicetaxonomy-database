@@ -17,6 +17,7 @@ jobs:
           name: RunLoadTest
           displayName: 'PowerShell Script: Invoke-Neo4jLoadTest.ps1'
           inputs: 
+            targetType: inline
             script: |
               $OutputFolderDateStamp = [DateTime]::Now.ToString("yyyy-MM-dd_HHmm")
               $(Pipeline.Workspace)/LoadTests/Invoke-Neo4jLoadTest.ps1 -JMeterBinDir ${{ parameters.JMeterBinDir }} -ServerName ${{ parameters.ServerName }} -OutputFolder /tests/$OutputFolderDateStamp -JmxTestFilePath $(Pipeline.Workspace)/LoadTests/NeoLoadTest.jmx
