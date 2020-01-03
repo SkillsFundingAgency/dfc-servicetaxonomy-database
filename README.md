@@ -56,3 +56,18 @@ az aks get-credentials --resource-group dfc-dev-shared-rg --name dfc-dev-shared-
 ```
 
 and test that you've connected successfully by running `kubectl get nodes`
+
+## How to Test - jMeter
+
+This repo includes a jMeter load test orchestrated using a PowerShell script.  The easiest way to run this is using the (jMeter-agent)[https://github.com/SkillsFundingAgency/dfc-devops/blob/master/DockerFiles/AzureDevOpsAgents/jmeter-agent.Dockerfile] Docker image in dfc-devops.
+
+The tests are dependent on the following jMeter Plugins, with the exception of the Neo4j driver they can be installed using the Plugin Manager:
+
+jMeter Plugins Wiki Link | PluginsManagerCMD Install Name
+--- | ---
+https://jmeter-plugins.org/wiki/FilterResultsTool/ | jpgc-filterresults=2.2
+https://jmeter-plugins.org/wiki/ResponseTimesOverTime/ | jpgc-graphs-basic=2.0
+https://jmeter-plugins.org/wiki/ResponseCodesPerSecond/ | jpgc-graphs-additional=2.0
+https://jmeter-plugins.org/wiki/RespTimesDistribution/ | jpgc-graphs-dist=2.0
+https://jmeter-plugins.org/wiki/GraphsGeneratorListener/ | jpgc-ggl=2.0
+https://jmeter-plugins.org/wiki/SynthesisReport/ | jpgc-synthesis=2.0

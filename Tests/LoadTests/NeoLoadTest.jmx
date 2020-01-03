@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.1.1 r1855137">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -53,6 +53,7 @@
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </SetupThreadGroup>
       <hashTree>
         <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BeanShell Sampler" enabled="true">
@@ -88,7 +89,6 @@ log.info(&quot;*******************-----------------------------*****************
 //bsh.shared.log.write(&quot;------------&quot; + props.get(&quot;TargetRate&quot;) +bsh.shared.nl);
 //out.write(outputLine);
 //out.write(System.getProperty(&quot;line.separator&quot;) );
-
 String[]  queries = 
 {
 	&quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
@@ -105,7 +105,6 @@ String[]  queries =
 };
 
 bsh.shared.queries = queries;
-
 // build query 1
 String query = &quot;MATCH (s:esco__Skill)-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]-&gt;(o:esco__Occupation {uri:$uri}), (s)-[:esco__skillType]-&gt;(skilltype), (s)-[:esco__skillReuseLevel]-&gt;(reuse) &quot; +
 			 &quot;WITH o,  collect({skillReusability:reuse.skos__prefLabel, type:skilltype.skos__prefLabel, skill:s.skos__prefLabel, relationshipWithOccupation:case type(r) &quot; + 
@@ -128,10 +127,9 @@ query =&quot;MATCH (o1:esco__Occupation)&lt;-[:esco__isEssentialSkillFor]-(s:esc
 bsh.shared.query3 = query;
 
 
-		
  if ( props.get(&quot;HostName&quot;) == null )
  {
- 	props.put(&quot;HostName&quot;,&quot;dfc-dev-stax-shared-neo4j-aci.westeurope.azurecontainer.io&quot;);
+ 	props.put(&quot;HostName&quot;,&quot;dfc-dev-stax-database.westeurope.cloudapp.azure.com&quot;);
  }
 //props.put(&quot;HostName&quot;,&quot;dfc-dev-stax-shared-neo4j-aci.westeurope.azurecontainer.io&quot;);
 //props.put(&quot;HostName&quot;,&quot;localhost&quot;);
@@ -356,6 +354,7 @@ import org.neo4j.driver.Config;
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${__P(Duration)}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
@@ -408,6 +407,8 @@ import org.neo4j.driver.Config;
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
           <stringProp name="username">neo4j</stringProp>
+          <boolProp name="preinit">false</boolProp>
+          <stringProp name="connectionProperties"></stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="false">
@@ -450,6 +451,7 @@ return {occupation:o.skos__prefLabel, skills:Skills}</stringProp>
           <stringProp name="resultVariable"></stringProp>
           <stringProp name="queryTimeout"></stringProp>
           <stringProp name="resultSetHandler">Store as String</stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
         </JDBCSampler>
         <hashTree>
           <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="false">
@@ -2383,6 +2385,7 @@ vars.put(&quot;uri2&quot;, uri2);</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </PostThreadGroup>
       <hashTree>
         <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BeanShell Sampler" enabled="true">
