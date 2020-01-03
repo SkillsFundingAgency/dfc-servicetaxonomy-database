@@ -77,7 +77,7 @@ param
 	[Parameter(Mandatory=$false)]
 	[int]$NumberOfConnections = 1,
 	[Parameter(Mandatory=$false)]
-	[string]$OutputFolder = "test1",
+	[string]$OutputFolder = "/tests/test001",
 	[Parameter(Mandatory=$false)]
 	[string]$Protocol = "http",
 	[Parameter(Mandatory=$false)]
@@ -155,11 +155,10 @@ if ( $Protocol -eq "http" ) {
 }
 
 # set paths
-$OutputDir = "/$OutputFolder"
 $ScriptFullName = "/tests/$JmxTestFileName"
-$OutFilename = $OutputDir + "/neo_request_output.csv"
+$OutFilename = $OutputFolder + "/neo_request_output.csv"
 
-Write-Output "output_dir: $OutputDir"
+Write-Output "output_dir: $OutputFolder"
 Write-Output "scriptName: $ScriptFullName"
 
 # set output filenames
@@ -184,38 +183,38 @@ While ( $LoopCount -lt $Iterations ) {
 
 	# run test
 	Write-Output "Running jMeter  Test: $ScriptFullName Server: $ServerName Protocol: $Protocol TargerRate: $CurrentTargetHitRate ..."
-	Invoke-Expression -Command "jmeter -n -t $ScriptFullName -J HostName=$ServerName -J Protocol=$Protocol -J TargetRate=$CurrentTargetHitRate -J NumberOfThreads=$NumberOfThreads -J Duration=$Duration -j $OutputDir/logfile$LoopCount.log -J SingleLabel=$SingleLabel -J ResultsFile=$OutFilename -J NumberOfConnections=$NumberOfConnections -J BoltRetries=$BoltRetries -J BoltConnectionTimeout=$BoltConnectionTimeout"
+	Invoke-Expression -Command "jmeter -n -t $ScriptFullName -J HostName=$ServerName -J Protocol=$Protocol -J TargetRate=$CurrentTargetHitRate -J NumberOfThreads=$NumberOfThreads -J Duration=$Duration -j $OutputFolder/logfile$LoopCount.log -J SingleLabel=$SingleLabel -J ResultsFile=$OutFilename -J NumberOfConnections=$NumberOfConnections -J BoltRetries=$BoltRetries -J BoltConnectionTimeout=$BoltConnectionTimeout"
 
 	# generate aggregation report
 	Write-Output "Generating aggregation report ..."
-	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-csv $OutputDir/Aggregate_Report_$CurrentTargetHitRate.csv --input-jtl $OutFilename --plugin-type AggregateReport"
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-csv $OutputFolder/Aggregate_Report_$CurrentTargetHitRate.csv --input-jtl $OutFilename --plugin-type AggregateReport"
 
 	# generate graphs??
-	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputDir/hits_per_second_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type HitsPerSecond --width 800 --height 400 --granulation 10000"
-	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputDir/ResponseTimesOverTime_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type ResponseTimesOverTime --width 800 --height 400 --granulation 10000"
-	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputDir/TransactionsPerSecond_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type TransactionsPerSecond --width 800 --height 400 --granulation 10000"
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputFolder/hits_per_second_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type HitsPerSecond --width 800 --height 400 --granulation 10000"
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputFolder/ResponseTimesOverTime_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type ResponseTimesOverTime --width 800 --height 400 --granulation 10000"
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputFolder/TransactionsPerSecond_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type TransactionsPerSecond --width 800 --height 400 --granulation 10000"
 
     
-	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputDir/hits_per_second_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type HitsPerSecond --width 800 --height 600 --granulation 20000"
-	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputDir/ResponseTimesOverTime_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type ResponseTimesOverTime --width 600 --height 400 --granulation 20000"
-	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputDir/TransactionsPerSecond_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type TransactionsPerSecond --width 600 --height 400 --granulation 20000"
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputFolder/hits_per_second_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type HitsPerSecond --width 800 --height 600 --granulation 20000"
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputFolder/ResponseTimesOverTime_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type ResponseTimesOverTime --width 600 --height 400 --granulation 20000"
+	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputFolder/TransactionsPerSecond_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type TransactionsPerSecond --width 600 --height 400 --granulation 20000"
 	#cmd.exe /v $JMeterBinDir\$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png "F:\Jmeter\output\ResponseTimesOverTime_TEST.png" --input-jtl "F:\Jmeter\output\http_request_output.csv" --plugin-type ResponseTimesOverTime
 	# add to / initialise overarching results file
 	$Output = get-content $OutFilename 
 	if ( $LoopCount -eq 1 ) {
 		#initalise overarching file
-		$Output | select -first 1 | foreach { $_ } | Out-FileUtf8NoBom  $OutputDir/$OverallResultsSummary 
+		$Output | select -first 1 | foreach { $_ } | Out-FileUtf8NoBom  $OutputFolder/$OverallResultsSummary 
 	}
-	$Output | select -skip 1 | foreach { $_ } | Out-FileUtf8NoBom -Append $OutputDir/$OverallResultsSummary #>> $OutputBaseDir\$OverallResultsSummary
+	$Output | select -skip 1 | foreach { $_ } | Out-FileUtf8NoBom -Append $OutputFolder/$OverallResultsSummary #>> $OutputBaseDir\$OverallResultsSummary
 
 	#add to / initialise overaching aggregation report
-	$Output2 = get-content $OutputDir/Aggregate_Report_$CurrentTargetHitRate.csv
+	$Output2 = get-content $OutputFolder/Aggregate_Report_$CurrentTargetHitRate.csv
 	if ( $LoopCount -eq 1 ) {
 		#initalise overarching file
 		#$Output2 | select -first 1 | foreach  {"protocol,target_workload," + $_ } > $OutputBaseDir\$OverallAggSummary
-		Write-Output "Protocol,Target Workload,Request,# Samples,Average,Median,90% Line,95% Line,99% Line,Minimum,Maximum,Error %,Throughput,Bandwith,Stddev" | Out-FileUtf8NoBom  $OutputDir/$OverallAggSummary
+		Write-Output "Protocol,Target Workload,Request,# Samples,Average,Median,90% Line,95% Line,99% Line,Minimum,Maximum,Error %,Throughput,Bandwith,Stddev" | Out-FileUtf8NoBom  $OutputFolder/$OverallAggSummary
 	}
-	$Output2 | select -skip 1 | foreach { $Protocol + "," + $CurrentTargetHitRate + "," + $_ } | Out-FileUtf8NoBom -Append $OutputDir/$OverallAggSummary
+	$Output2 | select -skip 1 | foreach { $Protocol + "," + $CurrentTargetHitRate + "," + $_ } | Out-FileUtf8NoBom -Append $OutputFolder/$OverallAggSummary
 
 	# add to overarching aggregration report
 	# https://stackoverflow.com/questions/9813228/add-rows-to-csv-file-in-powershell
@@ -229,6 +228,6 @@ While ( $LoopCount -lt $Iterations ) {
 # end loop
 
 # generate overarching test report
-Remove-Item  -Recurse $OutputDir/report
+Remove-Item  -Recurse $OutputFolder/report -ErrorAction SilentlyContinue
 
-Invoke-Expression -Command "jmeter -g $OutputDir/$OverallResultsSummary -o $OutputDir/report"
+Invoke-Expression -Command "jmeter -g $OutputFolder/$OverallResultsSummary -o $OutputFolder/report"
