@@ -5,6 +5,7 @@ parameters:
 
 jobs:
 - deployment: TestIn_${{ parameters.Environment }}
+  dependsOn: DeployTo_${{ parameters.Environment }}
   pool:
     name: 'NCS - jMeter'
   environment: ${{ parameters.Environment }}
@@ -14,7 +15,7 @@ jobs:
         steps:
         - powershell: |
             $OutputFolderDateStamp = [DateTime]::Now.ToString("yyyy-MM-dd_HHmm")
-            $(Pipeline.Workspace)/LoadTests/Invoke-Neo4jLoadTest.ps1 -JMeterBinDir ${{ parameters.JMeterBinDir }} -ServerName ${{ parameters.ServerName }} -OutputFolder /tests/$OutputFolderDateStamp
+            $(Pipeline.Workspace)/LoadTests/Invoke-Neo4jLoadTest.ps1 -JMeterBinDir ${{ parameters.JMeterBinDir }} -ServerName ${{ parameters.ServerName }} -OutputFolder /tests/$OutputFolderDateStamp -JmxTestFilePath $(Pipeline.Workspace)/LoadTests/NeoLoadTest.jmx
             Write-Host "##vso[task.setvariable variable=OutputFolderDateStamp]$OutputFolderDateStamp"
           displayName: 'PowerShell Script: Invoke-Neo4jLoadTest.ps1'
         - task: PublishPipelineArtifact@0

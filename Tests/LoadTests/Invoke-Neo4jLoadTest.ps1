@@ -71,7 +71,7 @@ param
 	[Parameter(Mandatory=$false)]
 	[int]$Iterations = 1,
 	[Parameter(Mandatory=$false)]
-	[string]$JmxTestFileName = "NeoLoadTest.jmx",
+	[string]$JmxTestFilePath = "/tests/NeoLoadTest.jmx",
 	[Parameter(Mandatory=$false)]
 	[int]$NumberOfThreads = 1,
 	[Parameter(Mandatory=$false)]
@@ -96,6 +96,7 @@ Write-Output "iterations: $interations"
 Write-Output "Single Label: $SingleLabel"
 Write-Output "hitRate override: $HitRate"
 Write-Output "number of connections: $NumberOfConnections"
+Write-Output "JmxTestFilePath: $JmxTestFilePath"
 
 #exit;
 function Out-FileUtf8NoBom {
@@ -155,11 +156,9 @@ if ( $Protocol -eq "http" ) {
 }
 
 # set paths
-$ScriptFullName = "/tests/$JmxTestFileName"
 $OutFilename = $OutputFolder + "/neo_request_output.csv"
 
 Write-Output "output_dir: $OutputFolder"
-Write-Output "scriptName: $ScriptFullName"
 
 # set output filenames
 $OverallResultsSummary = "neo_results_full.csv"
@@ -182,8 +181,8 @@ While ( $LoopCount -lt $Iterations ) {
 	$LoopCount += 1
 
 	# run test
-	Write-Output "Running jMeter  Test: $ScriptFullName Server: $ServerName Protocol: $Protocol TargerRate: $CurrentTargetHitRate ..."
-	Invoke-Expression -Command "jmeter -n -t $ScriptFullName -J HostName=$ServerName -J Protocol=$Protocol -J TargetRate=$CurrentTargetHitRate -J NumberOfThreads=$NumberOfThreads -J Duration=$Duration -j $OutputFolder/logfile$LoopCount.log -J SingleLabel=$SingleLabel -J ResultsFile=$OutFilename -J NumberOfConnections=$NumberOfConnections -J BoltRetries=$BoltRetries -J BoltConnectionTimeout=$BoltConnectionTimeout"
+	Write-Output "Running jMeter  Test: $JmxTestFilePath Server: $ServerName Protocol: $Protocol TargerRate: $CurrentTargetHitRate ..."
+	Invoke-Expression -Command "jmeter -n -t $JmxTestFilePath -J HostName=$ServerName -J Protocol=$Protocol -J TargetRate=$CurrentTargetHitRate -J NumberOfThreads=$NumberOfThreads -J Duration=$Duration -j $OutputFolder/logfile$LoopCount.log -J SingleLabel=$SingleLabel -J ResultsFile=$OutFilename -J NumberOfConnections=$NumberOfConnections -J BoltRetries=$BoltRetries -J BoltConnectionTimeout=$BoltConnectionTimeout"
 
 	# generate aggregation report
 	Write-Output "Generating aggregation report ..."

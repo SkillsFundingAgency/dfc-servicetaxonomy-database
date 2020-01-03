@@ -59,7 +59,19 @@ and test that you've connected successfully by running `kubectl get nodes`
 
 ## How to Test - jMeter
 
-This repo includes a jMeter load test orchestrated using a PowerShell script.  The easiest way to run this is using the (jMeter-agent)[https://github.com/SkillsFundingAgency/dfc-devops/blob/master/DockerFiles/AzureDevOpsAgents/jmeter-agent.Dockerfile] Docker image in dfc-devops.
+This repo includes a jMeter load test orchestrated using a PowerShell script.  The easiest way to run this is using the (jMeter-agent)[https://github.com/SkillsFundingAgency/dfc-devops/blob/master/DockerFiles/AzureDevOpsAgents/jmeter-agent.Dockerfile] Docker image in dfc-devops.  Download a copy of the Docker image:
+
+```
+az login
+az acr login --name dfcdevsharedcr
+docker pull dfcdevsharedcr.azurecr.io/ncs.azuredevopsagents.jmeter:<tag>
+```
+
+Run the container and mount the LoadTests folder as a volume:
+
+```
+docker run -e AZP_URL=https://<yourorg>.visualstudio.com/ -e AZP_TOKEN=not-a-real-pat-token -e AZP_AGENT_NAME=JMeterAgent -e AZP_POOL=TestPool -v <path-to-your-repo-folder>\dfc-servicetaxonomy-database\Tests\LoadTests:/tests dfcdevsharedcr.azurecr.io/ncs.azuredevopsagents.jmeter:<tag>
+```
 
 The tests are dependent on the following jMeter Plugins, with the exception of the Neo4j driver they can be installed using the Plugin Manager:
 
