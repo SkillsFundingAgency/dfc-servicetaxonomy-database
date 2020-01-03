@@ -59,7 +59,7 @@ and test that you've connected successfully by running `kubectl get nodes`
 
 ## How to Test - jMeter
 
-This repo includes a jMeter load test orchestrated using a PowerShell script.  The easiest way to run this is using the (jMeter-agent)[https://github.com/SkillsFundingAgency/dfc-devops/blob/master/DockerFiles/AzureDevOpsAgents/jmeter-agent.Dockerfile] Docker image in dfc-devops.  Download a copy of the Docker image:
+This repo includes a jMeter load test orchestrated using a PowerShell script.  The easiest way to run this is using the [jMeter-agent](https://github.com/SkillsFundingAgency/dfc-devops/blob/master/DockerFiles/AzureDevOpsAgents/jmeter-agent.Dockerfile) Docker image in dfc-devops.  Download a copy of the Docker image:
 
 ```
 az login

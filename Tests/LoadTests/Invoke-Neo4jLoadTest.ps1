@@ -112,26 +112,27 @@ function Out-FileUtf8NoBom {
 
 	#requires -version 3
 
-	# Make sure that the .NET framework sees the same working dir. as PS
-	# and resolve the input path to a full path.
+	# Make sure that the .NET framework sees the same working dir. as PS and resolve the input path to a full path.
 	[System.IO.Directory]::SetCurrentDirectory($PWD) # Caveat: .NET Core doesn't support [Environment]::CurrentDirectory
 	$LiteralPath = [IO.Path]::GetFullPath($LiteralPath)
 
-	# If -NoClobber was specified, throw an exception if the target file already
-	# exists.
+	# If -NoClobber was specified, throw an exception if the target file already exists.
 	if ($NoClobber -and (Test-Path $LiteralPath)) {
-		Throw [IO.IOException] "The file '$LiteralPath' already exists."
+
+		throw [IO.IOException] "The file '$LiteralPath' already exists."
+
 	}
 
-	# Create a StreamWriter object.
-	# Note that we take advantage of the fact that the StreamWriter class by default:
+	# Create a StreamWriter object.  Note that we take advantage of the fact that the StreamWriter class by default:
 	# - uses UTF-8 encoding
 	# - without a BOM.
 	$StreamWriter = New-Object IO.StreamWriter $LiteralPath, $Append
 
-	$HtOutStringArgs = @{ }
+	$HtOutStringArgs = @{}
 	if ($Width) {
+
 		$HtOutStringArgs += @{ Width = $Width }
+
 	}
 
 	# Note: By not using begin / process / end blocks, we're effectively running
@@ -141,18 +142,24 @@ function Out-FileUtf8NoBom {
 	#       in each iteration of a process block would format each input object
 	#       with an indvidual header.
 	try {
-		$Input | Out-String -Stream @HtOutStringArgs | % { $StreamWriter.WriteLine($_) }
+
+		$Input | Out-String -Stream @HtOutStringArgs | ForEach-Object { $StreamWriter.WriteLine($_) }
+
 	}
 	finally {
+
 		$StreamWriter.Dispose()
+
 	}
 
 }
     
 $NumberOfThreads = 50
 
-if ( $Protocol -eq "http" ) {
+if ($Protocol -eq "http") {
+
 	$NumberOfThreads = 100
+
 }
 
 # set paths
@@ -168,16 +175,18 @@ $OverallAggSummary = "neo_aggregation_full.csv"
 $PreviousTargetHitRate = $Seed1
 $CurrentTargetHitRate = $Seed2
 
-if ( $HitRate -gt 0 ) {
-	Write-Output "Setting up for a single interation at hit rate of " + $HitRate
+if ($HitRate -gt 0) {
+
+	Write-Output "Setting up for a single interation at hit rate of $HitRate"
 	$CurrentTargetHitRate = $HitRate
 	$Iterations = 1
+
 }
 
 $LoopCount = 0
-#$interations = 10
 # begin loop
-While ( $LoopCount -lt $Iterations ) {
+while ($LoopCount -lt $Iterations) {
+
 	$LoopCount += 1
 
 	# run test
@@ -198,22 +207,26 @@ While ( $LoopCount -lt $Iterations ) {
 	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputFolder/ResponseTimesOverTime_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type ResponseTimesOverTime --width 600 --height 400 --granulation 20000"
 	Invoke-Expression -Command "$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png $OutputFolder/TransactionsPerSecond_a_$CurrentTargetHitRate.png --input-jtl $OutFilename --plugin-type TransactionsPerSecond --width 600 --height 400 --granulation 20000"
 	#cmd.exe /v $JMeterBinDir\$JMeterBinDir/PluginsManagerCMD.sh --tool Reporter --generate-png "F:\Jmeter\output\ResponseTimesOverTime_TEST.png" --input-jtl "F:\Jmeter\output\http_request_output.csv" --plugin-type ResponseTimesOverTime
+	
 	# add to / initialise overarching results file
 	$Output = get-content $OutFilename 
-	if ( $LoopCount -eq 1 ) {
+	if ($LoopCount -eq 1) {
+
 		#initalise overarching file
-		$Output | select -first 1 | foreach { $_ } | Out-FileUtf8NoBom  $OutputFolder/$OverallResultsSummary 
+		$Output | Select-Object -first 1 | ForEach-Object { $_ } | Out-FileUtf8NoBom  $OutputFolder/$OverallResultsSummary 
+
 	}
-	$Output | select -skip 1 | foreach { $_ } | Out-FileUtf8NoBom -Append $OutputFolder/$OverallResultsSummary #>> $OutputBaseDir\$OverallResultsSummary
+	$Output | Select-Object -skip 1 | ForEach-Object { $_ } | Out-FileUtf8NoBom -Append $OutputFolder/$OverallResultsSummary
 
 	#add to / initialise overaching aggregation report
 	$Output2 = get-content $OutputFolder/Aggregate_Report_$CurrentTargetHitRate.csv
-	if ( $LoopCount -eq 1 ) {
+	if ($LoopCount -eq 1) {
+
 		#initalise overarching file
-		#$Output2 | select -first 1 | foreach  {"protocol,target_workload," + $_ } > $OutputBaseDir\$OverallAggSummary
 		Write-Output "Protocol,Target Workload,Request,# Samples,Average,Median,90% Line,95% Line,99% Line,Minimum,Maximum,Error %,Throughput,Bandwith,Stddev" | Out-FileUtf8NoBom  $OutputFolder/$OverallAggSummary
+
 	}
-	$Output2 | select -skip 1 | foreach { $Protocol + "," + $CurrentTargetHitRate + "," + $_ } | Out-FileUtf8NoBom -Append $OutputFolder/$OverallAggSummary
+	$Output2 | Select-Object -skip 1 | ForEach-Object { $Protocol + "," + $CurrentTargetHitRate + "," + $_ } | Out-FileUtf8NoBom -Append $OutputFolder/$OverallAggSummary
 
 	# add to overarching aggregration report
 	# https://stackoverflow.com/questions/9813228/add-rows-to-csv-file-in-powershell
