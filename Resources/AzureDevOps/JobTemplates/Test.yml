@@ -13,13 +13,16 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - powershell: |
-            $OutputFolderDateStamp = [DateTime]::Now.ToString("yyyy-MM-dd_HHmm")
-            $(Pipeline.Workspace)/LoadTests/Invoke-Neo4jLoadTest.ps1 -JMeterBinDir ${{ parameters.JMeterBinDir }} -ServerName ${{ parameters.ServerName }} -OutputFolder /tests/$OutputFolderDateStamp -JmxTestFilePath $(Pipeline.Workspace)/LoadTests/NeoLoadTest.jmx
-            Write-Host "##vso[task.setvariable variable=OutputFolderDateStamp]$OutputFolderDateStamp"
+        - task: PowerShell@2
+          name: RunLoadTest
           displayName: 'PowerShell Script: Invoke-Neo4jLoadTest.ps1'
+          inputs: 
+            script: |
+              $OutputFolderDateStamp = [DateTime]::Now.ToString("yyyy-MM-dd_HHmm")
+              $(Pipeline.Workspace)/LoadTests/Invoke-Neo4jLoadTest.ps1 -JMeterBinDir ${{ parameters.JMeterBinDir }} -ServerName ${{ parameters.ServerName }} -OutputFolder /tests/$OutputFolderDateStamp -JmxTestFilePath $(Pipeline.Workspace)/LoadTests/NeoLoadTest.jmx
+              Write-Host "##vso[task.setvariable variable=OutputFolderDateStamp]$OutputFolderDateStamp"
         - task: PublishPipelineArtifact@0
           displayName: 'Publish Artifact: LoadTestResults'
           inputs:
-            targetPath: '/tests/$[variables.OutputFolderDateStamp]'
+            targetPath: '/tests/$(RunLoadTest.OutputFolderDateStamp)'
             artifactName: LoadTestResults
