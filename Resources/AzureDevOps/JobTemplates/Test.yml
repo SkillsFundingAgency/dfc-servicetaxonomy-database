@@ -25,5 +25,5 @@ jobs:
         - task: PublishPipelineArtifact@0
           displayName: 'Publish Artifact: LoadTestResults'
           inputs:
-            targetPath: '/tests/$(RunLoadTest.OutputFolderDateStamp)'
+            targetPath: /tests/$(RunLoadTest.OutputFolderDateStamp)
             artifactName: LoadTestResults
