@@ -12,43 +12,43 @@ The path to the bin directory of the jMeter Java application.  On the dfc-devops
 The hostname of the Neo4j server to run the test against
 
 .PARAMETER BoltRetries
-TBC
+The number of times to re-try if a Bolt error is encountered. Default value is 2
 
 .PARAMETER BoltConnectionTimeout
-TBC
+The maximum time in seconds to wait for a request made over a Bolt connection. Default value is 60 seconds
 
 .PARAMETER Duration
-TBC
+The run time of each test iteration in seconds. Default value is 120 seconds
 
 .PARAMETER HitRate
-TBC
+Specifying a HitRate will override iteration settings and result in a constant load test which runs for the supplied Duration. Default value is 25
 
 .PARAMETER Iterations
-TBC
+The number of cycles that will be executed. The hit rate will be incremented after each iteration using a Fibonacci sequence. Default value 1
 
 .PARAMETER JmxTestFileName
-TBC
+Specify the location of the JMeter test project. Default value /tests/NeoLoadTest.jmx
 
 .PARAMETER NumberOfThreads
-TBC
+The number of concurrent processes that JMeter will employ to create requests. Default value 5
 
 .PARAMETER NumberOfConnections
-TBC
+The number of Bolt instances that will be created during the load test.  Default value 1 (as per recommendations in Neo4j Developer documenation)
 
 .PARAMETER OutputFolder
-TBC
+Specify the location for test output. Default value "/tests/test001"
 
 .PARAMETER Protocol
-TBC
+The protocol to be employed during the test. Accepted values http|bolt. Default value is "bolt"
 
 .PARAMETER Seed1
-TBC
+Specify the first increment after the intial iteration has completed. Default value 1
 
 .PARAMETER Seed2
-TBC
+Specify the initial hit rate. Default value 1
 
 .PARAMETER SingleLabel
-TBC
+If specified, all request labels will be based on the current hit rate rather than the request description. Default value "N"
 
 . EXAMPLE
 . ./Invoke-Neo4jLoadTest.ps1 -ServerName dfc-dev-stax-database.westeurope.cloudapp.azure.com -JMeterBinDir "/opt/apache-jmeter-5.2.1/bin"
@@ -67,19 +67,19 @@ param
 	[Parameter(Mandatory=$false)]
 	[int]$Duration = 120,
 	[Parameter(Mandatory=$false)]
-	[int]$HitRate = 0,
+	[int]$HitRate = 25,
 	[Parameter(Mandatory=$false)]
 	[int]$Iterations = 1,
 	[Parameter(Mandatory=$false)]
 	[string]$JmxTestFilePath = "/tests/NeoLoadTest.jmx",
 	[Parameter(Mandatory=$false)]
-	[int]$NumberOfThreads = 1,
+	[int]$NumberOfThreads = 5,
 	[Parameter(Mandatory=$false)]
 	[int]$NumberOfConnections = 1,
 	[Parameter(Mandatory=$false)]
 	[string]$OutputFolder = "/tests/test001",
 	[Parameter(Mandatory=$false)]
-	[string]$Protocol = "http",
+	[string]$Protocol = "bolt",
 	[Parameter(Mandatory=$false)]
 	[int]$Seed1 = 1,
 	[Parameter(Mandatory=$false)]
