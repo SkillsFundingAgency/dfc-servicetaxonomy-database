@@ -70,4 +70,27 @@ stages:
       StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
 
+- stage: DeployToSit
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  variables:
+    - group: dfc-shared-all
+    - group: dfc-stax-shared-all
+    - group: KeyVault - dfc-sit-shared-kv
+    - group: dfc-shared-sit
+    - group: dfc-stax-shared-sit
+    - template: VariableTemplates\SitEnvironmentVariables.yml
+  jobs:
+  - template: JobTemplates/Deploy.yml
+    parameters:
+      AksResourceGroup: $(sharedResourceGroup)
+      AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      Environment: SIT_SERVICETAXONOMY
+      EnvironmentTag: $(EnvironmentTag)
+      KubernetesCluster: $(sharedAksCluster)
+      ParentBusinessTag: $(ParentBusiness)
+      ResourceGroup: $(ResourceGroup)
+      ServiceOfferingTag: $(ServiceOffering)
+      StaxSharedStorageAccountKey: $(dfcsitstaxsharedstr)
+      StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+
 
