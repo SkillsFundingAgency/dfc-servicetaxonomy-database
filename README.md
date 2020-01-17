@@ -79,4 +79,4 @@ metadata:
   uid: <a-guid>
 ```
 
-In a PS prompty copy and paste one of the <an-encoded-string> into `[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("<an-encoded-string>"))`
+In a PS prompt copy and paste one of the \<an-encoded-string> into ```[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("<an-encoded-string>"))```
