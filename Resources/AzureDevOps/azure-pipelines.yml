@@ -64,6 +64,7 @@ stages:
       Environment: DEV_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
       KubernetesCluster: $(sharedAksCluster)
+      Neo4jPassword: $(Neo4jPassword)
       ParentBusinessTag: $(ParentBusiness)
       ResourceGroup: $(ResourceGroup)
       ServiceOfferingTag: $(ServiceOffering)
@@ -87,6 +88,7 @@ stages:
       Environment: SIT_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
       KubernetesCluster: $(sharedAksCluster)
+      Neo4jPassword: $(Neo4jPassword)
       ParentBusinessTag: $(ParentBusiness)
       ResourceGroup: $(ResourceGroup)
       ServiceOfferingTag: $(ServiceOffering)

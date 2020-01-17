@@ -56,3 +56,27 @@ az aks get-credentials --resource-group dfc-dev-shared-rg --name dfc-dev-shared-
 ```
 
 and test that you've connected successfully by running `kubectl get nodes`
+
+#### Decoding the secret stored in Kubernetes
+
+```
+kubectl get secret neo4j-account-secret -o yaml
+```
+This will return:
+```
+apiVersion: v1
+data:
+  auth: <an-encoded-string>
+  password: <an-encoded-string>
+  username: <an-encoded-string>
+kind: Secret
+metadata:
+  creationTimestamp: "<a-date>"
+  name: neo4j-account-secret
+  namespace: default
+  resourceVersion: "1234567"
+  selfLink: /api/v1/namespaces/default/secrets/neo4j-account-secret
+  uid: <a-guid>
+```
+
+In a PS prompt copy and paste one of the \<an-encoded-string> into ```[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("<an-encoded-string>"))```
