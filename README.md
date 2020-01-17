@@ -77,5 +77,6 @@ metadata:
   resourceVersion: "1234567"
   selfLink: /api/v1/namespaces/default/secrets/neo4j-account-secret
   uid: <a-guid>
+```
 
-  In a PS prompty copy and paste one of the <an-encoded-string> into `[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("<an-encoded-string>"))`
+In a PS prompty copy and paste one of the <an-encoded-string> into `[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("<an-encoded-string>"))`
