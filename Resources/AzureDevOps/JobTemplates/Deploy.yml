@@ -58,7 +58,7 @@ jobs:
             useClusterAdmin: true
             namespace: 'default'
             secretType: generic
-            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }}
+            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }}
             secretName: neo4j-account-secret
         # deploy manifest
         - task: Kubernetes@1

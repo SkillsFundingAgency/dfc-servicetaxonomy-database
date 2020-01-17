@@ -25,6 +25,11 @@ spec:
             secretKeyRef: 
               name: neo4j-account-secret
               key: password
+        - name: NEO4J_AUTH
+          valueFrom:
+            secretKeyRef: 
+              name: neo4j-account-secret
+              key: auth
         ports:
         - containerPort: 7474
         resources:
