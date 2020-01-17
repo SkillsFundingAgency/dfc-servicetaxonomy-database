@@ -12,7 +12,7 @@ parameters:
   StaxSharedStorageAccountName: ''
 
 jobs:
-- deployment: DeployToDev
+- deployment: DeployTo_${{ parameters.Environment }}
   pool:
     name: 'NCS - CI and CD'
   environment: ${{ parameters.Environment }}
