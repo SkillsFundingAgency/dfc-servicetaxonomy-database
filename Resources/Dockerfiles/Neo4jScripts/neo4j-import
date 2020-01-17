@@ -1,1 +1,1 @@
-CALL semantics.importRDF("file:///var/lib/neo4j/import/__ESCOFILE__", "Turtle",{ languageFilter: "en" });
+CALL semantics.importRDF("file:///var/lib/neo4j/import/__ESCOFILE__", "Turtle", { handleMultival: 'ARRAY', languageFilter: "en" });
