@@ -42,14 +42,14 @@ spec:
         volumeMounts:
         - name: esco-rdf-files
           mountPath: /var/lib/neo4j/import
+        securityContext: 
+          allowPrivilegeEscalation: false 
       volumes:
       - name: esco-rdf-files
         azureFile:
           secretName: staxsharedstr-account-secret
           shareName: esco-rdf-files
           readOnly: true
-      securityContext: 
-        allowPrivilegeEscalation: false 
 ---
 apiVersion: v1
 kind: Service
