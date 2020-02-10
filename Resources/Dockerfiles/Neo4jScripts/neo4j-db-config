@@ -1,4 +1,4 @@
-CREATE INDEX ON :Resource(uri);
+CREATE CONSTRAINT ON (n:Resource) ASSERT n.uri IS UNIQUE;
 CALL semantics.addNamespacePrefix("adms","http://www.w3.org/ns/adms#");
 CALL semantics.addNamespacePrefix("owl","http://www.w3.org/2002/07/owl#");
 CALL semantics.addNamespacePrefix("skosxl", "http://www.w3.org/2008/05/skos-xl#");
