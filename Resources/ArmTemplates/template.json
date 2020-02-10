@@ -17,6 +17,10 @@
     },
     "variables": {
         "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/dfc-devops/master/ArmTemplates/",
+        "fileShares": [
+            "certificates",
+            "esco-rdf-files"
+        ],
         "publicIpAddressName": "[concat(variables('resourcePrefix'), '-ip')]",
         "resourcePrefix": "[tolower(concat('dfc-', parameters('environment'), '-stax-database'))]"
     },
@@ -49,7 +53,7 @@
             }
         },
         {
-            "name": "staxSharedStorageAccountFileShares",
+            "name": "[concat(variables('fileShares')[copyIndex()], 'fileshare')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('storageAccountResourceGroup')]",
             "apiVersion": "2017-05-10",
@@ -61,12 +65,16 @@
                 },
                 "parameters": {
                     "fileShareName": {
-                        "value": "esco-rdf-files"
+                        "value": "[variables('fileShares')[copyIndex()]]"
                     },
                     "storageAccountName": {
                         "value": "[parameters('storageAccountName')]"
                     }
                 }
+            },
+            "copy": {
+                "name": "fileSharesCopy",
+                "count": "[length(variables('fileShares'))]"
             }
         }
     ]
