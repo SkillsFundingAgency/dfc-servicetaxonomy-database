@@ -40,9 +40,16 @@ spec:
             cpu: 1500m
             memory: "16G"
         volumeMounts:
+        - name: certificates
+          mountPath: /var/certificates
         - name: esco-rdf-files
           mountPath: /var/lib/neo4j/import
       volumes:
+      - name: certificates
+        azureFile:
+          secretName: staxsharedstr-account-secret
+          shareName: certificates
+          readOnly: true
       - name: esco-rdf-files
         azureFile:
           secretName: staxsharedstr-account-secret

@@ -9,6 +9,15 @@ ENV ESCOFILE esco_v1.0.3.ttl
 ENV NEO4J_PWD escodb
 ENV NEO4J_AUTH neo4j/$NEO4J_PWD
 ENV NEO4J_dbms_memory_pagecache_size=5600M
+##tls config
+ENV NEO4J_dbms_connectors_default__listen__address=0.0.0.0
+ENV NEO4J_dbms_connectors_default__advertised__address=dev.servicetaxonomy.nationalcareersservice.org.uk
+ENV NEO4J_dbms_connector_https_enabled=true
+ENV NEO4J_dbms_ssl_policy_https_enabled=false
+ENV NEO4J_dbms_ssl_policy_https_base__directory=/var/certificates/https
+ENV NEO4J_dbms_ssl_policy_https_public__certificate=/var/certificates/https/kv-cer-manipulated-export.pem
+ENV NEO4J_dbms_ssl_policy_https_private__key=/var/certificates/https/openssl-conv-client.pem
+#add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
 ADD --chown=neo4j:neo4j https://github.com/neo4j-labs/neosemantics/releases/download/3.5.0.3/neosemantics-3.5.0.3.jar plugins
