@@ -44,7 +44,7 @@ jobs:
           inputs:
             azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
             scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
-            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }}'
+            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
         ##TO DO: repoint this at the master branch resource
         - checkout: dfc-devops-test
@@ -54,7 +54,7 @@ jobs:
           inputs:
             azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
             scriptPath: $(Build.SourcesDirectory)/dfc-devops/PSScripts/Export-KeyVaultCertToPemFiles.ps1
-            scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -KeyVaultName ${{ parameters.KeyVaultName }} -OutputDirectory "https" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }}'
+            scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -KeyVaultName ${{ parameters.KeyVaultName }} -OutputDirectory "https" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
         # create storage secret
         - task: Kubernetes@1

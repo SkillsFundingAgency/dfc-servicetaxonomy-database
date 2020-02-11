@@ -29,7 +29,7 @@ function Set-AzStorageDirectory {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
-        [String]$Context,
+        [Microsoft.WindowsAzure.Commands.Storage.AzureStorageContext]$Context,
         [Parameter(Mandatory=$true)]
         [String]$Path,
         [Parameter(Mandatory=$true)]
