@@ -80,3 +80,11 @@ metadata:
 ```
 
 In a PS prompt copy and paste one of the \<an-encoded-string> into ```[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("<an-encoded-string>"))```
+
+## Notes on SSL configuration
+
+This [document](https://neo4j.com/docs/operations-manual/3.5/security/ssl-framework/) explains the settings needed to set up SSL\TLS connections in version 3.5, changes may be required when upgrading to version 4 of neo4j as additional settings have been implemented.
+
+As well as configuring SSL policy there are also seperate settings to enable the HTTPS connector.  These do not need to be configured in the current version of the neo4j container, it works out of the box but for reference the settings for version 3.5 are found [here](https://neo4j.com/docs/operations-manual/3.5/configuration/connectors/)
+
+The neo4j container runs on Linux so the certificate files need to be in the pem format.  Several scripts execute as part of the pipeline to convert the certificate stored in Azure KeyVault to the pem format that neo4j can consume.  As a useful reference this [article](https://medium.com/neo4j/getting-certificates-for-neo4j-with-letsencrypt-a8d05c415bbd) explains how to set up neo4j with LetsEncrypt which natively produces certificates in the correct format.

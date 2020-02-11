@@ -30,6 +30,8 @@ spec:
             secretKeyRef: 
               name: neo4j-account-secret
               key: auth
+        - name: NEO4J_dbms_connectors_default__advertised__address
+          value: __Neo4jCustomHostname__
         ports:
         - containerPort: 7474
         resources:

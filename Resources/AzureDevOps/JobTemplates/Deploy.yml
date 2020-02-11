@@ -2,8 +2,10 @@ parameters:
   ArmTemplateRoot: '$(Pipeline.Workspace)/Dfc.ServiceTaxonomy.Database.Resources.ArmTemplates'
   AksResourceGroup: ''
   AzureSubscriptionEndpoint: ''
+  CertificateSecretName: ''
   Environment: ''
   EnvironmentTag: ''
+  KeyVaultName: ''
   KubernetesCluster: ''
   Neo4jPassword: ''
   ParentBusinessTag: ''
@@ -11,6 +13,7 @@ parameters:
   ServiceOfferingTag: ''
   StaxSharedStorageAccountKey: ''
   StaxSharedStorageAccountName: ''
+  StaxSharedStorageAccountResourceGroup: ''
 
 jobs:
 - deployment: DeployTo_${{ parameters.Environment }}
@@ -34,6 +37,22 @@ jobs:
           inputs:
             SourcePath: $(Pipeline.Workspace)/NCS.ServiceTaxonomy.EscoDb.Manifest
             TargetFileNames: neo4jescodb.yaml
+        # convert and copy certificate to container
+        - task: AzurePowerShell@4
+          displayName: 'Azure PowerShell script: Set-CertficatesDirectoriesInFileShare'
+          azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
+          scriptPath: $(Pipeline.Workspace)/NCS.ServiceTaxonomy.EscoDb.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
+          scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }}'
+          azurePowerShellVersion: 'latestVersion'
+        ##TO DO: repoint this at the master branch resource
+        - checkout: dfc-devops-test
+          path: 's/dfc-devops/'
+        - task: AzurePowerShell@4
+          displayName: 'Azure PowerShell script: Export-KeyVaultCertToPemFiles'
+          azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
+          scriptPath: $(Build.SourcesDirectory)/dfc-devops/PSScripts/Export-KeyVaultCertToPemFiles.ps1
+          scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -KeyVaultName ${{ parameters.KeyVaultName }} -OutputDirectory "https" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }}'
+          azurePowerShellVersion: 'latestVersion'
         # create storage secret
         - task: Kubernetes@1
           displayName: kubectl create storage secret

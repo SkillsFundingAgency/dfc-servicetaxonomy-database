@@ -10,6 +10,12 @@ resources:
     name: SkillsFundingAgency/dfc-devops
     ref: refs/tags/v1.7.3
     endpoint: 'GitHub (ESFA)'
+  ##TO DO: remove this after merging script back to master
+  - repository: dfc-devops-test
+    type: github
+    name: SkillsFundingAgency/dfc-devops
+    ref: refs/heads/NCSD-2759-ConvertCertToPem
+    endpoint: 'GitHub (ESFA)'
 
 trigger: 
   branches:
@@ -61,8 +67,10 @@ stages:
     parameters:
       AksResourceGroup: $(sharedResourceGroup)
       AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      CertificateSecretName: $(DatabaseCertificateSecretName)
       Environment: DEV_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
+      KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)
       ParentBusinessTag: $(ParentBusiness)
@@ -70,6 +78,7 @@ stages:
       ServiceOfferingTag: $(ServiceOffering)
       StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 - stage: DeployToSit
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -85,8 +94,10 @@ stages:
     parameters:
       AksResourceGroup: $(sharedResourceGroup)
       AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      CertificateSecretName: $(DatabaseCertificateSecretName)
       Environment: SIT_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
+      KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)
       ParentBusinessTag: $(ParentBusiness)
@@ -94,5 +105,6 @@ stages:
       ServiceOfferingTag: $(ServiceOffering)
       StaxSharedStorageAccountKey: $(dfcsitstaxsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 

@@ -13,10 +13,10 @@ ENV NEO4J_dbms_memory_pagecache_size=5600M
 ENV NEO4J_dbms_connectors_default__listen__address=0.0.0.0
 ENV NEO4J_dbms_connectors_default__advertised__address=dev.servicetaxonomy.nationalcareersservice.org.uk
 ENV NEO4J_dbms_connector_https_enabled=true
-ENV NEO4J_dbms_ssl_policy_https_enabled=false
+#ENV NEO4J_dbms_ssl_policy_https_enabled=true #this setting is not required until v4.0
 ENV NEO4J_dbms_ssl_policy_https_base__directory=/var/certificates/https
-ENV NEO4J_dbms_ssl_policy_https_public__certificate=/var/certificates/https/kv-cer-manipulated-export.pem
-ENV NEO4J_dbms_ssl_policy_https_private__key=/var/certificates/https/openssl-conv-client.pem
+ENV NEO4J_dbms_ssl_policy_https_public__certificate=/var/certificates/https/fullchain.pem
+ENV NEO4J_dbms_ssl_policy_https_private__key=/var/certificates/https/privkey.pem
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
