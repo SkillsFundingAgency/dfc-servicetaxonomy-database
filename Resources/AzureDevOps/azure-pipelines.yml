@@ -52,6 +52,7 @@ stages:
       AppImageName: $(AppImageName)
       ContainerRegistryAdminUser: $(ContainerRegistryAdminUser)
       ContainerRegistryPassword: $(ContainerRegistryPassword)
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
 
 - stage: DeployToDev
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -76,6 +77,7 @@ stages:
       ParentBusinessTag: $(ParentBusiness)
       ResourceGroup: $(ResourceGroup)
       ServiceOfferingTag: $(ServiceOffering)
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
       StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
@@ -103,6 +105,7 @@ stages:
       ParentBusinessTag: $(ParentBusiness)
       ResourceGroup: $(ResourceGroup)
       ServiceOfferingTag: $(ServiceOffering)
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
       StaxSharedStorageAccountKey: $(dfcsitstaxsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)

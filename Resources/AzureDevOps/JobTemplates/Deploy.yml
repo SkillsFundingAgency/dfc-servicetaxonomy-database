@@ -11,6 +11,7 @@ parameters:
   ParentBusinessTag: ''
   ResourceGroup: ''
   ServiceOfferingTag: ''
+  SolutionBaseName: ''
   StaxSharedStorageAccountKey: ''
   StaxSharedStorageAccountName: ''
   StaxSharedStorageAccountResourceGroup: ''
@@ -35,14 +36,14 @@ jobs:
         - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
           displayName: 'Tokenization: Transform file neo4jescodb.yaml'
           inputs:
-            SourcePath: $(Pipeline.Workspace)/NCS.ServiceTaxonomy.EscoDb.Manifest
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.Manifest
             TargetFileNames: neo4jescodb.yaml
         # convert and copy certificate to container
         - task: AzurePowerShell@4
           displayName: 'Azure PowerShell script: Set-CertficatesDirectoriesInFileShare'
           inputs:
             azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Pipeline.Workspace)/NCS.ServiceTaxonomy.EscoDb.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
+            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
             scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }}'
             azurePowerShellVersion: 'latestVersion'
         ##TO DO: repoint this at the master branch resource
@@ -92,4 +93,4 @@ jobs:
             useClusterAdmin: true
             namespace: 'default'
             command: 'apply'
-            arguments: '--filename=$(Pipeline.Workspace)/NCS.ServiceTaxonomy.EscoDb.Manifest/neo4jescodb.yaml'
+            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.Manifest/neo4jescodb.yaml'
