@@ -53,7 +53,7 @@ jobs:
           displayName: 'Azure PowerShell script: Export-KeyVaultCertToPemFiles'
           inputs:
             azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Build.SourcesDirectory)/dfc-devops/PSScripts/Export-KeyVaultCertToPemFiles.ps1
+            scriptPath: $(Build.SourcesDirectory)/dfc-devops/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
             scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -KeyVaultName ${{ parameters.KeyVaultName }} -OutputDirectory "https" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
         # create storage secret
