@@ -36,9 +36,10 @@ function Set-AzStorageDirectory {
         [String]$ShareName
     )
 
-    if (!(Get-AzStorageFile -ShareName $ShareName -Path $Path -Context $Context)) {
+    if (!(Get-AzStorageFile -ShareName $ShareName -Path $Path -Context $Context -ErrorAction SilentlyContinue)) {
 
-        New-AzStorageDirectory -ShareName $ShareName -Path $Path
+        Write-Verbose "Creating directory $Path in file share $ShareName"
+        New-AzStorageDirectory -ShareName $ShareName -Path $Path -Context $Context
         
     }
 
