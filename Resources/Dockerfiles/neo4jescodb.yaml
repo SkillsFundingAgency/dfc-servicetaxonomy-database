@@ -34,6 +34,8 @@ spec:
           value: __Neo4jCustomHostname__
         ports:
         - containerPort: 7474
+        - containerPort: 7473
+        - containerPort: 7687
         resources:
           requests:
             cpu: 1500m
@@ -72,6 +74,10 @@ spec:
     protocol: TCP
     port: 7474
     targetPort: 7474
+  - name: https
+    protocol: TCP
+    port: 7473
+    targetPort: 7473
   - name: query 
     protocol: TCP
     port: 7687
