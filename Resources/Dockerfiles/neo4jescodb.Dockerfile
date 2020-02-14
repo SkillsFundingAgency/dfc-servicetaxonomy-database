@@ -19,7 +19,7 @@ ENV NEO4J_dbms_ssl_policy_https_public__certificate=/var/certificates/https/full
 ENV NEO4J_dbms_ssl_policy_https_private__key=/var/certificates/https/privkey.pem
 ENV NEO4J_dbms_ssl_policy_https_trusted__dir=/var/certificates/https/trusted
 ENV NEO4J_dbms_ssl_policy_https_revoked__dir=/var/certificates/https/revoked
-ENV NEO4J_dbms_ssl_policy_https_client__auth=false
+ENV NEO4J_dbms_ssl_policy_https_client__auth=NONE
 ENV NEO4J_https_ssl__policy=https
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
