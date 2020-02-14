@@ -18,6 +18,7 @@ ENV NEO4J_dbms_ssl_policy_https_base__directory=/var/certificates/https
 ENV NEO4J_dbms_ssl_policy_https_public__certificate=/var/certificates/https/fullchain.pem
 ENV NEO4J_dbms_ssl_policy_https_private__key=/var/certificates/https/privkey.pem
 ENV NEO4J_dbms_ssl_policy_https_trusted__dir=/var/certificates/https/trusted
+ENV NEO4J_dbms_ssl_policy_https_revoked__dir=/var/certificates/https/revoked
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
