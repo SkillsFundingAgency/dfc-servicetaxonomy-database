@@ -30,8 +30,12 @@ spec:
             secretKeyRef: 
               name: neo4j-account-secret
               key: auth
+        - name: NEO4J_dbms_connectors_default__advertised__address
+          value: __Neo4jCustomHostname__
         ports:
         - containerPort: 7474
+        - containerPort: 7473
+        - containerPort: 7687
         resources:
           requests:
             cpu: 1500m
@@ -40,11 +44,18 @@ spec:
             cpu: 1500m
             memory: "16G"
         volumeMounts:
+        - name: certificates
+          mountPath: /var/certificates
         - name: esco-rdf-files
           mountPath: /var/lib/neo4j/import
         securityContext: 
           allowPrivilegeEscalation: false 
       volumes:
+      - name: certificates
+        azureFile:
+          secretName: staxsharedstr-account-secret
+          shareName: certificates
+          readOnly: true
       - name: esco-rdf-files
         azureFile:
           secretName: staxsharedstr-account-secret
@@ -65,6 +76,10 @@ spec:
     protocol: TCP
     port: 7474
     targetPort: 7474
+  - name: https
+    protocol: TCP
+    port: 7473
+    targetPort: 7473
   - name: query 
     protocol: TCP
     port: 7687

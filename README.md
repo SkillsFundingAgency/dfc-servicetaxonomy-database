@@ -39,7 +39,7 @@ Browse to http://localhost:7474/browser/ and logon with username: neo4j and pass
 
 Note: if you have previously ran a neo4j docker container, mounted the data folder as an external volume and are reusing that volume then you may need to delete the contents of the mounted folder or mount to a different folder
 
-From the web interface of neo4j run match (n:ns1__Occupation) return n to confirm that the rdf file has loaded (the import process takes about 5 minutes)
+From the web interface of neo4j run `match (n:esco__Occupation) return n` to confirm that the rdf file has loaded (the import process takes about 5 minutes)
 
 ## How to use - Kubernetes
 
@@ -80,3 +80,11 @@ metadata:
 ```
 
 In a PS prompt copy and paste one of the \<an-encoded-string> into ```[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("<an-encoded-string>"))```
+
+## Notes on SSL configuration
+
+This [document](https://neo4j.com/docs/operations-manual/3.5/security/ssl-framework/) explains the settings needed to set up SSL\TLS connections in version 3.5, changes may be required when upgrading to version 4 of neo4j as additional settings have been implemented.
+
+As well as configuring SSL policy there are also seperate settings to enable the HTTPS connector.  These do not need to be configured in the current version of the neo4j container, it works out of the box but for reference the settings for version 3.5 are found [here](https://neo4j.com/docs/operations-manual/3.5/configuration/connectors/)
+
+The neo4j container runs on Linux so the certificate files need to be in the pem format.  Several scripts execute as part of the pipeline to convert the certificate stored in Azure KeyVault to the pem format that neo4j can consume.  As a useful reference this [article](https://medium.com/neo4j/getting-certificates-for-neo4j-with-letsencrypt-a8d05c415bbd) explains how to set up neo4j with LetsEncrypt which natively produces certificates in the correct format.  The article states that the fullchain.pem file needs to be copied to the certificate base directory, in this implementation that caused errors related to the certificate chain when browsing to the web frontend.  Instead a cert.pem file was created that just contains the client certificate without any of the chain.

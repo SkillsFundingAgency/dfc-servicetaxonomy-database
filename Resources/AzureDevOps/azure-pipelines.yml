@@ -8,7 +8,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.7.3
+    ref: refs/tags/v1.10.4
     endpoint: 'GitHub (ESFA)'
 
 trigger: 
@@ -46,6 +46,7 @@ stages:
       AppImageName: $(AppImageName)
       ContainerRegistryAdminUser: $(ContainerRegistryAdminUser)
       ContainerRegistryPassword: $(ContainerRegistryPassword)
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
 
 - stage: DeployToDev
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -61,15 +62,19 @@ stages:
     parameters:
       AksResourceGroup: $(sharedResourceGroup)
       AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      CertificateSecretName: $(DatabaseCertificateSecretName)
       Environment: DEV_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
+      KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)
       ParentBusinessTag: $(ParentBusiness)
       ResourceGroup: $(ResourceGroup)
       ServiceOfferingTag: $(ServiceOffering)
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
       StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 - stage: DeployToSit
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -85,14 +90,18 @@ stages:
     parameters:
       AksResourceGroup: $(sharedResourceGroup)
       AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      CertificateSecretName: $(DatabaseCertificateSecretName)
       Environment: SIT_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
+      KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)
       ParentBusinessTag: $(ParentBusiness)
       ResourceGroup: $(ResourceGroup)
       ServiceOfferingTag: $(ServiceOffering)
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
       StaxSharedStorageAccountKey: $(dfcsitstaxsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 
