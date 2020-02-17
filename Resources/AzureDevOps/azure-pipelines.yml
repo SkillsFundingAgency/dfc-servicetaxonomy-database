@@ -8,13 +8,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.7.3
-    endpoint: 'GitHub (ESFA)'
-  ##TO DO: remove this after merging script back to master
-  - repository: dfc-devops-test
-    type: github
-    name: SkillsFundingAgency/dfc-devops
-    ref: refs/heads/NCSD-2759-ConvertCertToPem
+    ref: refs/tags/v1.10.4
     endpoint: 'GitHub (ESFA)'
 
 trigger: 

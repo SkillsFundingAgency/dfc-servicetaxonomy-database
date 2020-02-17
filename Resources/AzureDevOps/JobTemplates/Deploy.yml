@@ -46,8 +46,7 @@ jobs:
             scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
             scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
-        ##TO DO: repoint this at the master branch resource
-        - checkout: dfc-devops-test
+        - checkout: dfc-devops
           path: 's/dfc-devops/'
         - task: AzurePowerShell@4
           displayName: 'Azure PowerShell script: Export-KeyVaultCertToPemFiles'
