@@ -64,6 +64,6 @@ $AccountKey = ($StorageAccountKeys | Where-Object { $_.keyName -eq "key1" }).Val
 Write-Verbose "Creating storage context"
 $Context = New-AzStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $AccountKey
 
-Set-AzStorageDirectory -ShareName $ShareName -Path "https" -Context $Context
-Set-AzStorageDirectory -ShareName $ShareName -Path "https\trusted" -Context $Context
-Set-AzStorageDirectory -ShareName $ShareName -Path "https\revoked" -Context $Context
+Set-AzStorageDirectory -ShareName $ShareName -Path "default" -Context $Context
+Set-AzStorageDirectory -ShareName $ShareName -Path "default\trusted" -Context $Context
+Set-AzStorageDirectory -ShareName $ShareName -Path "default\revoked" -Context $Context
