@@ -53,8 +53,7 @@ spec:
         azureFile:
           secretName: staxsharedstr-account-secret
           shareName: certificates
-          ##TO DO: revert to true
-          readOnly: false
+          readOnly: true
       - name: esco-rdf-files
         azureFile:
           secretName: staxsharedstr-account-secret
