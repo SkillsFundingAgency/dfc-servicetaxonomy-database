@@ -39,7 +39,7 @@ Browse to http://localhost:7474/browser/ and logon with username: neo4j and pass
 
 Note: if you have previously ran a neo4j docker container, mounted the data folder as an external volume and are reusing that volume then you may need to delete the contents of the mounted folder or mount to a different folder
 
-From the web interface of neo4j run match (n:ns1__Occupation) return n to confirm that the rdf file has loaded (the import process takes about 5 minutes)
+From the web interface of neo4j run `match (n:esco__Occupation) return n` to confirm that the rdf file has loaded (the import process takes about 5 minutes)
 
 ## How to use - Kubernetes
 
