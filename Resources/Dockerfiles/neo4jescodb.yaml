@@ -46,6 +46,8 @@ spec:
         volumeMounts:
         - name: certificates
           mountPath: /var/certificates
+        - name: data
+          mountPath: /data
         - name: esco-rdf-files
           mountPath: /var/lib/neo4j/import
         securityContext: 
@@ -56,6 +58,11 @@ spec:
           secretName: staxsharedstr-account-secret
           shareName: certificates
           readOnly: true
+      - name: data
+        azureFile:
+          secretName: staxsharedstr-account-secret
+          shareName: data
+          readOnly: false
       - name: esco-rdf-files
         azureFile:
           secretName: staxsharedstr-account-secret

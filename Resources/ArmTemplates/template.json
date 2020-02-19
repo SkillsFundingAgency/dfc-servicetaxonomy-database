@@ -19,6 +19,7 @@
         "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/dfc-devops/master/ArmTemplates/",
         "fileShares": [
             "certificates",
+            "data",
             "esco-rdf-files"
         ],
         "publicIpAddressName": "[concat(variables('resourcePrefix'), '-ip')]",
