@@ -32,6 +32,24 @@ spec:
               key: auth
         - name: NEO4J_dbms_connectors_default__advertised__address
           value: __Neo4jCustomHostname__
+        - name: NEO4J_dbms_connectors_default__listen__address
+          value: 0.0.0.0
+        - name: NEO4J_dbms_ssl_policy_default_base__directory
+          value: /var/certificates/default
+        - name: NEO4J_dbms_ssl_policy_default_public__certificate
+          value: /var/certificates/default/cert.pem
+        - name: NEO4J_dbms_ssl_policy_default_private__key
+          value: /var/certificates/default/privkey.pem
+        - name: NEO4J_dbms_ssl_policy_default_trusted__dir
+          value: /var/certificates/default/trusted
+        - name: NEO4J_dbms_ssl_policy_default_revoked__dir
+          value: /var/certificates/default/revoked
+        - name: NEO4J_dbms_ssl_policy_default_client__auth
+          value: NONE
+        - name: NEO4J_https_ssl__policy
+          value: default
+        - name: NEO4J_bolt_ssl__policy
+          value: default
         ports:
         - containerPort: 7474
         - containerPort: 7473

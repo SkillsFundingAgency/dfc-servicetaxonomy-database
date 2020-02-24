@@ -32,7 +32,7 @@ New-Item $HOME\neo4j\import -ItemType Directory
 Download and copy the esco rdf file to $HOME\neo4j\import
 
 ```
-docker run -p7474:7474 -p7687:7687 -v $HOME\neo4j\import:/var/lib/neo4j/import ncs.servicetaxonomy.escodb
+docker run -p7474:7474 -p7687:7687 -e NEO4J_dbms_memory_pagecache_size=500M -v $HOME\neo4j\import:/var/lib/neo4j/import ncs.servicetaxonomy.escodb
 ```
 
 Browse to http://localhost:7474/browser/ and logon with username: neo4j and password: escodb
