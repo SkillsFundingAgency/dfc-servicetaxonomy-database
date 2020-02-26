@@ -1,0 +1,4 @@
+MATCH(n:esco__Occupation)
+WHERE EXISTS(n.skos__hiddenLabel)
+SET n.skos__altLabel = n.skos__hiddenLabel, n.skos__hiddenLabel = null
+RETURN n
