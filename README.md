@@ -37,6 +37,8 @@ docker run -p7474:7474 -p7687:7687 -e NEO4J_dbms_memory_pagecache_size=500M -v $
 
 Browse to http://localhost:7474/browser/ and logon with username: neo4j and password: escodb
 
+To persist any changes you make to the imported data add `-v $HOME\neo4j\data:/data`.  This may rapidly consume quite a lot of space on your hard drive.
+
 Note: if you have previously ran a neo4j docker container, mounted the data folder as an external volume and are reusing that volume then you may need to delete the contents of the mounted folder or mount to a different folder
 
 From the web interface of neo4j run `match (n:esco__Occupation) return n` to confirm that the rdf file has loaded (the import process takes about 5 minutes)
