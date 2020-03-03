@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: neo4j-data-disk
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: managed-premium
+  resources:
+    requests:
+      storage: 5Gi
+---
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
@@ -64,6 +76,8 @@ spec:
         volumeMounts:
         - name: certificates
           mountPath: /var/certificates
+        - name: data
+          mountPath: /data
         - name: esco-rdf-files
           mountPath: /var/lib/neo4j/import
         securityContext: 
@@ -74,6 +88,9 @@ spec:
           secretName: staxsharedstr-account-secret
           shareName: certificates
           readOnly: true
+      - name: data
+        persistentVolumeClaim:
+          claimName: neo4j-data-disk
       - name: esco-rdf-files
         azureFile:
           secretName: staxsharedstr-account-secret
