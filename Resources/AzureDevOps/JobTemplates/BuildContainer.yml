@@ -1,7 +1,10 @@
 parameters:
-  AppImageName: ''
   ContainerRegistryAdminUser: ''
   ContainerRegistryPassword: ''
+  DockerfileContext: ''
+  DockerfileName: ''
+  ImageBaseName: ''
+  ImageTag: ''
   SolutionBaseName: ''
 
 jobs:
@@ -9,20 +12,14 @@ jobs:
   displayName: Build and publish NCS.ServiceTaxonomy.EscoDb container
   pool: 'Hosted Ubuntu 1604'
   steps:
-  - script: |
-      cd ./Resources/Dockerfiles
-      AppImageName=${{ parameters.AppImageName }}
-      # Lowercase the AppImage name to conform to Docker Image naming constraints
-      AppImageName=${AppImageName,,}
-      docker build -t ${{ parameters.ContainerRegistryAdminUser }}.azurecr.io/$AppImageName --file neo4jescodb.Dockerfile .
-    displayName: 'Build ${{ parameters.SolutionBaseName }} container'
-  - script: |
-      docker login -u ${{ parameters.ContainerRegistryAdminUser }} -p ${{ parameters.ContainerRegistryPassword }} ${{ parameters.ContainerRegistryAdminUser }}.azurecr.io
-      AppImageName=${{ parameters.AppImageName }}
-      # Lowercase the AppImage name to conform to Docker Image naming constraints
-      AppImageName=${AppImageName,,}
-      docker push ${{ parameters.ContainerRegistryAdminUser }}.azurecr.io/$AppImageName
-    displayName: 'Publish ${{ parameters.SolutionBaseName }} container'
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish.yml
+    parameters:
+      ContainerRegistryAdminUser: ${{ parameters.ContainerRegistryAdminUser }}
+      ContainerRegistryPassword: ${{ parameters.ContainerRegistryPassword }}
+      DockerfileContext: ${{ parameters.DockerfileContext }}
+      DockerfileName: ${{ parameters.DockerfileName }}
+      ImageBaseName: ${{ parameters.ImageBaseName }}
+      ImageTag: ${{ parameters.ImageTag }}
   - task: CopyFiles@2
     displayName: 'Copy Manifest File to: $(Build.ArtifactStagingDirectory)\Manifest'
     inputs:

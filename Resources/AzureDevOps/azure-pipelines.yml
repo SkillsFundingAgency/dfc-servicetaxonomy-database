@@ -8,7 +8,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.10.4
+    ref: refs/heads/NCSD-3001-SplitDockerBuildStepTemplates
     endpoint: 'GitHub (ESFA)'
 
 trigger: 
@@ -33,9 +33,7 @@ stages:
   variables:
     - group: KeyVault - dfc-dev-shared-kv
     - group: dfc-shared-dev
-    #TO DO: decide how to tag and publish image builds from branches
-    - name: AppImageName
-      value: NCS.ServiceTaxonomy.EscoDb:$(Build.BuildNumber)
+
   jobs:
   - template: JobTemplates/BuildResources.yml
     parameters:
@@ -43,9 +41,13 @@ stages:
       SolutionBaseName: ${{ variables.SolutionBaseName }}
   - template: JobTemplates/BuildContainer.yml
     parameters:
-      AppImageName: $(AppImageName)
       ContainerRegistryAdminUser: $(ContainerRegistryAdminUser)
       ContainerRegistryPassword: $(ContainerRegistryPassword)
+      DockerfileContext: Resources/Dockerfiles
+      DockerfileName: neo4jescodb.Dockerfile
+      ImageBaseName: NCS.ServiceTaxonomy.EscoDb
+      #TO DO: decide how to tag and publish image builds from branches
+      ImageTag: $(Build.BuildNumber)
       SolutionBaseName: ${{ variables.SolutionBaseName }}
 
 - stage: DeployToDev
