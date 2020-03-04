@@ -32,7 +32,7 @@ stages:
 
 - stage: Build
   variables:
-    - group: KeyVault - dfc-dev-shared-kv
+    - group: dfc-shared-all
     - group: dfc-shared-dev
 
   jobs:
