@@ -104,4 +104,32 @@ stages:
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
+- stage: DeployToPP
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  variables:
+    - group: dfc-shared-all
+    - group: dfc-stax-shared-all
+    - group: KeyVault - dfc-pp-shared-kv
+    - group: dfc-shared-pp
+    - group: dfc-stax-shared-pp
+    - template: VariableTemplates\PPEnvironmentVariables.yml
+  jobs:
+  - template: JobTemplates/Deploy.yml
+    parameters:
+      AksResourceGroup: $(sharedResourceGroup)
+      AzureSubscriptionEndpoint: 'SFA-DIG-PreProd (931bc9f6-359c-4f65-a753-1ee191a1fd6c)'
+      CertificateSecretName: $(DatabaseCertificateSecretName)
+      Environment: PP_SERVICETAXONOMY
+      EnvironmentTag: $(EnvironmentTag)
+      KeyVaultName: $(sharedKeyVaultName)
+      KubernetesCluster: $(sharedAksCluster)
+      Neo4jPassword: $(Neo4jPassword)
+      ParentBusinessTag: $(ParentBusiness)
+      ResourceGroup: $(ResourceGroup)
+      ServiceOfferingTag: $(ServiceOffering)
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
+      StaxSharedStorageAccountKey: $(dfcppstaxsharedstr)
+      StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
+
 
