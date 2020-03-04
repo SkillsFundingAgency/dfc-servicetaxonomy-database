@@ -8,7 +8,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/heads/NCSD-3001-SplitDockerBuildStepTemplates
+    ref: refs/heads/NCSD-3001-FixDockerBuildStepTemplate
     endpoint: 'GitHub (ESFA)'
 
 trigger: 
