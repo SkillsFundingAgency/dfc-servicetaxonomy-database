@@ -5,6 +5,7 @@ parameters:
   CertificateSecretName: ''
   Environment: ''
   EnvironmentTag: ''
+  ImageBaseName: ''
   KeyVaultName: ''
   KubernetesCluster: ''
   Neo4jPassword: ''
@@ -92,4 +93,4 @@ jobs:
             useClusterAdmin: true
             namespace: 'default'
             command: 'apply'
-            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.Manifest/neo4jescodb.yaml'
+            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb.yaml'

@@ -1,5 +1,6 @@
 variables:
   ArmTemplateRoot: '$(Build.SourcesDirectory)\Resources\ArmTemplates'
+  ImageBaseName: NCS.ServiceTaxonomy.EscoDb
   SolutionBaseName: DFC.ServiceTaxonomy.Database
 
 resources:
@@ -48,10 +49,9 @@ stages:
       PrdContainerRegistryPassword: $(PrdContainerRegistryPassword)
       DockerfileContext: Resources/Dockerfiles
       DockerfileName: neo4jescodb.Dockerfile
-      ImageBaseName: NCS.ServiceTaxonomy.EscoDb
+      ImageBaseName: ${{ variables.ImageBaseName }}
       #TO DO: decide how to tag and publish image builds from branches
       ImageTag: $(Build.BuildNumber)
-      SolutionBaseName: ${{ variables.SolutionBaseName }}
 
 - stage: DeployToDev
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -70,6 +70,7 @@ stages:
       CertificateSecretName: $(DatabaseCertificateSecretName)
       Environment: DEV_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
+      ImageBaseName: ${{ variables.ImageBaseName }}
       KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)
@@ -98,6 +99,7 @@ stages:
       CertificateSecretName: $(DatabaseCertificateSecretName)
       Environment: SIT_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
+      ImageBaseName: ${{ variables.ImageBaseName }}
       KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)
@@ -126,6 +128,7 @@ stages:
       CertificateSecretName: $(DatabaseCertificateSecretName)
       Environment: PP_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
+      ImageBaseName: ${{ variables.ImageBaseName }}
       KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)

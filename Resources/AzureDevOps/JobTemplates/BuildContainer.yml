@@ -7,7 +7,6 @@ parameters:
   DockerfileName: ''
   ImageBaseName: ''
   ImageTag: ''
-  SolutionBaseName: ''
 
 jobs:
 - job: BuildNCSServiceTaxonomyEscoDbContainer
