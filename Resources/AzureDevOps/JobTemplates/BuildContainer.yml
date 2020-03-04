@@ -1,6 +1,8 @@
 parameters:
-  ContainerRegistryAdminUser: ''
-  ContainerRegistryPassword: ''
+  DevSitContainerRegistryAdminUser: ''
+  DevSitContainerRegistryPassword: ''
+  PrdContainerRegistryAdminUser: ''
+  PrdContainerRegistryPassword: ''
   DockerfileContext: ''
   DockerfileName: ''
   ImageBaseName: ''
@@ -14,10 +16,18 @@ jobs:
   steps:
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
-      ContainerRegistryAdminUser: ${{ parameters.ContainerRegistryAdminUser }}
-      ContainerRegistryPassword: ${{ parameters.ContainerRegistryPassword }}
+      ContainerRegistryAdminUser: ${{ parameters.DevSitContainerRegistryAdminUser }}
+      ContainerRegistryPassword: ${{ parameters.DevSitContainerRegistryPassword }}
       DockerfileContext: ${{ parameters.DockerfileContext }}
       DockerfileName: ${{ parameters.DockerfileName }}
       ImageBaseName: ${{ parameters.ImageBaseName }}
       ImageTag: ${{ parameters.ImageTag }}
       ManifestFilePath: Resources/Dockerfiles/neo4jescodb.yaml
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
+    parameters:
+      ContainerRegistryAdminUser: ${{ parameters.PrdContainerRegistryAdminUser }}
+      ContainerRegistryPassword: ${{ parameters.PrdContainerRegistryPassword }}
+      DockerfileContext: ${{ parameters.DockerfileContext }}
+      DockerfileName: ${{ parameters.DockerfileName }}
+      ImageBaseName: ${{ parameters.ImageBaseName }}
+      ImageTag: ${{ parameters.ImageTag }}

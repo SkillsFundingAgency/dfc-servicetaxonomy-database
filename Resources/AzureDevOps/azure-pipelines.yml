@@ -8,6 +8,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
+    ##TO DO: revert this to tag
     ref: refs/heads/NCSD-3001-FixDockerBuildStepTemplate
     endpoint: 'GitHub (ESFA)'
 
@@ -41,8 +42,10 @@ stages:
       SolutionBaseName: ${{ variables.SolutionBaseName }}
   - template: JobTemplates/BuildContainer.yml
     parameters:
-      ContainerRegistryAdminUser: $(ContainerRegistryAdminUser)
-      ContainerRegistryPassword: $(ContainerRegistryPassword)
+      DevSitContainerRegistryAdminUser: $(DevContainerRegistryAdminUser)
+      DevSitContainerRegistryPassword: $(DevContainerRegistryPassword)
+      PrdContainerRegistryAdminUser: $(PrdContainerRegistryAdminUser)
+      PrdContainerRegistryPassword: $(PrdContainerRegistryPassword)
       DockerfileContext: Resources/Dockerfiles
       DockerfileName: neo4jescodb.Dockerfile
       ImageBaseName: NCS.ServiceTaxonomy.EscoDb
