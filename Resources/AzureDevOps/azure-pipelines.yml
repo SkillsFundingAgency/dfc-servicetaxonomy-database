@@ -9,8 +9,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ##TO DO: revert this to tag
-    ref: refs/heads/NCSD-3001-FixDockerBuildStepTemplate
+    ref: refs/tags/v1.11.0
     endpoint: 'GitHub (ESFA)'
 
 trigger: 
