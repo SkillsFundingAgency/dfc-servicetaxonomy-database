@@ -8,4 +8,4 @@ variables:
 - name: StaxDbPublicIpAddressResourceGroup
   value: $(AksNodeResourceGroupName)
 - name: InternalLoadBalancerAnnotation
-  value: service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  value: 'service.beta.kubernetes.io/azure-load-balancer-internal: "true"'
