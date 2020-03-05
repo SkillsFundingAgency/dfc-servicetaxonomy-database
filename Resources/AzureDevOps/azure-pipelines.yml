@@ -1,5 +1,6 @@
 variables:
   ArmTemplateRoot: '$(Build.SourcesDirectory)\Resources\ArmTemplates'
+  ImageBaseName: NCS.ServiceTaxonomy.EscoDb
   SolutionBaseName: DFC.ServiceTaxonomy.Database
 
 resources:
@@ -8,7 +9,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.10.4
+    ref: refs/tags/v1.11.0
     endpoint: 'GitHub (ESFA)'
 
 trigger: 
@@ -31,11 +32,9 @@ stages:
 
 - stage: Build
   variables:
-    - group: KeyVault - dfc-dev-shared-kv
+    - group: dfc-shared-all
     - group: dfc-shared-dev
-    #TO DO: decide how to tag and publish image builds from branches
-    - name: AppImageName
-      value: NCS.ServiceTaxonomy.EscoDb:$(Build.BuildNumber)
+
   jobs:
   - template: JobTemplates/BuildResources.yml
     parameters:
@@ -43,10 +42,15 @@ stages:
       SolutionBaseName: ${{ variables.SolutionBaseName }}
   - template: JobTemplates/BuildContainer.yml
     parameters:
-      AppImageName: $(AppImageName)
-      ContainerRegistryAdminUser: $(ContainerRegistryAdminUser)
-      ContainerRegistryPassword: $(ContainerRegistryPassword)
-      SolutionBaseName: ${{ variables.SolutionBaseName }}
+      DevSitContainerRegistryAdminUser: $(DevContainerRegistryAdminUser)
+      DevSitContainerRegistryPassword: $(DevContainerRegistryPassword)
+      PrdContainerRegistryAdminUser: $(PrdContainerRegistryAdminUser)
+      PrdContainerRegistryPassword: $(PrdContainerRegistryPassword)
+      DockerfileContext: Resources/Dockerfiles
+      DockerfileName: neo4jescodb.Dockerfile
+      ImageBaseName: ${{ variables.ImageBaseName }}
+      #TO DO: decide how to tag and publish image builds from branches
+      ImageTag: $(Build.BuildNumber)
 
 - stage: DeployToDev
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -65,6 +69,7 @@ stages:
       CertificateSecretName: $(DatabaseCertificateSecretName)
       Environment: DEV_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
+      ImageBaseName: ${{ variables.ImageBaseName }}
       KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)
@@ -93,6 +98,7 @@ stages:
       CertificateSecretName: $(DatabaseCertificateSecretName)
       Environment: SIT_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
+      ImageBaseName: ${{ variables.ImageBaseName }}
       KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)
@@ -101,6 +107,35 @@ stages:
       ServiceOfferingTag: $(ServiceOffering)
       SolutionBaseName: ${{ variables.SolutionBaseName }}
       StaxSharedStorageAccountKey: $(dfcsitstaxsharedstr)
+      StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
+
+- stage: DeployToPP
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  variables:
+    - group: dfc-shared-all
+    - group: dfc-stax-shared-all
+    - group: KeyVault - dfc-pp-shared-kv
+    - group: dfc-shared-pp
+    - group: dfc-stax-shared-pp
+    - template: VariableTemplates\PPEnvironmentVariables.yml
+  jobs:
+  - template: JobTemplates/Deploy.yml
+    parameters:
+      AksResourceGroup: $(sharedResourceGroup)
+      AzureSubscriptionEndpoint: 'SFA-DIG-PreProd (931bc9f6-359c-4f65-a753-1ee191a1fd6c)'
+      CertificateSecretName: $(DatabaseCertificateSecretName)
+      Environment: PP_SERVICETAXONOMY
+      EnvironmentTag: $(EnvironmentTag)
+      ImageBaseName: ${{ variables.ImageBaseName }}
+      KeyVaultName: $(sharedKeyVaultName)
+      KubernetesCluster: $(sharedAksCluster)
+      Neo4jPassword: $(Neo4jPassword)
+      ParentBusinessTag: $(ParentBusiness)
+      ResourceGroup: $(ResourceGroup)
+      ServiceOfferingTag: $(ServiceOffering)
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
+      StaxSharedStorageAccountKey: $(dfcppstaxsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 

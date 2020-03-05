@@ -5,6 +5,7 @@ parameters:
   CertificateSecretName: ''
   Environment: ''
   EnvironmentTag: ''
+  ImageBaseName: ''
   KeyVaultName: ''
   KubernetesCluster: ''
   Neo4jPassword: ''
@@ -33,11 +34,6 @@ jobs:
             ParentBusinessTag: ${{ parameters.ParentBusinessTag }}
             ResourceGroup: ${{ parameters.ResourceGroup }}
             ServiceOfferingTag: ${{ parameters.ServiceOfferingTag }}
-        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
-          displayName: 'Tokenization: Transform file neo4jescodb.yaml'
-          inputs:
-            SourcePath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.Manifest
-            TargetFileNames: neo4jescodb.yaml
         # convert and copy certificate to container
         - task: AzurePowerShell@4
           displayName: 'Azure PowerShell script: Set-CertficatesDirectoriesInFileShare'
@@ -82,6 +78,11 @@ jobs:
             secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }}
             secretName: neo4j-account-secret
         # deploy manifest
+        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
+          displayName: 'Tokenization: Transform file neo4jescodb.yaml'
+          inputs:
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }}
+            TargetFileNames: neo4jescodb.yaml
         - task: Kubernetes@1
           displayName: kubectl deploy manifest
           inputs:
@@ -92,4 +93,4 @@ jobs:
             useClusterAdmin: true
             namespace: 'default'
             command: 'apply'
-            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.Manifest/neo4jescodb.yaml'
+            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb.yaml'
