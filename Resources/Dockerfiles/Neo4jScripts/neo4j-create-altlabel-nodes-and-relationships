@@ -1,0 +1,20 @@
+﻿match (n:esco__Occupation) // where n.skos__prefLabel starts with '3D' 
+unwind n.skos__altLabel as altLabels
+create (al:ncs__OccupationAltLabel {ncs__altLabel: altLabels})
+create (n)-[:ncs__hasAltLabel]->(al)
+
+
+
+CALL db.index.fulltext.createNodeIndex("OccupationAltLabels",["ncs__OccupationAltLabel"],["ncs__altLabel"])
+
+
+call db.index.fulltext.queryNodes("OccupationAltLabels", "3D") yield node, score
+return node.ncs__altLabel, score
+
+
+
+call db.index.fulltext.queryNodes("OccupationAltLabels", "3D") yield node, score
+match (node)<-[:ncs__hasAltLabel]-(occ)
+return distinct node.ncs__altLabel, occ.skos__prefLabel, score
+
+call db.index.fulltext.drop("OccupationAltLabels")
