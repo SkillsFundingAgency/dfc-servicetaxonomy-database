@@ -12,9 +12,84 @@ call db.index.fulltext.queryNodes("OccupationAltLabels", "3D") yield node, score
 return node.ncs__altLabel, score
 
 
+// options
+// default standard analyser (doesn't stem)
+// whole work, '3D'
+// partial word match, '*rin*'                  <= To prevent extremely slow wildcard queries, a term should not start with the wildcard
+// full term match, '"printer technician"'
+// whole word: any 'printer technician'
+// partial word, any '*rin* *nic*'
+// partial word, all '*rin* AND *nic*'
+// or other combo
+// Fuzzy search: printer~                   <= Fuzzy search works by using mathematical formulae that calculate the similarity between two words
+// ^^ set term similarity...
+// printer~0.7
+
+
+
+
+// "english" analyser (does stem)
+// what does stemming do exactly?
+
 
 call db.index.fulltext.queryNodes("OccupationAltLabels", "3D") yield node, score
 match (node)<-[:ncs__hasAltLabel]-(occ)
 return distinct node.ncs__altLabel, occ.skos__prefLabel, score
 
 call db.index.fulltext.drop("OccupationAltLabels")
+
+
+
+
+or
+
+CALL db.index.fulltext.createNodeIndex("OccupationLabels",["esco__Occupation", "ncs__OccupationAltLabel"],["skos__prefLabel", "ncs__altLabel"], {analyser: "english"})
+
+// ^ boosts the score for match against that property. we'll want to boost pref label matches
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: 3D^3 ncs__altLabel: 3D") yield node, score
+match (node)<-[:ncs__hasAltLabel]-(occ)
+return distinct node.ncs__altLabel, occ.skos__prefLabel, score
+
+// why doesn't match in pref label give a better score???
+
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: checkout^2 ncs__altLabel: checkout") yield node, score
+match (node)<-[:ncs__hasAltLabel]-(occ)
+return distinct occ.skos__prefLabel, node.ncs__altLabel, score
+
+call db.index.fulltext.drop("OccupationLabels")
+
+// this works, but calls index twice
+// could have separate indexes
+// but how to call only once??
+
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: checkout^2 ncs__altLabel: checkout") yield node, score
+match (node:esco__Occupation)
+return node as occ
+union
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: checkout^2 ncs__altLabel: checkout") yield node, score
+match (node)<-[:ncs__hasAltLabel]-(occ)
+return occ
+
+// individual matches ok, but union returns way more...
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: checkout^2 ncs__altLabel: checkout") yield node, score
+optional match (node)<-[:ncs__hasAltLabel]-(occ)
+return occ
+union
+match (node:esco__Occupation)
+return node as occ
+
+//options
+// single index, multiple labels
+// separate index per label
+
+
+// approach options
+neo4j plugin that transparently and asynchronously replicates data from Neo4j to Elasticsearch
+https://github.com/graphaware/neo4j-to-elasticsearch
+
+use neo's build in free text search / lucene
+requires creating nodes for alt labels, but that seems the recommended option over using list properties anyway
+https://lucene.apache.org/core/2_9_4/queryparsersyntax.html
+
+https://www.youtube.com/watch?v=TFXoYQBHl4Q&list=PL9Hl4pk2FsvUbsmdPrqTRF_DWvUb4z5AK&index=24
+^^ says using fts for autocomplete currently a no go & should use elastic, but doesn't say why!! (is from graphaware who sell the elastic search plugin!)
