@@ -132,13 +132,12 @@ return occupations
 
 without subquery...
 
+with toLower('checkout') as lowerlabel
 
-with toLower('toxic') as lowerlabel
-
-call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: checkout^2 ncs__altLabel: checkout") yield node, score
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: "+lowerlabel+"^2 ncs__altLabel: "+ lowerlabel) yield node, score
 match (node:esco__Occupation)
 with collect(node) as prefocc, lowerlabel
-call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: checkout^2 ncs__altLabel: checkout") yield node, score
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: "+lowerlabel+"^2 ncs__altLabel: "+ lowerlabel) yield node, score
 match (node)<-[:ncs__hasAltLabel]-(altocc)
 with prefocc + collect(altocc) as combocc, lowerlabel
 unwind combocc as o
