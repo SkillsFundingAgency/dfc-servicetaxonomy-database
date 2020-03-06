@@ -125,3 +125,37 @@ with { occupations:collect(
 }
 )} as occupations 
 return occupations
+
+
+
+
+
+without subquery...
+
+
+with toLower('toxic') as lowerlabel
+
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: checkout^2 ncs__altLabel: checkout") yield node, score
+match (node:esco__Occupation)
+with collect(node) as prefocc, lowerlabel
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: checkout^2 ncs__altLabel: checkout") yield node, score
+match (node)<-[:ncs__hasAltLabel]-(altocc)
+with prefocc + collect(altocc) as combocc, lowerlabel
+unwind combocc as o
+with distinct o, lowerlabel
+
+
+with { occupations:collect(
+{
+  uri:o.uri,
+  occupation:o.skos__prefLabel,
+  alternativeLabels:o.skos__altLabel,
+  lastModified:o.dct__modified,
+  matches:
+  {
+    occupation:[preflab in o.skos__prefLabel where toLower(preflab) contains lowerlabel],
+    alternativeLabels:[altlab in o.skos__altLabel where toLower(altlab) contains lowerlabel]
+  }
+}
+)} as occupations 
+return occupations
