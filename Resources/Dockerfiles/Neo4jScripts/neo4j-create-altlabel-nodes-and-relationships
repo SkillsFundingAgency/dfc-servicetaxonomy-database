@@ -96,6 +96,7 @@ https://www.youtube.com/watch?v=TFXoYQBHl4Q&list=PL9Hl4pk2FsvUbsmdPrqTRF_DWvUb4z
 
 
 then plugging it into the existing query could look like this (except subquery is v4 only)
+ways around no subquery in v4 ... https://neo4j.com/developer/kb/post-union-processing/
 
 
 with toLower('toxic') as lowerlabel
