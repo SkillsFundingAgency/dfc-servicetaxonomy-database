@@ -93,3 +93,34 @@ https://lucene.apache.org/core/2_9_4/queryparsersyntax.html
 
 https://www.youtube.com/watch?v=TFXoYQBHl4Q&list=PL9Hl4pk2FsvUbsmdPrqTRF_DWvUb4z5AK&index=24
 ^^ says using fts for autocomplete currently a no go & should use elastic, but doesn't say why!! (is from graphaware who sell the elastic search plugin!)
+
+
+then plugging it into the existing query could look like this (except subquery is v4 only)
+
+
+with toLower('toxic') as lowerlabel
+
+call
+{
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: checkout^2 ncs__altLabel: checkout") yield node, score
+match (node:esco__Occupation)
+return node as occ
+union
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: checkout^2 ncs__altLabel: checkout") yield node, score
+match (node)<-[:ncs__hasAltLabel]-(occ)
+return occ
+}
+with { occupations:collect(
+{
+  uri:o.uri,
+  occupation:o.skos__prefLabel,
+  alternativeLabels:o.skos__altLabel,
+  lastModified:o.dct__modified,
+  matches:
+  {
+    occupation:[preflab in o.skos__prefLabel where toLower(preflab) contains lowerlabel],
+    alternativeLabels:[altlab in o.skos__altLabel where toLower(altlab) contains lowerlabel]
+  }
+}
+)} as occupations 
+return occupations
