@@ -60,8 +60,8 @@ spec:
           value: NONE
         - name: NEO4J_https_ssl__policy
           value: default
-        - name: NEO4J_bolt_ssl__policy
-          value: default
+        # - name: NEO4J_bolt_ssl__policy
+        #   value: default
         ports:
         - containerPort: 7474
         - containerPort: 7473
