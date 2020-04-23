@@ -2,7 +2,7 @@
 
 #APOC plugin version must track the major.minor version of neo4j so the base image for this dockerfile is specified rather than using latest
 #https://github.com/neo4j-contrib/neo4j-apoc-procedures#version-compatibility-matrix
-FROM neo4j:3.5
+FROM neo4j:4.0
 
 #the esco file must be provisioned in a folder that is mounted to /var/lib/neo4j/import/
 ENV ESCOFILE esco_v1.0.3.ttl
@@ -13,6 +13,6 @@ ENV NEO4J_dbms_connector_https_enabled=true
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
-ADD --chown=neo4j:neo4j https://github.com/neo4j-labs/neosemantics/releases/download/3.5.0.3/neosemantics-3.5.0.3.jar plugins
-ADD --chown=neo4j:neo4j https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/3.5.0.5/apoc-3.5.0.5-all.jar plugins
+ADD --chown=neo4j:neo4j https://github.com/neo4j-labs/neosemantics/releases/download/4.0.0-beta/neosemantics-4.0.0-beta.jar plugins
+ADD --chown=neo4j:neo4j https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.0.0.7/apoc-4.0.0.7-all.jar plugins
 ENTRYPOINT ["/scripts/wrapper.sh"]
