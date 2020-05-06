@@ -46,12 +46,13 @@ stages:
       SolutionBaseName: ${{ variables.SolutionBaseName }}
   - template: JobTemplates/BuildContainer.yml
     parameters:
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
       DevSitContainerRegistryAdminUser: $(DevContainerRegistryAdminUser)
       DevSitContainerRegistryPassword: $(DevContainerRegistryPassword)
       PrdContainerRegistryAdminUser: $(PrdContainerRegistryAdminUser)
       PrdContainerRegistryPassword: $(PrdContainerRegistryPassword)
-      DockerfileContext: Resources/Dockerfiles
-      DockerfileName: neo4jescodb.Dockerfile
+      DockerfileContext: 'Resources/Dockerfiles'
+      DockerfileName: 'neo4jescodb.Dockerfile'
       ImageBaseName: ${{ variables.ImageBaseName }}
       #TO DO: decide how to tag and publish image builds from branches
       ImageTag: $(Build.BuildNumber)
