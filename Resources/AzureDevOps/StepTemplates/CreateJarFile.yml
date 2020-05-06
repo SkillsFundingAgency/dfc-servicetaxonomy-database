@@ -17,7 +17,7 @@ steps:
       jdkArchitectureOption: 'x64'
       publishJUnitResults: false
   - task: DeleteFiles@1
-    displayName: 'Remove unneeded jar files from the maven build'target folder
+    displayName: 'Remove unneeded jar files from the maven build target folder'
     inputs:
       sourceFolder: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target'
       contents: original*.jar
