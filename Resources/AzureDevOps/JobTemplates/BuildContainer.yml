@@ -40,8 +40,8 @@ jobs:
     displayName: 'Copy jar files to Dockerfiles'
     inputs:
       contents: |
-        'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.jar'
-      targetFolder: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
+        'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*'
+      targetFolder: '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
       flattenFolders: true
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
