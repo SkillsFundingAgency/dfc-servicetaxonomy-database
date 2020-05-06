@@ -15,7 +15,8 @@ jobs:
   steps:
   - checkout: self
   - checkout: dfc-servicetaxonomy-editor
-  - script: dir $(Build.SourcesDirectory)
+{{- /*
+   - script: dir $(Build.SourcesDirectory)
   - task: DeleteFiles@1
     displayName: 'Remove unneeded jar files Java Plugins/target folder'
     inputs:
@@ -43,7 +44,11 @@ jobs:
       targetFolder: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
       flattenFolders: true
   - script: dir '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
-    displayName: 'dir Dockerfiles/plugins folder - sanity check'
+    displayName: 'dir Dockerfiles/plugins folder - sanity check' 
+*/ -}}
+  - template: ../StepTemplates/CreateJarFile.yml
+    parameters:
+      DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
       ContainerRegistryAdminUser: ${{ parameters.DevSitContainerRegistryAdminUser }}
