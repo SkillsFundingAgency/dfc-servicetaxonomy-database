@@ -33,7 +33,8 @@ jobs:
       cd '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
       mkdir plugins
       cd '../../../../'
-      cp '$(Build.SourcesDirectory)/dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target' '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/Resources/Dockerfiles/plugins/'
+      dir
+      cp '$(Build.SourcesDirectory)/dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.jar' '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/Resources/Dockerfiles/plugins/'
     displayName: 'md plugins'
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
