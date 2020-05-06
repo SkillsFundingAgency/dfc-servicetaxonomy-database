@@ -29,7 +29,7 @@ steps:
       contents: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.jar'
       targetFolder: '${{ parameters.DockerfileContext }}/plugins'
       flattenFolders: true
-  - script: dir '{{ parameters.DockerfileContext }}/plugins'
+  - script: dir '${{ parameters.DockerfileContext }}/plugins'
     displayName: 'dir Dockerfiles/plugins folder - sanity check'
 
 
