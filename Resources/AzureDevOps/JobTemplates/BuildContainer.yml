@@ -17,6 +17,7 @@ jobs:
   - checkout: dfc-servicetaxonomy-editor
   - script: dir $(Build.SourcesDirectory)
   - script: |
+      dir
       cd '$(Build.SourcesDirectory)/dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target'
       dir
       rm *.jar
