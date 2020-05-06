@@ -16,8 +16,7 @@ jobs:
   - checkout: self
   - checkout: dfc-servicetaxonomy-editor
   - script: dir $(Build.SourcesDirectory)
-  - script: |
-    del 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.*'
+  - script: del 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.*'
   - template: ../StepTemplates/dfc-maven-build.yml
     parameters:
       mavenPomFile: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/pom.xml'
