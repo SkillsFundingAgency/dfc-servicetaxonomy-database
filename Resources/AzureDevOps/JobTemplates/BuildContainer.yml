@@ -16,6 +16,12 @@ jobs:
   - checkout: self
   - checkout: dfc-servicetaxonomy-editor
   - script: dir $(Build.SourcesDirectory)
+  - task: DeleteFiles@1
+    displayName: 'Remove unneeded files'
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)/dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target'
+      contents: |
+        *.jar
   - template: ../StepTemplates/dfc-maven-build.yml
     parameters:
       mavenPomFile: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/pom.xml'
@@ -34,6 +40,7 @@ jobs:
     inputs:
       contents: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.jar'
       targetFolder: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
+      flattenFolders: true
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
       ContainerRegistryAdminUser: ${{ parameters.DevSitContainerRegistryAdminUser }}
