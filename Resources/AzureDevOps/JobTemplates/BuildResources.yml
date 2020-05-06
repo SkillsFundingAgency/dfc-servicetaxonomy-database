@@ -8,7 +8,6 @@ jobs:
   pool: 'NCS - CI and CD'
   steps:
   - checkout: self
-  - checkout: dfc-devops
   - checkout: dfc-servicetaxonomy-editor
   - script: dir $(Build.SourcesDirectory)
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-arm-build.yml@dfc-devops
