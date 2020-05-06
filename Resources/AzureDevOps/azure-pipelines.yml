@@ -11,6 +11,10 @@ resources:
     name: SkillsFundingAgency/dfc-devops
     ref: refs/tags/v1.11.0
     endpoint: 'GitHub (ESFA)'
+  - repository: dfc-servicetaxonomy-editor
+    type: github
+    name: SkillsFundingAgency/dfc-servicetaxonomy-editor
+    endpoint: 'GitHub (ESFA)'
 
 trigger: 
   branches:
