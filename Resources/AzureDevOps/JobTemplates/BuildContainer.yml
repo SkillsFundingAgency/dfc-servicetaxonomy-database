@@ -17,9 +17,9 @@ jobs:
   - checkout: dfc-servicetaxonomy-editor
   - script: dir $(Build.SourcesDirectory)
   - script: |
-      cd 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target'
+      cd '$(Build.SourcesDirectory)/dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target'
       rm *.jar
-      cd ../../../../
+      cd ../../../../../
     displayName: 'delete old plugins '
   - template: ../StepTemplates/dfc-maven-build.yml
     parameters:
@@ -30,10 +30,10 @@ jobs:
       jdkArchitectureOption: 'x64'
       publishJUnitResults: false
   - script: |
-      cd 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
+      cd '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
       mkdir plugins
-      cd '../../../'
-      cp 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target' 'dfc-servicetaxonomy-database/Resources/Dockerfiles/plugins/'
+      cd '../../../../'
+      cp '$(Build.SourcesDirectory)/dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target' '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/Resources/Dockerfiles/plugins/'
     displayName: 'md plugins'
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
