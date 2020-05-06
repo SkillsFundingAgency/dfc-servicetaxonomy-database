@@ -32,7 +32,7 @@ jobs:
     displayName: 'md plugins'
   - task: CopyFiles@2
     inputs:
-      contents: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/**'
+      contents: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.jar'
       targetFolder: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
