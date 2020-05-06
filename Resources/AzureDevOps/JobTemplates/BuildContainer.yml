@@ -20,8 +20,7 @@ jobs:
     displayName: 'Remove unneeded jar files'
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)/dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target'
-      contents: |
-        *.jar
+      contents: '*.jar'
   - template: ../StepTemplates/dfc-maven-build.yml
     parameters:
       mavenPomFile: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/pom.xml'
@@ -36,10 +35,7 @@ jobs:
       sourceFolder: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target'
       contents: original*.jar
   - script: |
-      dir '$(Build.SourcesDirectory)/dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target'
-      dir '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
       mkdir '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
-      dir '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
     displayName: 'md plugins folder under Dockerfiles'
   - task: CopyFiles@2
     displayName: copy files to dockerfiles
