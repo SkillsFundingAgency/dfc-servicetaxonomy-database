@@ -18,8 +18,11 @@ jobs:
   - script: dir $(Build.SourcesDirectory)
   - script: |
       cd '$(Build.SourcesDirectory)/dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target'
+      dir
       rm *.jar
+      dir
       cd ../../../../../
+      dir
     displayName: 'delete old plugins '
   - template: ../StepTemplates/dfc-maven-build.yml
     parameters:
@@ -30,7 +33,9 @@ jobs:
       jdkArchitectureOption: 'x64'
       publishJUnitResults: false
   - script: |
+      dir
       cd '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
+      dir
       mkdir plugins
       cd '../../../../'
       dir
