@@ -1,5 +1,4 @@
 parameters:
-  SolutionBaseName: ''
   DevSitContainerRegistryAdminUser: ''
   DevSitContainerRegistryPassword: ''
   PrdContainerRegistryAdminUser: ''
@@ -17,9 +16,8 @@ jobs:
   - checkout: self
   - checkout: dfc-servicetaxonomy-editor
   - script: dir $(Build.SourcesDirectory)
-  - task: Maven@3
-    displayName: 'Maven build for dfc-servicetaxonomy-editor Java Plugins'
-    inputs:
+  - template: ../StepTemplates/dfc-maven-build.yml
+    parameters:
       mavenPomFile: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/pom.xml'
       mavenOptions: '-Xmx3072m'
       javaHomeOption: 'JDKVersion'
