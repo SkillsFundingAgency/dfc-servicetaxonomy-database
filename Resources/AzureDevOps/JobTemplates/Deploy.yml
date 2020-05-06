@@ -34,7 +34,7 @@ jobs:
             ParentBusinessTag: ${{ parameters.ParentBusinessTag }}
             ResourceGroup: ${{ parameters.ResourceGroup }}
             ServiceOfferingTag: ${{ parameters.ServiceOfferingTag }}
-        # convert and copy certificate to container
+        # convert and copy certificate to containers
         - task: AzurePowerShell@4
           displayName: 'Azure PowerShell script: Set-CertficatesDirectoriesInFileShare'
           inputs:
