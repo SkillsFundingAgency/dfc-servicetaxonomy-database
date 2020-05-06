@@ -31,8 +31,8 @@ jobs:
       cd 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
       md plugins
       copy 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.*' 'dfc-servicetaxonomy-database/Resources/Dockerfiles/plugins/'
-    displayName: 'md plugins '
- - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
+    displayName: 'md plugins'
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
       ContainerRegistryAdminUser: ${{ parameters.DevSitContainerRegistryAdminUser }}
       ContainerRegistryPassword: ${{ parameters.DevSitContainerRegistryPassword }}
