@@ -21,7 +21,7 @@ steps:
     inputs:
       sourceFolder: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target'
       contents: original*.jar
-  - script: mkdir '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
+  - script: mkdir 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
     displayName: 'md plugins folder under Dockerfiles'
   - task: CopyFiles@2
     displayName: copy files to dockerfiles
@@ -29,7 +29,7 @@ steps:
       contents: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.jar'
       targetFolder: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
       flattenFolders: true
-  - script: dir '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
+  - script: dir 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
     displayName: 'dir Dockerfiles/plugins folder - sanity check'
 
 
