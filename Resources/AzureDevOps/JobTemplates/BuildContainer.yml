@@ -16,7 +16,9 @@ jobs:
   - checkout: self
   - checkout: dfc-servicetaxonomy-editor
   - script: dir $(Build.SourcesDirectory)
-  - script: del 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.*'
+  - script: |
+      del 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.*'
+    displayName: 'delete old plugins '
   - template: ../StepTemplates/dfc-maven-build.yml
     parameters:
       mavenPomFile: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/pom.xml'
@@ -26,10 +28,11 @@ jobs:
       jdkArchitectureOption: 'x64'
       publishJUnitResults: false
   - script: |
-    cd 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
-    md plugins
-    copy 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.*' 'dfc-servicetaxonomy-database/Resources/Dockerfiles/plugins/'
-  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
+      cd 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
+      md plugins
+      copy 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.*' 'dfc-servicetaxonomy-database/Resources/Dockerfiles/plugins/'
+    displayName: 'md plugins '
+ - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
       ContainerRegistryAdminUser: ${{ parameters.DevSitContainerRegistryAdminUser }}
       ContainerRegistryPassword: ${{ parameters.DevSitContainerRegistryPassword }}
