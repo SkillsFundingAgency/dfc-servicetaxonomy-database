@@ -17,7 +17,7 @@ jobs:
   - checkout: dfc-servicetaxonomy-editor
   - script: dir $(Build.SourcesDirectory)
   - task: DeleteFiles@1
-    displayName: 'Remove unneeded files'
+    displayName: 'Remove unneeded jar files'
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)/dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target'
       contents: |
@@ -35,10 +35,13 @@ jobs:
       dir '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
       mkdir '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
       dir '$(Build.SourcesDirectory)/dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
-    displayName: 'md plugins'
+    displayName: 'md plugins folder under Dockerfiles'
   - task: CopyFiles@2
+    displayName: 'Copy jar files to Dockerfiles'
     inputs:
-      contents: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.jar'
+      contents: |
+        'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.jar'
+        !original*.jar
       targetFolder: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
       flattenFolders: true
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
