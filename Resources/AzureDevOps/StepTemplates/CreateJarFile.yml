@@ -27,7 +27,7 @@ steps:
     displayName: copy files to dockerfiles
     inputs:
       contents: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.jar'
-      targetFolder: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}/plugins'
+      targetFolder: '${{ parameters.DockerfileContext }}/plugins'
       flattenFolders: true
   - script: dir '{{ parameters.DockerfileContext }}/plugins'
     displayName: 'dir Dockerfiles/plugins folder - sanity check'
