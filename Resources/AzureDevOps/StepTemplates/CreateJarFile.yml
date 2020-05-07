@@ -17,20 +17,20 @@ steps:
       jdkArchitectureOption: 'x64'
       publishJUnitResults: false
   - task: DeleteFiles@1
-    displayName: 'Remove unneeded jar files from the maven build target folder'
+    displayName: 'Remove unneeded jar files from the maven build target folder --> original*.jar'
     inputs:
       sourceFolder: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target'
       contents: original*.jar
   - script: mkdir '${{ parameters.DockerfileContext }}/plugins'
-    displayName: 'mkdir plugins folder under Dockerfiles'
+    displayName: 'mkdir plugins folder under ${{ parameters.DockerfileContext }}'
   - task: CopyFiles@2
-    displayName: 'Copy jar file to dockerfiles/plugins folder'
+    displayName: 'Copy jar file to ${{ parameters.DockerfileContext }}/plugins folder'
     inputs:
       contents: 'dfc-servicetaxonomy-editor/DFC.ServiceTaxonomy.Neo4j/Java Plugins/target/*.jar'
       targetFolder: '${{ parameters.DockerfileContext }}/plugins'
       flattenFolders: true
   - script: dir '${{ parameters.DockerfileContext }}/plugins'
-    displayName: 'Sanity check to verify that a jar file was copied across'
+    displayName: 'Sanity check to confirm right jar file was copied in'
 
 
         

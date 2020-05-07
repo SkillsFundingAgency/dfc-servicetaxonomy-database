@@ -1,3 +1,4 @@
+#Maven build for java jar files
 parameters: 
   mavenPomFile: ''
   mavenOptions: ''
