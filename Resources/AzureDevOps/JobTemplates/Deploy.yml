@@ -34,7 +34,7 @@ jobs:
             ParentBusinessTag: ${{ parameters.ParentBusinessTag }}
             ResourceGroup: ${{ parameters.ResourceGroup }}
             ServiceOfferingTag: ${{ parameters.ServiceOfferingTag }}
-        # convert and copy certificate to container
+        # convert and copy certificate to containers
         - task: AzurePowerShell@4
           displayName: 'Azure PowerShell script: Set-CertficatesDirectoriesInFileShare'
           inputs:
@@ -43,12 +43,12 @@ jobs:
             scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
         - checkout: dfc-devops
-          path: 's/dfc-devops/'
+          path: 's/'
         - task: AzurePowerShell@4
           displayName: 'Azure PowerShell script: Export-KeyVaultCertToPemFiles'
           inputs:
             azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Build.SourcesDirectory)/dfc-devops/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
+            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
             scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
         # create storage secret

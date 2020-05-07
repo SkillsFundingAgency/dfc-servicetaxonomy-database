@@ -13,6 +13,9 @@ ENV NEO4J_dbms_connector_https_enabled=true
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
+#copy jar file compiled from editor into the Dockerfile plugins folder
+COPY --chown=neo4j:neo4j plugins /var/lib/neo4j/plugins
+#download jar files into plugins folder
 ADD --chown=neo4j:neo4j https://github.com/neo4j-labs/neosemantics/releases/download/3.5.0.3/neosemantics-3.5.0.3.jar plugins
 ADD --chown=neo4j:neo4j https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/3.5.0.5/apoc-3.5.0.5-all.jar plugins
 ENTRYPOINT ["/scripts/wrapper.sh"]

@@ -1,0 +1,18 @@
+#Maven build for java jar files
+parameters: 
+  mavenPomFile: ''
+  mavenOptions: ''
+  javaHomeOption: ''
+  jdkVersionOption: ''
+  jdkArchitectureOption: ''
+  publishJUnitResults: false
+steps:
+  - task: Maven@3
+    displayName: 'Maven build for synonyms Java Plugins'
+    inputs:
+      mavenPomFile: '${{ parameters.mavenPomFile }}'
+      mavenOptions: '${{ parameters.mavenOptions }}'
+      javaHomeOption: '${{ parameters.javaHomeOption }}'
+      jdkVersionOption: '${{ parameters.jdkVersionOption }}'
+      jdkArchitectureOption: '${{ parameters.jdkArchitectureOption }}'
+      publishJUnitResults: '${{ parameters.mavenPomFile }}'

@@ -13,20 +13,28 @@ jobs:
   displayName: Build and publish NCS.ServiceTaxonomy.EscoDb container
   pool: 'Hosted Ubuntu 1604'
   steps:
+  - checkout: self
+  - checkout: dfc-servicetaxonomy-editor
+  - template: ../StepTemplates/CreateJarFile.yml
+    parameters:
+      DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
       ContainerRegistryAdminUser: ${{ parameters.DevSitContainerRegistryAdminUser }}
       ContainerRegistryPassword: ${{ parameters.DevSitContainerRegistryPassword }}
-      DockerfileContext: ${{ parameters.DockerfileContext }}
+      DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
       DockerfileName: ${{ parameters.DockerfileName }}
       ImageBaseName: ${{ parameters.ImageBaseName }}
       ImageTag: ${{ parameters.ImageTag }}
-      ManifestFilePath: Resources/Dockerfiles/neo4jescodb.yaml
+      ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jescodb.yaml'
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
       ContainerRegistryAdminUser: ${{ parameters.PrdContainerRegistryAdminUser }}
       ContainerRegistryPassword: ${{ parameters.PrdContainerRegistryPassword }}
-      DockerfileContext: ${{ parameters.DockerfileContext }}
+      DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
       DockerfileName: ${{ parameters.DockerfileName }}
       ImageBaseName: ${{ parameters.ImageBaseName }}
       ImageTag: ${{ parameters.ImageTag }}
+
+
+        
