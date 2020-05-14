@@ -13,11 +13,13 @@ ENV NEO4J_dbms_connector_https_enabled=true
 ENV NEO4J_dbms_allow__upgrade=true
 ENV NEO4J_dbms_security_procedures_unrestricted=apoc.coll.*,apoc.load.*
 ENV NEO4J_dbms_directories_certificates=certificates
+ENV NEO4J_dbms_default__database=graph
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
 #copy jar file compiled from editor into the Dockerfile plugins folder
 COPY --chown=neo4j:neo4j plugins /var/lib/neo4j/plugins
+COPY --chown=neo4j:neo4j /var/certificates /var/lib/neo4j/certificates
 #download jar files into plugins folder
 ADD --chown=neo4j:neo4j https://github.com/neo4j-labs/neosemantics/releases/download/4.0.0.1/neosemantics-4.0.0.1.jar plugins
 ADD --chown=neo4j:neo4j https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.0.0.11/apoc-4.0.0.11-all.jar plugins
