@@ -12,6 +12,7 @@ ENV NEO4J_dbms_memory_pagecache_size=5600M
 ENV NEO4J_dbms_connector_https_enabled=true
 ENV NEO4J_dbms_allow__upgrade=true
 ENV NEO4J_dbms_security_procedures_unrestricted=apoc.coll.*,apoc.load.*
+ENV NEO4J_dbms_directories_certificates=certificates
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
