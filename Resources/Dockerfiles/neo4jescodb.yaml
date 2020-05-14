@@ -42,9 +42,9 @@ spec:
             secretKeyRef: 
               name: neo4j-account-secret
               key: auth
-        - name: NEO4J_dbms_connectors_default__advertised__address
+        - name: NEO4J_dbms_default__advertised__address
           value: __Neo4jCustomHostname__
-        - name: NEO4J_dbms_connectors_default__listen__address
+        - name: NEO4J_dbms_default__listen__address
           value: 0.0.0.0
         - name: NEO4J_dbms_ssl_policy_bolt_base__directory
           value: /var/certificates/default
@@ -54,7 +54,7 @@ spec:
           value: /var/certificates/default/privkey.pem
         - name: NEO4J_dbms_ssl_policy_bolt_trusted__dir
           value: /var/certificates/bolt/trusted
-        - name: NEO4J_dbms_ssl_policy_default_revoked__dir
+        - name: NEO4J_dbms_ssl_policy_bolt_revoked__dir
           value: /var/certificates/bolt/revoked
         - name: NEO4J_dbms_ssl_policy_bolt_client__auth
           value: NONE
