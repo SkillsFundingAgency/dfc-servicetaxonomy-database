@@ -47,27 +47,27 @@ spec:
         - name: NEO4J_dbms_default__listen__address
           value: 0.0.0.0
         - name: NEO4J_dbms_ssl_policy_bolt_base__directory
-          value: /var/certificates/default
+          value: /var/lib/neo4j/certificates/default
         - name: NEO4J_dbms_ssl_policy_bolt_public__certificate
-          value: /var/certificates/default/cert.pem
+          value: /var/lib/neo4j/certificates/default/cert.pem
         - name: NEO4J_dbms_ssl_policy_bolt_private__key
-          value: /var/certificates/default/privkey.pem
+          value: /var/lib/neo4j/certificates/default/privkey.pem
         - name: NEO4J_dbms_ssl_policy_bolt_trusted__dir
-          value: /var/certificates/default/trusted
+          value: /var/lib/neo4j/certificates/default/trusted
         - name: NEO4J_dbms_ssl_policy_bolt_revoked__dir
-          value: /var/certificates/default/revoked
+          value: /var/lib/neo4j/certificates/default/revoked
         - name: NEO4J_dbms_ssl_policy_bolt_client__auth
           value: NONE
         - name: NEO4J_dbms_ssl_policy_https_base__directory
-          value: /var/certificates/https
+          value: /var/lib/neo4j/certificates/https
         - name: NEO4J_dbms_ssl_policy_https_public__certificate
-          value: /var/certificates/https/cert.pem
+          value: /var/lib/neo4j/certificates/https/cert.pem
         - name: NEO4J_dbms_ssl_policy_https_private__key
-          value: /var/certificates/https/privkey.pem
+          value: /var/lib/neo4j/certificates/https/privkey.pem
         - name: NEO4J_dbms_ssl_policy_https_trusted__dir
-          value: /var/certificates/https/trusted
+          value: /var/lib/neo4j/certificates/https/trusted
         - name: NEO4J_dbms_ssl_policy_https_revoked__dir
-          value: /var/certificates/https/revoked
+          value: /var/lib/neo4j/certificates/https/revoked
         - name: NEO4J_dbms_ssl_policy_https_client__auth
           value: NONE
         - name: NEO4J_ncs_occupation__synonyms__file__url
@@ -87,7 +87,7 @@ spec:
             memory: "16G"
         volumeMounts:
         - name: certificates
-          mountPath: /var/certificates
+          mountPath: /var/lib/neo4j/certificates
         - name: data
           mountPath: /data
         - name: esco-rdf-files
