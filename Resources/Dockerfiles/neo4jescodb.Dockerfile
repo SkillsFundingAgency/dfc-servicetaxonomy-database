@@ -9,7 +9,6 @@ ENV ESCOFILE esco_v1.0.3.ttl
 ENV NEO4J_PWD escodb
 ENV NEO4J_AUTH neo4j/$NEO4J_PWD
 ENV NEO4J_dbms_memory_pagecache_size=5600M
-ENV NEO4J_dbms_connector_https_enabled=true
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
