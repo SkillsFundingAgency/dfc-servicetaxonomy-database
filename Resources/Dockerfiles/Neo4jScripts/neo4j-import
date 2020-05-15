@@ -1,1 +1,1 @@
-CALL semantics.importRDF("file:///var/lib/neo4j/import/__ESCOFILE__", "Turtle", { handleMultival: 'ARRAY', multivalPropList : ['http://www.w3.org/2004/02/skos/core#altLabel', 'http://www.w3.org/2004/02/skos/core#hiddenLabel'], languageFilter: "en" });
+call n10s.rdf.import.fetch( "file:///var/lib/neo4j/import/__ESCOFILE__", "Turtle", { languageFilter: "en" });
