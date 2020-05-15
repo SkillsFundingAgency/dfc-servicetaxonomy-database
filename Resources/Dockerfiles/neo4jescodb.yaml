@@ -93,7 +93,7 @@ spec:
         - name: esco-rdf-files
           mountPath: /var/lib/neo4j/import
         securityContext: 
-          allowPrivilegeEscalation: false 
+          allowPrivilegeEscalation: true
       volumes:
       - name: certificates
         azureFile:
