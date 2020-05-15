@@ -18,5 +18,6 @@ do
     sleep 10
 done
 
-cp /var/certificates /var/lib/neo4j/
+cp -R /var/certificates /var/lib/neo4j/
+
 chown -R neo4j:neo4j /var/lib/neo4j/certificates/*
