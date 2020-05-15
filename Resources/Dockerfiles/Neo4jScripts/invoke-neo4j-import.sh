@@ -1,7 +1,3 @@
-cp -R -v /var/certificates /var/lib/neo4j/ >> copyresult.log
-
-chown -R -v neo4j:neo4j /var/lib/neo4j/certificates/* >> chown.log
-
 sed -i "s/__ESCOFILE__/$ESCOFILE/g" /scripts/neo4j-import
 
 until cat /scripts/neo4j-db-config | /var/lib/neo4j/bin/cypher-shell --format plain  -u neo4j -p $NEO4J_PWD
