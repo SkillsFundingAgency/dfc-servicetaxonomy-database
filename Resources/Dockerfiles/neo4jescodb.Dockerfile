@@ -14,6 +14,7 @@ ENV NEO4J_dbms_allow__upgrade=false
 ENV NEO4J_dbms_default__database=graph
 ENV NEO4J_dbms_ssl_policy_https_enabled=true
 ENV NEO4J_dbms_ssl_policy_bolt_enabled=true
+ENV NEO4J_dbms_security_procedures_whitelist=apoc.coll.*,apoc.load.*,apoc.*
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
