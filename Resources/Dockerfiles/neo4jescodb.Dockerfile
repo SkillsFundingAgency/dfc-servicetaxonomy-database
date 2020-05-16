@@ -10,8 +10,8 @@ ENV NEO4J_PWD escodb
 ENV NEO4J_AUTH neo4j/$NEO4J_PWD
 ENV NEO4J_dbms_memory_pagecache_size=5600M
 ENV NEO4J_dbms_connector_https_enabled=true
-ENV NEO4J_dbms_allow__upgrade=false
-#ENV NEO4J_dbms_default__database=graph
+ENV NEO4J_dbms_allow__upgrade=true
+ENV NEO4J_dbms_default__database=graph
 ENV NEO4J_dbms_ssl_policy_https_enabled=true
 ENV NEO4J_dbms_ssl_policy_bolt_enabled=false
 ENV NEO4J_dbms_security_procedures_whitelist=apoc.coll.*,apoc.load.*,apoc.*,n10s.*,ncs.*
