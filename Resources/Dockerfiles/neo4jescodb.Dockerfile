@@ -12,13 +12,15 @@ ENV NEO4J_dbms_memory_pagecache_size=5600M
 ENV NEO4J_dbms_connector_https_enabled=true
 ENV NEO4J_dbms_allow__upgrade=false
 #ENV NEO4J_dbms_default__database=graph
-ENV NEO4J_dbms_ssl_policy_https_enabled=true
-ENV NEO4J_dbms_ssl_policy_bolt_enabled=true
+ENV NEO4J_dbms_ssl_policy_https_enabled=false
+ENV NEO4J_dbms_ssl_policy_bolt_enabled=false
 ENV NEO4J_dbms_security_procedures_whitelist=apoc.coll.*,apoc.load.*,apoc.*,n10s.*
 ENV NEO4J_dbms_security_procedures_unrestricted=apoc.*,n10s.*
 ENV NEO4J_dbms_connector_bolt_listen_address=0.0.0.0:7687
 ENV NEO4J_dbms_connector_http_listen_address=0.0.0.0:7474
 ENV NEO4J_dbms_connector_https_listen_address=0.0.0.0:7373
+ENV NEO4J_wrapper_java__additional=-Dneo4j.ext.udc.source=docker
+ENV NEO4J_dbms_jvm__additional=-Dunsupported.dbms.udc.source=docker
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
