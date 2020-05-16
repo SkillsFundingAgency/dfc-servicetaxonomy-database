@@ -21,7 +21,7 @@ ENV NEO4J_dbms_connector_bolt_listen__address=0.0.0.0:7687
 ENV NEO4J_dbms_connector_http_listen__address=0.0.0.0:7474
 ENV NEO4J_dbms_connector_https_listen__address=0.0.0.0:7373
 ENV NEO4J_dbms_wrapper_java__additional=-Dneo4j.ext.udc.source=docker
-ENV NEO4J_dbms_jvm__additional=-Dunsupported.dbms.udc.source=docker
+ENV NEO4J_dbms__jvm__additional=-Dunsupported.dbms.udc.source=docker
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
