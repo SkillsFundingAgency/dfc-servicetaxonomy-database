@@ -59,15 +59,15 @@ spec:
         - name: NEO4J_dbms_ssl_policy_bolt_client__auth
           value: NONE
         - name: NEO4J_dbms_ssl_policy_https_base__directory
-          value: /var/certificates/https
+          value: /var/certificates/default
         - name: NEO4J_dbms_ssl_policy_https_public__certificate
-          value: /var/certificates/https/cert.pem
+          value: /var/certificates/default/cert.pem
         - name: NEO4J_dbms_ssl_policy_https_private__key
-          value: /var/certificates/https/privkey.pem
+          value: /var/certificates/default/privkey.pem
         - name: NEO4J_dbms_ssl_policy_https_trusted__dir
-          value: /var/certificates/https/trusted
+          value: /var/certificates/default/trusted
         - name: NEO4J_dbms_ssl_policy_https_revoked__dir
-          value: /var/certificates/https/revoked
+          value: /var/certificates/default/revoked
         - name: NEO4J_dbms_ssl_policy_https_client__auth
           value: NONE
         - name: NEO4J_ncs_occupation__synonyms__file__url
