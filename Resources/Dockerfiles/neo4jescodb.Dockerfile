@@ -18,10 +18,14 @@ ENV NEO4J_dbms_ssl_policy_bolt_enabled=false
 ENV NEO4J_dbms_security_procedures_whitelist=apoc.coll.*,apoc.load.*,apoc.*,n10s.*,ncs.*
 ENV NEO4J_dbms_security_procedures_unrestricted=apoc.*,n10s.*,ncs.*
 ENV NEO4J_dbms_connector_bolt_listen__address=0.0.0.0:7687
+ENV NEO4J_dbms_connector_bolt_advertised__address=0.0.0.0:7687
 ENV NEO4J_dbms_connector_http_listen__address=0.0.0.0:7474
+ENV NEO4J_dbms_connector_http_advertised__address=0.0.0.0:7474
 ENV NEO4J_dbms_connector_https_listen__address=0.0.0.0:7473
+ENV NEO4J_dbms_connector_https_advertised__address=0.0.0.0:7473
 ENV NEO4J_dbms_wrapper_java__additional=-Dneo4j.ext.udc.source=docker
 ENV NEO4J_dbms__jvm__additional=-Dunsupported.dbms.udc.source=docker
+ENV NEO4J_unsupported_dbms_tx__log_fail__on__corrupted__log__files=false
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
