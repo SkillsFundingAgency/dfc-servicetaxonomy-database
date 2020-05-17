@@ -52,12 +52,14 @@ spec:
           value: __Neo4jCustomHostname__
         - name: NEO4J_dbms_default__listen__address
           value: 0.0.0.0
+        - name: NEO4J_dbms_connector_bolt_address
+          value: 0.0.0.0:7687
         - name: NEO4J_dbms_connector_bolt_listen__address
-          value: 0.0.0.0
+          value: 0.0.0.0:7687
         - name: NEO4J_dbms_connector_http_listen__address
-          value: 0.0.0.0
+          value: 0.0.0.0:7474
         - name: NEO4J_dbms_connector_https_listen__address
-          value: 0.0.0.0
+          value: 0.0.0.0:7473
         - name: NEO4J_dbms_ssl_policy_bolt_base__directory
           value: /var/certificates/default
         - name: NEO4J_dbms_ssl_policy_bolt_public__certificate
@@ -105,7 +107,7 @@ spec:
         - name: esco-rdf-files
           mountPath: /var/lib/neo4j/import
         securityContext: 
-          allowPrivilegeEscalation: true
+          allowPrivilegeEscalation: false
       volumes:
       - name: certificates
         azureFile:

@@ -8,13 +8,17 @@ FROM neo4j:4.0.4
 ENV ESCOFILE esco_v1.0.3.ttl
 ENV NEO4J_PWD escodb
 ENV NEO4J_AUTH neo4j/$NEO4J_PWD
-ENV NEO4J_dbms_memory_pagecache_size=5600M
-ENV NEO4J_dbms_connector_https_enabled=true
 ENV NEO4J_dbms_allow__upgrade=true
 ENV NEO4J_dbms_recovery_fail__on__missing__files=false
+ENV NEO4J_dbms_memory_pagecache_size=5600M
+ENV NEO4J_dbms_connector_bolt_enabled=true
+ENV NEO4J_dbms_connector_bolt_tls__level=OPTIONAL
+ENV NEO4J_dbms_connector_http_enabled=true
+ENV NEO4J_dbms_connector_https_enabled=true
+ENV NEO4J_dbms_security_auth__enabled=false
 ENV NEO4J_dbms_default__database=graph
+ENV NEO4J_dbms_ssl_policy_bolt_enabled=true
 ENV NEO4J_dbms_ssl_policy_https_enabled=true
-ENV NEO4J_dbms_ssl_policy_bolt_enabled=false
 ENV NEO4J_dbms_security_procedures_whitelist=apoc.coll.*,apoc.load.*,apoc.*,n10s.*,ncs.*
 ENV NEO4J_dbms_security_procedures_unrestricted=apoc.*,n10s.*,ncs.*
 ENV NEO4J_dbms_wrapper_java__additional=-Dneo4j.ext.udc.source=docker
