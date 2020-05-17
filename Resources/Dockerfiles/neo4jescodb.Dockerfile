@@ -11,7 +11,6 @@ ENV NEO4J_AUTH neo4j/$NEO4J_PWD
 ENV NEO4J_dbms_allow__upgrade=true
 ENV NEO4J_dbms_recovery_fail__on__missing__files=false
 ENV NEO4J_dbms_memory_pagecache_size=5600M
-ENV NEO4J_dbms_connectors_default__listen__address=0.0.0.0
 ENV NEO4J_dbms_connector_bolt_address=0.0.0.0:7687
 ENV NEO4J_dbms_connector_bolt_enabled=true
 ENV NEO4J_dbms_connector_bolt_tls__level=OPTIONAL
@@ -22,7 +21,7 @@ ENV NEO4J_dbms_connector_http_listen__address=:7474
 ENV NEO4J_dbms_connector_http_advertised__address=:7474
 ENV NEO4J_dbms_connector_https_enabled=true
 ENV NEO4J_dbms_connector_https_listen__address=:7473
-ENV NEO4J_dbms_connector_https_advertised__address=7473
+ENV NEO4J_dbms_connector_https_advertised__address=:7473
 ENV NEO4J_dbms_security_auth__enabled=false
 ENV NEO4J_dbms_default__database=graph
 ENV NEO4J_dbms_ssl_policy_bolt_enabled=true
