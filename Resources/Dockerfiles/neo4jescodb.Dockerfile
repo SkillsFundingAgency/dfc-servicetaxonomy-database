@@ -14,13 +14,13 @@ ENV NEO4J_dbms_memory_pagecache_size=5600M
 ENV NEO4J_dbms_connector_bolt_address=0.0.0.0:7687
 ENV NEO4J_dbms_connector_bolt_enabled=true
 ENV NEO4J_dbms_connector_bolt_tls__level=OPTIONAL
-ENV NEO4J_dbms_connector_bolt_listen__address=:7687
+ENV NEO4J_dbms_connector_bolt_listen__address=0.0.0.0:7687
 ENV NEO4J_dbms_connector_bolt_advertised__address=:7687
 ENV NEO4J_dbms_connector_http_enabled=true
-ENV NEO4J_dbms_connector_http_listen__address=:7474
+ENV NEO4J_dbms_connector_http_listen__address=0.0.0.0:7474
 ENV NEO4J_dbms_connector_http_advertised__address=:7474
 ENV NEO4J_dbms_connector_https_enabled=true
-ENV NEO4J_dbms_connector_https_listen__address=:7473
+ENV NEO4J_dbms_connector_https_listen__address=0.0.0.0:7473
 ENV NEO4J_dbms_connector_https_advertised__address=:7473
 ENV NEO4J_dbms_security_auth__enabled=false
 #ENV NEO4J_dbms_default__database=graph
@@ -38,5 +38,5 @@ RUN chmod -R 754 /scripts
 COPY --chown=neo4j:neo4j plugins /var/lib/neo4j/plugins
 #download jar files into plugins folder
 ADD --chown=neo4j:neo4j https://github.com/neo4j-labs/neosemantics/releases/download/4.0.0.1/neosemantics-4.0.0.1.jar plugins
-ADD --chown=neo4j:neo4j https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.0.0.11/apoc-4.0.0.11-all.jar plugins
+ADD --chown=neo4j:neo4j https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.0.0.12/apoc-4.0.0.12-all.jar plugins
 ENTRYPOINT ["/scripts/wrapper.sh"]

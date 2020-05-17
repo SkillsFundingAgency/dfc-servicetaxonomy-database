@@ -42,9 +42,9 @@ spec:
             secretKeyRef: 
               name: neo4j-account-secret
               key: auth
-        - name: NEO4J_dbms_default__advertised__address
+        - name: NEO4J_dbms__default__advertised__address
           value: __Neo4jCustomHostname__
-        - name: NEO4J_dbms_default__listen__address
+        - name: NEO4J_dbms__default__listen__address
           value: 0.0.0.0
         - name: NEO4J_dbms_ssl_policy_bolt_base__directory
           value: /var/certificates/default
