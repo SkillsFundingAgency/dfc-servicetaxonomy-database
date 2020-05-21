@@ -42,32 +42,41 @@ spec:
             secretKeyRef: 
               name: neo4j-account-secret
               key: auth
-        - name: NEO4J_dbms_connectors_default__advertised__address
-          value: __Neo4jCustomHostname__
-        - name: NEO4J_dbms_connectors_default__listen__address
-          value: 0.0.0.0
-        - name: NEO4J_dbms_ssl_policy_default_base__directory
+        - name: NEO4J_dbms_ssl_policy_bolt_base__directory
           value: /var/certificates/default
-        - name: NEO4J_dbms_ssl_policy_default_public__certificate
+        - name: NEO4J_dbms_ssl_policy_bolt_public__certificate
           value: /var/certificates/default/cert.pem
-        - name: NEO4J_dbms_ssl_policy_default_private__key
+        - name: NEO4J_dbms_ssl_policy_bolt_private__key
           value: /var/certificates/default/privkey.pem
-        - name: NEO4J_dbms_ssl_policy_default_trusted__dir
+        - name: NEO4J_dbms_ssl_policy_bolt_trusted__dir
           value: /var/certificates/default/trusted
-        - name: NEO4J_dbms_ssl_policy_default_revoked__dir
+        - name: NEO4J_dbms_ssl_policy_bolt_revoked__dir
           value: /var/certificates/default/revoked
-        - name: NEO4J_dbms_ssl_policy_default_client__auth
+        - name: NEO4J_dbms_ssl_policy_bolt_client__auth
           value: NONE
-        - name: NEO4J_https_ssl__policy
-          value: default
-        - name: NEO4J_bolt_ssl__policy
-          value: default
+        - name: NEO4J_dbms_ssl_policy_https_base__directory
+          value: /var/certificates/default
+        - name: NEO4J_dbms_ssl_policy_https_public__certificate
+          value: /var/certificates/default/cert.pem
+        - name: NEO4J_dbms_ssl_policy_https_private__key
+          value: /var/certificates/default/privkey.pem
+        - name: NEO4J_dbms_ssl_policy_https_trusted__dir
+          value: /var/certificates/default/trusted
+        - name: NEO4J_dbms_ssl_policy_https_revoked__dir
+          value: /var/certificates/default/revoked
+        - name: NEO4J_dbms_ssl_policy_https_client__auth
+          value: NONE
+        - name: NEO4J_dbms_default__advertised__address
+          value: __Neo4jCustomHostname__
+        - name: NEO4J_dbms_connector_bolt_advertised__address
+          value: __Neo4jCustomHostname__:7687
+        - name: NEO4J_dbms_connector_https_advertised__address
+          value: __Neo4jCustomHostname__:7473
         - name: NEO4J_ncs_occupation__synonyms__file__url
           value: __OrchardEditorUrl__/graphsync/synonyms/occupation/synonyms.txt
         - name: NEO4J_ncs_skill__synonyms__file__url
           value: __OrchardEditorUrl__/graphsync/synonyms/skill/synonyms.txt
         ports:
-        - containerPort: 7474
         - containerPort: 7473
         - containerPort: 7687
         resources:
@@ -85,7 +94,7 @@ spec:
         - name: esco-rdf-files
           mountPath: /var/lib/neo4j/import
         securityContext: 
-          allowPrivilegeEscalation: false 
+          allowPrivilegeEscalation: false
       volumes:
       - name: certificates
         azureFile:
@@ -111,10 +120,6 @@ spec:
   type: LoadBalancer
   loadBalancerIP: __StaxDbPublicIpAddress__
   ports:
-  - name: http 
-    protocol: TCP
-    port: 7474
-    targetPort: 7474
   - name: https
     protocol: TCP
     port: 7473
