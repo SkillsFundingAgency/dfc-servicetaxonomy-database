@@ -70,8 +70,6 @@ spec:
           value: __Neo4jCustomHostname__
         - name: NEO4J_dbms_connector_bolt_advertised__address
           value: __Neo4jCustomHostname__:7687
-        - name: NEO4J_dbms_connector_http_advertised__address
-          value: __Neo4jCustomHostname__:7474
         - name: NEO4J_dbms_connector_https_advertised__address
           value: __Neo4jCustomHostname__:7473
         - name: NEO4J_ncs_occupation__synonyms__file__url
