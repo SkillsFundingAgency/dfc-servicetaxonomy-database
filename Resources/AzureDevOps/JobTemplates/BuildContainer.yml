@@ -38,7 +38,7 @@ jobs:
       DockerfileName: ${{ parameters.DockerfileName }}
       ImageBaseName: ${{ parameters.ImageBaseName }}
       ImageTag: ${{ parameters.ImageTag }}
-jobs:
+
 - job: BuildNCSSTaxDraftEscoDbContainer
   displayName: Build and publish NCS.ServiceTaxonomy.DraftEscoDB container
   pool: 'Hosted Ubuntu 1604'
