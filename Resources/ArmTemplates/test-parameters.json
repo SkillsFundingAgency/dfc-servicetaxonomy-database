@@ -11,6 +11,12 @@
         "storageAccountName": {
             "value": "dfcfoostaxsharedstr"
         },
+        "draftstorageAccountName": {
+            "value": "dfcfoostaxdraftstr"
+        },
+        "visitstorageAccountName": {
+            "value": "dfcfoostaxvisitstr"
+        },
         "storageAccountResourceGroup": {
             "value": "dfc-test-template-rg"
         }
