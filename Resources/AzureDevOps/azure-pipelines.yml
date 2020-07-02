@@ -77,6 +77,7 @@ stages:
       AksResourceGroup: $(sharedResourceGroup)
       AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
       CertificateSecretName: $(DatabaseCertificateSecretName)
+      DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
       Environment: DEV_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
       ImageBaseName: ${{ variables.ImageBaseName }}
@@ -88,7 +89,11 @@ stages:
       ServiceOfferingTag: $(ServiceOffering)
       SolutionBaseName: ${{ variables.SolutionBaseName }}
       StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
+      StaxDraftStorageAccountKey: $(dfcdevstaxdraftsharedstr)
+      StaxVisitStorageAccountKey: $(dfcdevstaxvisitsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
+      StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 - stage: DeployToSit
