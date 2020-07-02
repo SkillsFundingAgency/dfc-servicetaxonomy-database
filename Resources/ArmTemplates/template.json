@@ -142,7 +142,7 @@
             }
         },
         {
-            "name": "[concat(variables('fileShares')[copyIndex()], 'fileshare')]",
+            "name": "[concat(variables('fileShares')[copyIndex()], 'draftfileshare')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('storageAccountResourceGroup')]",
             "apiVersion": "2017-05-10",
@@ -167,7 +167,7 @@
             }
         },
         {
-            "name": "[concat(variables('fileShares')[copyIndex(0)], 'fileshare')]",
+            "name": "[concat(variables('fileShares')[copyIndex(0)], 'visitfileshare')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('storageAccountResourceGroup')]",
             "apiVersion": "2017-05-10",
