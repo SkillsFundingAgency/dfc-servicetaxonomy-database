@@ -1,6 +1,8 @@
 variables:
   ArmTemplateRoot: '$(Build.SourcesDirectory)\Resources\ArmTemplates'
   ImageBaseName: NCS.ServiceTaxonomy.EscoDb
+  DraftImageBaseName: NCS.ServiceTaxonomy.DraftEscoDB
+  VisitImageBaseName: NCS.ServiceTaxonomy.VisitDb
   SolutionBaseName: DFC.ServiceTaxonomy.Database
 
 resources:
@@ -53,7 +55,10 @@ stages:
       PrdContainerRegistryPassword: $(PrdContainerRegistryPassword)
       DockerfileContext: 'Resources/Dockerfiles'
       DockerfileName: 'neo4jescodb.Dockerfile'
+      DraftDockerfileName: 'neo4jDraftescodb.Dockerfile'
       ImageBaseName: ${{ variables.ImageBaseName }}
+      DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+      VisitImageBaseName: ${{ variables.VisitImageBaseName }}
       #TO DO: decide how to tag and publish image builds from branches
       ImageTag: $(Build.BuildNumber)
 

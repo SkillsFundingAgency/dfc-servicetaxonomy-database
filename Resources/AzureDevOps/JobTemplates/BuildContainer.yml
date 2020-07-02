@@ -5,7 +5,10 @@ parameters:
   PrdContainerRegistryPassword: ''
   DockerfileContext: ''
   DockerfileName: ''
+  DraftDockerfileName: ''
   ImageBaseName: ''
+  DraftImageBaseName: ''
+  VisitImageBaseName: ''
   ImageTag: ''
 
 jobs:
@@ -35,6 +38,24 @@ jobs:
       DockerfileName: ${{ parameters.DockerfileName }}
       ImageBaseName: ${{ parameters.ImageBaseName }}
       ImageTag: ${{ parameters.ImageTag }}
-
+jobs:
+- job: BuildNCSSTaxDraftEscoDbContainer
+  displayName: Build and publish NCS.ServiceTaxonomy.DraftEscoDB container
+  pool: 'Hosted Ubuntu 1604'
+  steps:
+  - checkout: self
+  - checkout: dfc-servicetaxonomy-editor
+  - template: ../StepTemplates/CreateJarFile.yml
+    parameters:
+      DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
+    parameters:
+      ContainerRegistryAdminUser: ${{ parameters.DevSitContainerRegistryAdminUser }}
+      ContainerRegistryPassword: ${{ parameters.DevSitContainerRegistryPassword }}
+      DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
+      DockerfileName: ${{ parameters.DraftDockerfileName }}
+      ImageBaseName: ${{ parameters.DraftImageBaseName }}
+      ImageTag: ${{ parameters.ImageTag }}
+      ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jDraftescodb.yaml'
 
         
