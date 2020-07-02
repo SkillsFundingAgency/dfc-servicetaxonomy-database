@@ -31,7 +31,6 @@ jobs:
       ImageTag: ${{ parameters.ImageTag }}
       ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jescodb.yaml'
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
-    displayname: 'BuildNCSSTaxDraftEscoDbContainer'
     parameters:
       ContainerRegistryAdminUser: ${{ parameters.DevSitContainerRegistryAdminUser }}
       ContainerRegistryPassword: ${{ parameters.DevSitContainerRegistryPassword }}
