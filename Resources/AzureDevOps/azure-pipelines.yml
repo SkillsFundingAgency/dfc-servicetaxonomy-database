@@ -81,6 +81,8 @@ stages:
       Environment: DEV_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
       ImageBaseName: ${{ variables.ImageBaseName }}
+      DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+      VisitImageBaseName: ${{ variables.VisitImageBaseName }}
       KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)
