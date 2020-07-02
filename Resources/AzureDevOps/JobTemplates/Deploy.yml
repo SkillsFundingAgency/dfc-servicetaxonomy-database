@@ -42,6 +42,13 @@ jobs:
             scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
             scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
+        - task: AzurePowerShell@4
+          displayName: 'Azure PowerShell script: Set-CertficatesDirectoriesInFileShare'
+          inputs:
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
+            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
+            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxDraftStorageAccountName }} -Verbose'
+            azurePowerShellVersion: 'latestVersion'
         - checkout: dfc-devops
           path: 's/'
         - task: AzurePowerShell@4
@@ -50,6 +57,13 @@ jobs:
             azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
             scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
             scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
+            azurePowerShellVersion: 'latestVersion'
+        - task: AzurePowerShell@4
+          displayName: 'Azure PowerShell script: Export-KeyVaultCertToPemFiles'
+          inputs:
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
+            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
+            scriptArguments: '-CertificateSecretName ${{ parameters.DraftDatabaseCertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxDraftStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
         # create storage secret
         - task: Kubernetes@1
@@ -94,24 +108,7 @@ jobs:
             namespace: 'default'
             command: 'apply'
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb.yaml'
-        # convert and copy certificate to Draft Neo4k containers
-        - task: AzurePowerShell@4
-          displayName: 'Azure PowerShell script: Set-CertficatesDirectoriesInFileShare'
-          inputs:
-            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
-            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxDraftStorageAccountName }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        - checkout: dfc-devops
-          path: 's/'
-        - task: AzurePowerShell@4
-          displayName: 'Azure PowerShell script: Export-KeyVaultCertToPemFiles'
-          inputs:
-            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
-            scriptArguments: '-CertificateSecretName ${{ parameters.DraftDatabaseCertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxDraftStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        # create storage secret
+        # create storage secret for Draft Env
         - task: Kubernetes@1
           displayName: kubectl create for Draft storage secret
           inputs:
@@ -124,7 +121,7 @@ jobs:
             secretType: generic
             secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxDraftStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxDraftStorageAccountKey }}
             secretName: staxdraftsharedstr-account-secret
-        # create secret for neo4j default account password
+        # create secret for neo4j Draft Env default account password
         - task: Kubernetes@1
           displayName: kubectl create neo4jdraft secret
           inputs:
@@ -137,7 +134,7 @@ jobs:
             secretType: generic
             secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }}
             secretName: neo4j-account-secret
-        # deploy manifest
+        # deploy manifest For neo4j Draft Env
         - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
           displayName: 'Tokenization: Transform file neo4jdraftescodb.yaml'
           inputs:
