@@ -6,6 +6,7 @@ parameters:
   DockerfileContext: ''
   DockerfileName: ''
   DraftDockerfileName: ''
+  VisitDockerfileName: ''
   ImageBaseName: ''
   DraftImageBaseName: ''
   VisitImageBaseName: ''
@@ -41,11 +42,21 @@ jobs:
       ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jDraftescodb.yaml'
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
+      ContainerRegistryAdminUser: ${{ parameters.DevSitContainerRegistryAdminUser }}
+      ContainerRegistryPassword: ${{ parameters.DevSitContainerRegistryPassword }}
+      DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
+      DockerfileName: ${{ parameters.VisitDockerfileName }}
+      ImageBaseName: ${{ parameters.VisitImageBaseName }}
+      ImageTag: ${{ parameters.ImageTag }}
+      ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jVisit.yaml'
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
+    parameters:
       ContainerRegistryAdminUser: ${{ parameters.PrdContainerRegistryAdminUser }}
       ContainerRegistryPassword: ${{ parameters.PrdContainerRegistryPassword }}
       DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
       DockerfileName: ${{ parameters.DockerfileName }}
       ImageBaseName: ${{ parameters.ImageBaseName }}
       ImageTag: ${{ parameters.ImageTag }}
-
+      ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jescodb.yaml'
+ 
         

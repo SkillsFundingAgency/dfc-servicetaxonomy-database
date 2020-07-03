@@ -56,6 +56,7 @@ stages:
       DockerfileContext: 'Resources/Dockerfiles'
       DockerfileName: 'neo4jescodb.Dockerfile'
       DraftDockerfileName: 'neo4jDraftescodb.Dockerfile'
+      VisitDockerfileName: 'neo4jVisit.Dockerfile'
       ImageBaseName: ${{ variables.ImageBaseName }}
       DraftImageBaseName: ${{ variables.DraftImageBaseName }}
       VisitImageBaseName: ${{ variables.VisitImageBaseName }}
