@@ -1,6 +1,8 @@
 variables:
   ArmTemplateRoot: '$(Build.SourcesDirectory)\Resources\ArmTemplates'
   ImageBaseName: NCS.ServiceTaxonomy.EscoDb
+  DraftImageBaseName: NCS.ServiceTaxonomy.DraftEscoDB
+  VisitImageBaseName: NCS.ServiceTaxonomy.VisitDb
   SolutionBaseName: DFC.ServiceTaxonomy.Database
 
 resources:
@@ -53,7 +55,11 @@ stages:
       PrdContainerRegistryPassword: $(PrdContainerRegistryPassword)
       DockerfileContext: 'Resources/Dockerfiles'
       DockerfileName: 'neo4jescodb.Dockerfile'
+      DraftDockerfileName: 'neo4jDraftescodb.Dockerfile'
+      VisitDockerfileName: 'neo4jVisit.Dockerfile'
       ImageBaseName: ${{ variables.ImageBaseName }}
+      DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+      VisitImageBaseName: ${{ variables.VisitImageBaseName }}
       #TO DO: decide how to tag and publish image builds from branches
       ImageTag: $(Build.BuildNumber)
 
@@ -72,9 +78,13 @@ stages:
       AksResourceGroup: $(sharedResourceGroup)
       AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
       CertificateSecretName: $(DatabaseCertificateSecretName)
+      DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
+      VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
       Environment: DEV_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
       ImageBaseName: ${{ variables.ImageBaseName }}
+      DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+      VisitImageBaseName: ${{ variables.VisitImageBaseName }}
       KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)
@@ -83,7 +93,11 @@ stages:
       ServiceOfferingTag: $(ServiceOffering)
       SolutionBaseName: ${{ variables.SolutionBaseName }}
       StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
+      StaxDraftStorageAccountKey: $(dfcdevstaxdraftsharedstr)
+      StaxVisitStorageAccountKey: $(dfcdevstaxvisitsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
+      StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 - stage: DeployToSit
@@ -101,9 +115,13 @@ stages:
       AksResourceGroup: $(sharedResourceGroup)
       AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
       CertificateSecretName: $(DatabaseCertificateSecretName)
+      DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
+      VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
       Environment: SIT_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
       ImageBaseName: ${{ variables.ImageBaseName }}
+      DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+      VisitImageBaseName: ${{ variables.VisitImageBaseName }}
       KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)
@@ -112,7 +130,11 @@ stages:
       ServiceOfferingTag: $(ServiceOffering)
       SolutionBaseName: ${{ variables.SolutionBaseName }}
       StaxSharedStorageAccountKey: $(dfcsitstaxsharedstr)
+      StaxDraftStorageAccountKey: $(dfcsitstaxdraftsharedstr)
+      StaxVisitStorageAccountKey: $(dfcsitstaxvisitsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
+      StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 - stage: DeployToPP

@@ -11,6 +11,12 @@
         "storageAccountName": {
             "value": "__StaxSharedStorageAccountName__"
         },
+        "draftstorageAccountName": {
+            "value": "__StaxDraftStorageAccountName__"
+        },
+        "visitstorageAccountName": {
+            "value": "__StaxVisitStorageAccountName__"
+        },
         "storageAccountResourceGroup": {
             "value": "__StaxSharedResourceGroup__"
         }

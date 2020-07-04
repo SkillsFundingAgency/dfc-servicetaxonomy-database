@@ -1,0 +1,132 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: neo4jdraft-data-disk
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: managed-premium
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: neo4jdraft-escodb
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: neo4jdraft-escodb
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: neo4j-escodb
+        image: __ContainerRegistryAdminUser__.azurecr.io/ncs.servicetaxonomy.draftescodb:__DFCServiceTaxonomyDatabaseTag__
+        env:
+        - name: NEO4J_PWD
+          valueFrom:
+            secretKeyRef: 
+              name: neo4j-account-secret
+              key: password
+        - name: NEO4J_AUTH
+          valueFrom:
+            secretKeyRef: 
+              name: neo4j-account-secret
+              key: auth
+        - name: NEO4J_dbms_ssl_policy_bolt_base__directory
+          value: /var/certificates/default
+        - name: NEO4J_dbms_ssl_policy_bolt_public__certificate
+          value: /var/certificates/default/cert.pem
+        - name: NEO4J_dbms_ssl_policy_bolt_private__key
+          value: /var/certificates/default/privkey.pem
+        - name: NEO4J_dbms_ssl_policy_bolt_trusted__dir
+          value: /var/certificates/default/trusted
+        - name: NEO4J_dbms_ssl_policy_bolt_revoked__dir
+          value: /var/certificates/default/revoked
+        - name: NEO4J_dbms_ssl_policy_bolt_client__auth
+          value: NONE
+        - name: NEO4J_dbms_ssl_policy_https_base__directory
+          value: /var/certificates/default
+        - name: NEO4J_dbms_ssl_policy_https_public__certificate
+          value: /var/certificates/default/cert.pem
+        - name: NEO4J_dbms_ssl_policy_https_private__key
+          value: /var/certificates/default/privkey.pem
+        - name: NEO4J_dbms_ssl_policy_https_trusted__dir
+          value: /var/certificates/default/trusted
+        - name: NEO4J_dbms_ssl_policy_https_revoked__dir
+          value: /var/certificates/default/revoked
+        - name: NEO4J_dbms_ssl_policy_https_client__auth
+          value: NONE
+        - name: NEO4J_dbms_default__advertised__address
+          value: __Neo4jDraftCustomHostname__
+        - name: NEO4J_dbms_connector_bolt_advertised__address
+          value: __Neo4jDraftCustomHostname__:7687
+        - name: NEO4J_dbms_connector_https_advertised__address
+          value: __Neo4jDraftCustomHostname__:7473
+        - name: NEO4J_ncs_occupation__synonyms__file__url
+          value: __OrchardEditorUrl__/graphsync/synonyms/occupation/synonyms.txt
+        - name: NEO4J_ncs_skill__synonyms__file__url
+          value: __OrchardEditorUrl__/graphsync/synonyms/skill/synonyms.txt
+        ports:
+        - containerPort: 7473
+        - containerPort: 7687
+        resources:
+          requests:
+            cpu: 1500m
+            memory: "16G"
+          limits:
+            cpu: 1500m
+            memory: "16G"
+        volumeMounts:
+        - name: certificates
+          mountPath: /var/certificates
+        - name: data
+          mountPath: /data
+        - name: esco-rdf-files
+          mountPath: /var/lib/neo4j/import
+        securityContext: 
+          allowPrivilegeEscalation: false
+      volumes:
+      - name: certificates
+        azureFile:
+          secretName: staxdraftsharedstr-account-secret
+          shareName: certificates
+          readOnly: true
+      - name: data
+        persistentVolumeClaim:
+          claimName: neo4jdraft-data-disk
+      - name: esco-rdf-files
+        azureFile:
+          secretName: staxdraftsharedstr-account-secret
+          shareName: esco-rdf-files
+          readOnly: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+      service.beta.kubernetes.io/neo4j-escodb-resource-group: __StaxDbPublicIpAddressResourceGroup__
+  name: neo4jdraft-escodb
+spec:
+  type: LoadBalancer
+  loadBalancerIP: __StaxDraftDbPublicIpAddress__
+  ports:
+  - name: https
+    protocol: TCP
+    port: 7473
+    targetPort: 7473
+  - name: query 
+    protocol: TCP
+    port: 7687
+    targetPort: 7687
+  selector:
+    app: neo4jdraft-escodb

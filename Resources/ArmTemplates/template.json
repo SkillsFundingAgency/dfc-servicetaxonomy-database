@@ -11,6 +11,12 @@
         "storageAccountName": {
             "type": "string"
         },
+        "draftstorageAccountName": {
+            "type": "string"
+        },
+        "visitstorageAccountName": {
+            "type": "string"
+        },
         "storageAccountResourceGroup": {
             "type": "string"
         }
@@ -22,7 +28,11 @@
             "esco-rdf-files"
         ],
         "publicIpAddressName": "[concat(variables('resourcePrefix'), '-ip')]",
-        "resourcePrefix": "[tolower(concat('dfc-', parameters('environment'), '-stax-database'))]"
+        "draftpublicIpAddressName": "[concat(variables('draftresourcePrefix'), '-ip')]",
+        "visitpublicIpAddressName": "[concat(variables('visitresourcePrefix'), '-ip')]",
+        "resourcePrefix": "[tolower(concat('dfc-', parameters('environment'), '-stax-database'))]",
+        "draftresourcePrefix": "[tolower(concat('dfc-', parameters('environment'), '-stax-draft-database'))]",
+        "visitresourcePrefix": "[tolower(concat('dfc-', parameters('environment'), '-stax-visit-database'))]"
     },
     "resources": [
         {
@@ -53,6 +63,60 @@
             }
         },
         {
+            "name": "staxDraftDatabasePublicIp",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('aksNodesResourceGroup')]",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'public-ip.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "ipAddressName": {
+                        "value": "[variables('draftpublicIpAddressName')]"
+                    },
+                    "ipAddressSku": {
+                        "value": "Basic"
+                    },
+                    "allocationMethod": {
+                        "value": "Static"
+                    },
+                    "publicDnsLabel": {
+                        "value": "[variables('draftresourcePrefix')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "visitDatabasePublicIp",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('aksNodesResourceGroup')]",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'public-ip.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "ipAddressName": {
+                        "value": "[variables('visitpublicIpAddressName')]"
+                    },
+                    "ipAddressSku": {
+                        "value": "Basic"
+                    },
+                    "allocationMethod": {
+                        "value": "Static"
+                    },
+                    "publicDnsLabel": {
+                        "value": "[variables('visitresourcePrefix')]"
+                    }
+                }
+            }
+        },
+        {
             "name": "[concat(variables('fileShares')[copyIndex()], 'fileshare')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('storageAccountResourceGroup')]",
@@ -69,6 +133,56 @@
                     },
                     "storageAccountName": {
                         "value": "[parameters('storageAccountName')]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "fileSharesCopy",
+                "count": "[length(variables('fileShares'))]"
+            }
+        },
+        {
+            "name": "[concat(variables('fileShares')[copyIndex()], 'draftfileshare')]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('storageAccountResourceGroup')]",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'Storage/storage-account-fileshare.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "fileShareName": {
+                        "value": "[variables('fileShares')[copyIndex()]]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('draftstorageAccountName')]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "fileSharesCopy",
+                "count": "[length(variables('fileShares'))]"
+            }
+        },
+        {
+            "name": "[concat(variables('fileShares')[copyIndex(0)], 'visitfileshare')]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('storageAccountResourceGroup')]",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'Storage/storage-account-fileshare.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "fileShareName": {
+                        "value": "[variables('fileShares')[copyIndex(0)]]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('visitstorageAccountName')]"
                     }
                 }
             },
