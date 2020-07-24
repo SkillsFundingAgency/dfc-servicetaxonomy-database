@@ -25,6 +25,8 @@ ENV NEO4J_dbms_security_procedures_unrestricted=apoc.*,n10s.*,ncs.*
 ENV NEO4J_dbms_wrapper_java__additional=-Dneo4j.ext.udc.source=docker
 ENV NEO4J_dbms__jvm__additional=-Dunsupported.dbms.udc.source=docker
 ENV NEO4J_unsupported_dbms_tx__log_fail__on__corrupted__log__files=false
+ENV NEO4J_dbms__apoc__ttl__enabled=true
+ENV NEO4J_dbms__apoc__ttl__schedule=86400
 #add scripts and plugins
 COPY --chown=neo4j:neo4j Neo4jScripts /scripts
 RUN chmod -R 754 /scripts
