@@ -44,8 +44,6 @@ stages:
   jobs:
   - template: JobTemplates/RefreshEnvironment.yml
     parameters:
-      ArmTemplateRoot: ${{ variables.ArmTemplateRoot }}
-      SolutionBaseName: ${{ variables.SolutionBaseName }}
       DBPassword: $(dfc-dev-shared-sql)
 
 - stage: Build
