@@ -46,6 +46,7 @@ stages:
     parameters:
       ArmTemplateRoot: ${{ variables.ArmTemplateRoot }}
       SolutionBaseName: ${{ variables.SolutionBaseName }}
+      DBPassword: $(dfc-dev-shared-sql)
 
 - stage: Build
   variables:
