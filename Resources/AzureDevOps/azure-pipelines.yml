@@ -40,7 +40,7 @@ stages:
   variables:
     - group: dfc-shared-all
     - group: dfc-shared-dev
-    - group: dfc-dev-shared-kv
+    - group: 'KeyVault - dfc-dev-shared-kv'
   jobs:
   - template: JobTemplates/RefreshEnvironment.yml
     parameters:
