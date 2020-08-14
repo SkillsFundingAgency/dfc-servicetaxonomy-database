@@ -9,16 +9,16 @@ jobs:
   steps:
   - task: SqlAzureDacpacDeployment@1
     inputs:
-      azureConnectionType: 'connectedServiceName' # Optional. Options: connectedServiceName, connectedServiceNameARM
-      azureClassicSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)' # Required when azureConnectionType == ConnectedServiceName
-      #azureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)' # Required when azureConnectionType == ConnectedServiceNameARM
-      authenticationType: 'server' # Options: server, aadAuthenticationPassword, aadAuthenticationIntegrated, connectionString
+      azureConnectionType: 'ConnectedServiceNameARM' # Optional. Options: connectedServiceName, connectedServiceNameARM
+      #azureClassicSubscription: # Required when azureConnectionType == ConnectedServiceName
+      azureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)' # Required when azureConnectionType == ConnectedServiceNameARM
+      authenticationType: 'aadAuthenticationPassword' # Options: server, aadAuthenticationPassword, aadAuthenticationIntegrated, connectionString
       serverName: 'dfc-dev-shared-sql.database.windows.net' # Required when authenticationType == Server || AuthenticationType == AadAuthenticationPassword || AuthenticationType == AadAuthenticationIntegrated
       databaseName: 'dfc-dev-stax-editor-db' # Required when authenticationType == Server || AuthenticationType == AadAuthenticationPassword || AuthenticationType == AadAuthenticationIntegrated
-      sqlUsername: 'dfc_sqladmin' # Required when authenticationType == Server
-      sqlPassword: '$(dfc-dev-shared-sql)' # Required when authenticationType == Server
-      #aadSqlUsername: # Required when authenticationType == AadAuthenticationPassword
-      #aadSqlPassword: # Required when authenticationType == AadAuthenticationPassword
+      #sqlUsername: 'dfc_sqladmin' # Required when authenticationType == Server
+      #sqlPassword: '$(dfc-dev-shared-sql)' # Required when authenticationType == Server
+      aadSqlUsername: 'dfc_sqladmin' # Required when authenticationType == AadAuthenticationPassword
+      aadSqlPassword: $(dfc-dev-shared-sql) # Required when authenticationType == AadAuthenticationPassword
       #connectionString: # Required when authenticationType == ConnectionString
       deployType: 'inlineSqlTask' # Options: dacpacTask, sqlTask, inlineSqlTask
       #deploymentAction: 'Publish' # Required when deployType == DacpacTask. Options: publish, extract, export, import, script, driftReport, deployReport
