@@ -36,11 +36,22 @@ pr:
 
 stages:
 
+- stage: Refresh
+  variables:
+    - group: dfc-shared-all
+    - group: dfc-shared-dev
+    - group: dfc-dev-shared-kv
+  jobs:
+  - template: JobTemplates/RefreshEnvironment.yml
+    parameters:
+      ArmTemplateRoot: ${{ variables.ArmTemplateRoot }}
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
+
 - stage: Build
   variables:
     - group: dfc-shared-all
     - group: dfc-shared-dev
-
+    
   jobs:
   - template: JobTemplates/BuildResources.yml
     parameters:
