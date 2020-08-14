@@ -19,12 +19,12 @@ jobs:
       #aadSqlUsername: 'dfc_sqladmin' # Required when authenticationType == AadAuthenticationPassword
       #aadSqlPassword: '$(dfc-dev-shared-sql)' # Required when authenticationType == AadAuthenticationPassword
       #connectionString: # Required when authenticationType == ConnectionString
-      deployType: 'inlineSqlTask' # Options: dacpacTask, sqlTask, inlineSqlTask
+      deployType: 'sqlTask' # Options: dacpacTask, sqlTask, inlineSqlTask
       #deploymentAction: 'Publish' # Required when deployType == DacpacTask. Options: publish, extract, export, import, script, driftReport, deployReport
       #dacpacFile: # Required when deploymentAction == Publish || DeploymentAction == Script || DeploymentAction == DeployReport
       #bacpacFile: # Required when deploymentAction == Import
-      #sqlFile: # Required when deployType == SqlTask
-      sqlInline: 'DROP TABLE [dbo].[SampleTable]' # Required when deployType == InlineSqlTask
+      sqlFile: '$(Build.SourcesDirectory)/Sql/CreateSampleTables.sql' # Required when deployType == SqlTask
+      #sqlInline: 'DROP TABLE [dbo].[SampleTable]' # Required when deployType == InlineSqlTask
       #publishProfile: # Optional
       #additionalArguments: # Optional
       #sqlAdditionalArguments: # Optional
