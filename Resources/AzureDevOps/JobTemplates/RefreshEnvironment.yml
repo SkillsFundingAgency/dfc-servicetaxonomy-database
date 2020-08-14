@@ -9,8 +9,8 @@ jobs:
   steps:
   - task: SqlAzureDacpacDeployment@1
     inputs:
-      #azureConnectionType: 'ConnectedServiceNameARM' # Optional. Options: connectedServiceName, connectedServiceNameARM
-      #azureClassicSubscription: # Required when azureConnectionType == ConnectedServiceName
+      azureConnectionType: 'connectedServiceName' # Optional. Options: connectedServiceName, connectedServiceNameARM
+      azureClassicSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)' # Required when azureConnectionType == ConnectedServiceName
       #azureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)' # Required when azureConnectionType == ConnectedServiceNameARM
       authenticationType: 'server' # Options: server, aadAuthenticationPassword, aadAuthenticationIntegrated, connectionString
       serverName: 'dfc-dev-shared-sql.database.windows.net' # Required when authenticationType == Server || AuthenticationType == AadAuthenticationPassword || AuthenticationType == AadAuthenticationIntegrated
