@@ -18,7 +18,7 @@ jobs:
       #sqlUsername: 'dfc_sqladmin' # Required when authenticationType == Server
       #sqlPassword: '$(dfc-dev-shared-sql)' # Required when authenticationType == Server
       aadSqlUsername: 'dfc_sqladmin' # Required when authenticationType == AadAuthenticationPassword
-      aadSqlPassword: $(dfc-dev-shared-sql) # Required when authenticationType == AadAuthenticationPassword
+      aadSqlPassword: '$(dfc-dev-shared-sql)' # Required when authenticationType == AadAuthenticationPassword
       #connectionString: # Required when authenticationType == ConnectionString
       deployType: 'inlineSqlTask' # Options: dacpacTask, sqlTask, inlineSqlTask
       #deploymentAction: 'Publish' # Required when deployType == DacpacTask. Options: publish, extract, export, import, script, driftReport, deployReport
