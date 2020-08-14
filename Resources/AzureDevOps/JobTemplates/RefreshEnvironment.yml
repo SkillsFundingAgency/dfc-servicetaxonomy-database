@@ -16,7 +16,7 @@ jobs:
       serverName: 'dfc-dev-shared-sql.database.windows.net' # Required when authenticationType == Server || AuthenticationType == AadAuthenticationPassword || AuthenticationType == AadAuthenticationIntegrated
       databaseName: 'dfc-dev-stax-editor-db' # Required when authenticationType == Server || AuthenticationType == AadAuthenticationPassword || AuthenticationType == AadAuthenticationIntegrated
       sqlUsername: 'dfc_sqladmin' # Required when authenticationType == Server
-      sqlPassword: "'$(dfc-dev-shared-sql)'" # Required when authenticationType == Server
+      sqlPassword: 'cHA$#697ZDpubJRI' # Required when authenticationType == Server
       #aadSqlUsername: 'dfc_sqladmin' # Required when authenticationType == AadAuthenticationPassword
       #aadSqlPassword: '$(dfc-dev-shared-sql)' # Required when authenticationType == AadAuthenticationPassword
       #connectionString: # Required when authenticationType == ConnectionString
