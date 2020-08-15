@@ -9,12 +9,12 @@ jobs:
   - task: SqlAzureDacpacDeployment@1
     inputs:
       azureConnectionType: 'ConnectedServiceNameARM' # Optional. Options: connectedServiceName, connectedServiceNameARM
-      azureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)' # Required when azureConnectionType == ConnectedServiceNameARM
+      azureSubscription: '$(AzureDevOpsServiceConnection)' # Required when azureConnectionType == ConnectedServiceNameARM
       authenticationType: 'server' # Options: server, aadAuthenticationPassword, aadAuthenticationIntegrated, connectionString
       serverName: 'dfc-dev-shared-sql.database.windows.net' # Required when authenticationType == Server || AuthenticationType == AadAuthenticationPassword || AuthenticationType == AadAuthenticationIntegrated
       databaseName: 'dfc-dev-stax-editor-db' # Required when authenticationType == Server || AuthenticationType == AadAuthenticationPassword || AuthenticationType == AadAuthenticationIntegrated
       sqlUsername: 'dfc_sqladmin' # Required when authenticationType == Server
-      sqlPassword: ${{ parameters.DBPassword }} # Required when authenticationType == Server
+      sqlPassword: $(dfc-dev-shared-sql) # Required when authenticationType == Server
       deployType: 'sqlTask' # Options: dacpacTask, sqlTask, inlineSqlTask
       sqlFile: '$(Build.SourcesDirectory)/Sql/DropSampleTables.sql' # Required when deployType == SqlTask
       #additionalArguments: # Optional
