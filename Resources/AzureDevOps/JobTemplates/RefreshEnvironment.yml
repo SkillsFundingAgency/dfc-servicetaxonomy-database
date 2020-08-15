@@ -9,7 +9,7 @@ jobs:
   - task: SqlAzureDacpacDeployment@1
     inputs:
       azureConnectionType: 'ConnectedServiceNameARM' # Optional. Options: connectedServiceName, connectedServiceNameARM
-      azureSubscription: '$(AzureDevOpsServiceConnection)' # Required when azureConnectionType == ConnectedServiceNameARM
+      azureSubscription: $(AzureDevOpsServiceConnection) # Required when azureConnectionType == ConnectedServiceNameARM
       authenticationType: 'server' # Options: server, aadAuthenticationPassword, aadAuthenticationIntegrated, connectionString
       serverName: 'dfc-dev-shared-sql.database.windows.net' # Required when authenticationType == Server || AuthenticationType == AadAuthenticationPassword || AuthenticationType == AadAuthenticationIntegrated
       databaseName: 'dfc-dev-stax-editor-db' # Required when authenticationType == Server || AuthenticationType == AadAuthenticationPassword || AuthenticationType == AadAuthenticationIntegrated
