@@ -39,7 +39,6 @@ RUN apt-get install --no-install-recommends \
     git \
     iputils-ping \
     libcurl4 \
-    libicu55 \
     libunwind8 \
     netcat
 # curl install returns broken package error if installed alongside other packages
