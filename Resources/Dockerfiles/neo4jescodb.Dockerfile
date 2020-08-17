@@ -31,7 +31,7 @@ ENV NEO4J_unsupported_dbms_tx__log_fail__on__corrupted__log__files=false
 RUN apt-get update 
 # Required to install libicu55 on Ubuntu versions > 16.04, the base image of owasp/zap2docker-stable at the time of writing is later than 16.04
 #RUN apt-get install software-properties-common
-RUN add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
+#RUN add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
 
 RUN apt-get install --no-install-recommends \
     ca-certificates \
