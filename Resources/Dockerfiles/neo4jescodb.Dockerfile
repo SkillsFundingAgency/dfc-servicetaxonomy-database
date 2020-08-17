@@ -38,7 +38,7 @@ RUN apt-get install --no-install-recommends \
     jq \
     git \
     iputils-ping \
-    libcurl3 \
+    libcurl4 \
     libicu55 \
     libunwind8 \
     netcat
