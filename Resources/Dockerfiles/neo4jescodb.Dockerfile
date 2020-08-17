@@ -33,7 +33,7 @@ RUN apt-get update
 #RUN apt-get install software-properties-common
 #RUN add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
 
-RUN apt-get install --no-install-recommends \
+RUN apt-get install -y --no-install-recommends \
     ca-certificates \
     jq \
     git \
