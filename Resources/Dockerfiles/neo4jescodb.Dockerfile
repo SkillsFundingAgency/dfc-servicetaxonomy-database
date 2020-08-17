@@ -40,7 +40,8 @@ RUN apt-get install -y --no-install-recommends \
     iputils-ping \
     libcurl4 \
     libunwind8 \
-    netcat
+    netcat \
+    supervisor
 # curl install returns broken package error if installed alongside other packages
 RUN apt-get install --no-install-recommends curl
 # Finished installing dependencies for Azure DevOps agent
@@ -69,4 +70,5 @@ COPY --chown=neo4j:neo4j plugins /var/lib/neo4j/plugins
 #download jar files into plugins folder
 ADD --chown=neo4j:neo4j https://github.com/neo4j-labs/neosemantics/releases/download/4.0.0.1/neosemantics-4.0.0.1.jar plugins
 ADD --chown=neo4j:neo4j https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.0.0.12/apoc-4.0.0.12-all.jar plugins
-ENTRYPOINT ["/scripts/wrapper.sh"]
+#ENTRYPOINT ["/scripts/wrapper.sh"]
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/supervisor/supervisord.conf"]
