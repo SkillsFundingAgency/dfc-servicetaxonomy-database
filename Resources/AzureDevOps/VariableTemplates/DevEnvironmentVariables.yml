@@ -7,3 +7,5 @@ variables:
   value: dfc-dev-stax-database-rg
 - name: StaxDbPublicIpAddressResourceGroup
   value: $(AksNodeResourceGroupName)
+- name: AzureDevOpsUrl
+  value: $(System.TeamFoundationCollectionUri)

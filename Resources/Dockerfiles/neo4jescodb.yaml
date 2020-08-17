@@ -76,6 +76,18 @@ spec:
           value: __OrchardEditorUrl__/graphsync/synonyms/occupation/synonyms.txt
         - name: NEO4J_ncs_skill__synonyms__file__url
           value: __OrchardEditorUrl__/graphsync/synonyms/skill/synonyms.txt
+        - name: AZP_AGENT_NAME
+          value: ncs-neo4j-__DFCServiceTaxonomyDatabaseTag__-agent=__ReleaseEnvironmentName__-1
+        - name: AZP_POOL
+          value: 'NCS - Neo4j'
+        - name: AZP_TOKEN
+          valueFrom: 
+            secretKeyRef:
+              name: dfc-azuredevops-pat-token
+              key: pattokensecret
+        - name: AZP_URL
+          value: __AzureDevOpsUrl__
+
         ports:
         - containerPort: 7473
         - containerPort: 7687

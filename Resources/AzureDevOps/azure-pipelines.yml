@@ -43,8 +43,6 @@ stages:
     - group: 'KeyVault - dfc-dev-shared-kv'
   jobs:
   - template: JobTemplates/RefreshEnvironment.yml
-    parameters:
-      DBPassword: $(dfc-dev-shared-sql)
 
 - stage: Build
   variables:

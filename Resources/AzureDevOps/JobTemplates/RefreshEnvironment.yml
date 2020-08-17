@@ -1,6 +1,3 @@
-parameters:
-  DBPassword: ''
-
 jobs:
 - job: TestAndPublishArmTemplates
   displayName: Test and Publish Arm Templates
