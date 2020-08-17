@@ -13,7 +13,7 @@ jobs:
       sqlUsername: 'dfc_sqladmin' # Required when authenticationType == Server
       sqlPassword: $(dfc-dev-shared-sql) # Required when authenticationType == Server
       deployType: 'sqlTask' # Options: dacpacTask, sqlTask, inlineSqlTask
-      sqlFile: '$(Build.SourcesDirectory)/Sql/DropSTAXTables.sql' # Required when deployType == SqlTask
+      sqlFile: '$(Build.SourcesDirectory)/Sql/DropSampleTables.sql' # Required when deployType == SqlTask
       #additionalArguments: # Optional
       #sqlAdditionalArguments: # Optional
       #inlineAdditionalArguments: # Optional
