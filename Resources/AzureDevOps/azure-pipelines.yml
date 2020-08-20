@@ -36,6 +36,8 @@ pr:
 
 stages:
 
+- stage: Clean up Environment
+
 - stage: Build
   variables:
     - group: dfc-shared-all

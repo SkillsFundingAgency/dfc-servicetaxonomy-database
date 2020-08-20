@@ -11,11 +11,20 @@
         "storageAccountName": {
             "value": "__StaxSharedStorageAccountName__"
         },
+        "storageAccountName1": {
+            "value": "__StaxSharedStorageAccountName1__"
+        },
         "draftstorageAccountName": {
             "value": "__StaxDraftStorageAccountName__"
         },
+        "draftstorageAccountName1": {
+            "value": "__StaxDraftStorageAccountName1__"
+        },
         "visitstorageAccountName": {
             "value": "__StaxVisitStorageAccountName__"
+        },
+        "visitstorageAccountName1": {
+            "value": "__StaxVisitStorageAccountName1__"
         },
         "storageAccountResourceGroup": {
             "value": "__StaxSharedResourceGroup__"
