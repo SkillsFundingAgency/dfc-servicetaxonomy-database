@@ -72,7 +72,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('environment'),'pp')]",
+            "condition": "[equals(parameters('environment'),'PP')]",
             "name": "staxDatabasePublicIp1",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('aksNodesResourceGroup')]",
@@ -127,7 +127,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('environment'),'pp')]",
+            "condition": "[equals(parameters('environment'),'PP')]",
             "name": "staxDraftDatabasePublicIp1",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('aksNodesResourceGroup')]",
@@ -182,7 +182,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('environment'),'pp')]",
+            "condition": "[equals(parameters('environment'),'PP')]",
             "name": "visitDatabasePublicIp1",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('aksNodesResourceGroup')]",
@@ -235,7 +235,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('environment'),'pp')]",
+            "condition": "[equals(parameters('environment'),'PP')]",
             "name": "[concat(variables('fileShares')[copyIndex()], 'fileshare1')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('storageAccountResourceGroup')]",
@@ -286,7 +286,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('environment'),'pp')]",
+            "condition": "[equals(parameters('environment'),'PP')]",
             "name": "[concat(variables('fileShares')[copyIndex()], 'draftfileshare1')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('storageAccountResourceGroup')]",
@@ -337,7 +337,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('environment'),'pp')]",
+            "condition": "[equals(parameters('environment'),'PP')]",
             "name": "[concat(variables('fileShares')[copyIndex(0)], 'visitfileshare1')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('storageAccountResourceGroup')]",
