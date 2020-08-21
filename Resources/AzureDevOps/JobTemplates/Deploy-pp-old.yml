@@ -1,0 +1,83 @@
+parameters:
+  ArmTemplateRoot: '$(Pipeline.Workspace)/Dfc.ServiceTaxonomy.Database.Resources.ArmTemplates'
+  AksResourceGroup: ''
+  AzureSubscriptionEndpoint: ''
+  CertificateSecretName: ''
+  CertificateSecretName1: ''
+  DraftDatabaseCertificateSecretName: ''
+  DraftDatabaseCertificateSecretName1: ''
+  VisitDatabaseCertificateSecretName: ''
+  VisitDatabaseCertificateSecretName1: ''
+  Environment: ''
+  EnvironmentTag: ''
+  ImageBaseName: ''
+  DraftImageBaseName: ''
+  VisitImageBaseName: ''
+  KeyVaultName: ''
+  KubernetesCluster: ''
+  Neo4jPassword: ''
+  ParentBusinessTag: ''
+  ResourceGroup: ''
+  ServiceOfferingTag: ''
+  SolutionBaseName: ''
+  StaxSharedStorageAccountKey: ''
+  StaxSharedStorageAccount1Key: ''
+  StaxDraftStorageAccountKey: ''
+  StaxDraftStorageAccount1Key: ''
+  StaxVisitStorageAccountKey: ''
+  StaxVisitStorageAccount1Key: ''
+  StaxSharedStorageAccountName: ''
+  StaxSharedStorageAccountName1: ''
+  StaxDraftStorageAccountName: ''
+  StaxDraftStorageAccountName1: ''
+  StaxVisitStorageAccountName: ''
+  StaxVisitStorageAccountName1: ''
+  StaxSharedStorageAccountResourceGroup: ''
+
+jobs:
+- deployment: DeployARMTemplatesTo_${{ parameters.Environment }}
+  pool:
+    name: 'NCS - CI and CD'
+  environment: ${{ parameters.Environment }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - template: AzureDevOpsTemplates/Deploy/StepTemplates/dfc-arm-deploy.yml@dfc-devops
+          parameters:
+            ArmTemplateRoot: ${{ parameters.ArmTemplateRoot }}
+            AzureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
+            EnvironmentTag: ${{ parameters.EnvironmentTag }}
+            ParentBusinessTag: ${{ parameters.ParentBusinessTag }}
+            ResourceGroup: ${{ parameters.ResourceGroup }}
+            ServiceOfferingTag: ${{ parameters.ServiceOfferingTag }}
+
+- deployment: DeployPrimaryNeo4JEscoDBTo_${{ parameters.Environment }}
+  pool:
+    name: 'NCS - CI and CD'
+  displayName: "Deploy Primary Neo4jEscoDB"
+  environment: ${{ parameters.Environment }}
+  dependsOn:
+  - DeployARMTemplatesToTo_${{ parameters.Environment }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - task: AzurePowerShell@4
+          displayName: 'Set-CertficatesDirectoriesInFileShare'
+          inputs:
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
+            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
+            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -Verbose'
+            azurePowerShellVersion: 'latestVersion'
+        - checkout: dfc-devops
+          path: 's/'
+        - task: AzurePowerShell@4
+          displayName: 'Export-KeyVaultCertToPemFiles'
+          inputs:
+            azureSubscriptions: ${{ parameters.AzureSubscriptionEndpoint }}
+            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
+            scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
+            azurePowerShellVersion: 'latestversion'
+        - task: Kubernetes@1
+          displayName: 'create storage account secret' 

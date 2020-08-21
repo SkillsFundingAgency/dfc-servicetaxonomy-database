@@ -75,385 +75,385 @@ jobs:
         - task: AzurePowerShell@4
           displayName: 'Export-KeyVaultCertToPemFiles'
           inputs:
-	          azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-	          scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
-	          scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        - task: Kubernetes@1
-	        displayName: 'create storage account secret'
-	        inputs:
-	          connectionType: Azure Resource Manager
-	          azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-	          azureResourceGroup: ${{ parameters.AksResourceGroup }}
-	          kubernetesCluster: ${{ parameters.KubernetesCluster }}
-	          useClusterAdmin: true
-	          namespace: 'default'
-	          secretType: generic
-	          secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxSharedStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxSharedStorageAccountKey }}
-	          secretName: staxsharedstr-account-secret
-        - task: Kubernetes@1
-	        displayName: 'create neo4j default account passwordsecret'
-	        inputs:
-	          connectionType: Azure Resource Manager
-	          azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-	          azureResourceGroup: ${{ parameters.AksResourceGroup }}
-	          kubernetesCluster: ${{ parameters.KubernetesCluster }}
-	          useClusterAdmin: true
-	          namespace: 'default'
-	          secretType: generic
-	          secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }}
-	          secretName: neo4j-account-secret
-        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
-	        displayName: 'Tokenization: file neo4jescodb.yaml'
-	        inputs:
-	          SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }}
-	          TargetFileNames: neo4jescodb.yaml
-        - task: Kubernetes@1
-	        displayName: 'Deploy manifest for Primary Neo4jEscoDB'
-	        inputs:
-	          connectionType: Azure Resource Manager
-	          azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-	          azureResourceGroup: ${{ parameters.AksResourceGroup }}
-	          kubernetesCluster: ${{ parameters.KubernetesCluster }}
-	          useClusterAdmin: true
-	          namespace: 'default'
-	          command: 'apply'
-	          arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb.yaml'
-- deployment: DeploySecondaryNeo4JEscoDBTo_${{ parameters.Environment }}
-  pool:
-    name: 'NCS - CI and CD'
-  displayName: "Deploy Secondary Neo4jEscoDB"
-  environment: ${{ parameters.Environment }}
-  dependsOn:
-  - DeployPrimaryNeo4JEscoDBTo_${{ parameters.Environment }}
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-        - task: AzurePowerShell@4
-            displayName: 'Set-CertficatesDirectoriesInFileShare'
-            inputs:
-            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
-            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName1 }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        - checkout: dfc-devops
-          path: 's/'
-        - task: AzurePowerShell@4
-	          displayName: 'Export-KeyVaultCertToPemFiles'
-	          inputs:
-	          azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-	          scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
-	          scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName1 }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName1 }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        - task: Kubernetes@1
-	          displayName: 'create storage account secret'
-	          inputs:
-	          connectionType: Azure Resource Manager
-	          azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-	          azureResourceGroup: ${{ parameters.AksResourceGroup }}
-	          kubernetesCluster: ${{ parameters.KubernetesCluster }}
-	          useClusterAdmin: true
-	          namespace: 'default'
-	          secretType: generic
-	          secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxSharedStorageAccountName1 }} --from-literal=azurestorageaccountkey=${{ parameters.StaxSharedStorageAccount1Key }}
-	          secretName: staxsharedstr1-account-secret
-        - task: Kubernetes@1
-	          displayName: 'create neo4j default account passwordsecret'
-	          inputs:
-	          connectionType: Azure Resource Manager
-	          azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-	          azureResourceGroup: ${{ parameters.AksResourceGroup }}
-	          kubernetesCluster: ${{ parameters.KubernetesCluster }}
-	          useClusterAdmin: true
-	          namespace: 'default'
-	          secretType: generic
-	          secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }}
-	          secretName: neo4j-account-secret
-        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
-	          displayName: 'Tokenization: file neo4jescodb-1.yaml'
-	          inputs:
-	          SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }}
-	          TargetFileNames: neo4jescodb-1.yaml
-        - task: Kubernetes@1
-	          displayName: 'Deploy manifest for Secondary Neo4jEscoDB'
-	          inputs:
-	          connectionType: Azure Resource Manager
-	          azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-	          azureResourceGroup: ${{ parameters.AksResourceGroup }}
-	          kubernetesCluster: ${{ parameters.KubernetesCluster }}
-	          useClusterAdmin: true
-	          namespace: 'default'
-	          command: 'apply'
-	          arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb-1.yaml'
+            azureSubscriptions: ${{ parameters.AzureSubscriptionEndpoint }}
+            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
+            scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
+            azurePowerShellVersion: 'latestversion'
+        - task: Kubernetes@1 
+          displayName: 'create storage account secret' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            secretType: generic 
+            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxSharedStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxSharedStorageAccountKey }} 
+            secretName: staxsharedstr-account-secret 
+        - task: Kubernetes@1 
+          displayName: 'create neo4j default account passwordsecret' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            secretType: generic 
+            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
+            secretName: neo4j-account-secret 
+        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0 
+          displayName: 'Tokenization: file neo4jescodb.yaml' 
+          inputs: 
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }} 
+            TargetFileNames: neo4jescodb.yaml 
+        - task: Kubernetes@1 
+          displayName: 'Deploy manifest for Primary Neo4jEscoDB' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            command: 'apply' 
+            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb.yaml'
+ 
+- deployment: DeploySecondaryNeo4JEscoDBTo_${{ parameters.Environment }} 
+  displayName: "Deploy Secondary Neo4jEscoDB" 
+  environment: ${{ parameters.Environment }} 
+  dependsOn: 
+  - DeployPrimaryNeo4JEscoDBTo_${{ parameters.Environment }} 
+  strategy: 
+    runOnce: 
+      deploy: 
+        steps: 
+        - task: AzurePowerShell@4 
+          displayName: 'Set-CertficatesDirectoriesInFileShare' 
+          inputs: 
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }} 
+            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1 
+            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName1 }} -Verbose' 
+            azurePowerShellVersion: 'latestVersion' 
+        - checkout: dfc-devops 
+          path: 's/' 
+        - task: AzurePowerShell@4 
+          displayName: 'Export-KeyVaultCertToPemFiles' 
+          inputs: 
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }} 
+            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1 
+            scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName1 }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName1 }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose' 
+            azurePowerShellVersion: 'latestVersion' 
+        - task: Kubernetes@1 
+          displayName: 'create storage account secret' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            secretType: generic 
+            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxSharedStorageAccountName1 }} --from-literal=azurestorageaccountkey=${{ parameters.StaxSharedStorageAccount1Key }} 
+            secretName: staxsharedstr1-account-secret 
+        - task: Kubernetes@1 
+          displayName: 'create neo4j default account passwordsecret' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            secretType: generic 
+            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
+            secretName: neo4j-account-secret 
+        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0 
+          displayName: 'Tokenization: file neo4jescodb-1.yaml' 
+          inputs: 
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }} 
+            TargetFileNames: neo4jescodb-1.yaml 
+        - task: Kubernetes@1 
+          displayName: 'Deploy manifest for Secondary Neo4jEscoDB' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            command: 'apply' 
+            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb-1.yaml' 
 
 - deployment: DeployPrimaryNeo4JEscoDBDraftTo_${{ parameters.Environment }}
   pool:
     name: 'NCS - CI and CD'
-  displayName: "Deploy Primary Neo4jEscoDB Draft"
-  environment: ${{ parameters.Environment }}
-  dependsOn:
-  - DeploySecondaryNeo4JEscoDBTo_${{ parameters.Environment }}
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-        - task: AzurePowerShell@4
-            displayName: 'Set-CertficatesDirectoriesInFileShare'
-            inputs:
-            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
-            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxDraftStorageAccountName }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        - checkout: dfc-devops
-          path: 's/'
-        - task: AzurePowerShell@4
-	    	    displayName: 'Export-KeyVaultCertToPemFiles'
-            inputs:
-            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
-            scriptArguments: '-CertificateSecretName ${{ parameters.DraftDatabaseCertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxDraftStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        - task: Kubernetes@1
-	          displayName: 'create storage account secret'
-            inputs:
-            connectionType: Azure Resource Manager
-            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-            azureResourceGroup: ${{ parameters.AksResourceGroup }}
-            kubernetesCluster: ${{ parameters.KubernetesCluster }}
-            useClusterAdmin: true
-            namespace: 'default'
-            secretType: generic
-            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxDraftStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxDraftStorageAccountKey }}
-            secretName: staxdraftsharedstr-account-secret
-        - task: Kubernetes@1
-	          displayName: 'create neo4j default account passwordsecret'
-            inputs:
-            connectionType: Azure Resource Manager
-            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-            azureResourceGroup: ${{ parameters.AksResourceGroup }}
-            kubernetesCluster: ${{ parameters.KubernetesCluster }}
-            useClusterAdmin: true
-            namespace: 'default'
-            secretType: generic
-            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }}
-	          secretName: neo4j-account-secret
-        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
-	          displayName: 'Tokenization: file neo4jdraftescodb.yaml'
-	          inputs:
-	          SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }}
-	          TargetFileNames: neo4jdraftescodb.yaml
-        - task: Kubernetes@1
-	          displayName: 'Deploy manifest for PrimaryNeo4JEscoDB Draft'
-	          inputs:
-	          connectionType: Azure Resource Manager
-	          azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-	          azureResourceGroup: ${{ parameters.AksResourceGroup }}
-	          kubernetesCluster: ${{ parameters.KubernetesCluster }}
-	          useClusterAdmin: true
-	          namespace: 'default'
-	          command: 'apply'
+  displayName: "Deploy Primary Neo4jEscoDB Draft" 
+  environment: ${{ parameters.Environment }} 
+  dependsOn: 
+  - DeploySecondaryNeo4JEscoDBTo_${{ parameters.Environment }} 
+  strategy: 
+    runOnce: 
+      deploy: 
+        steps: 
+        - task: AzurePowerShell@4 
+          displayName: 'Set-CertficatesDirectoriesInFileShare' 
+          inputs: 
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }} 
+            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1 
+            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxDraftStorageAccountName }} -Verbose' 
+            azurePowerShellVersion: 'latestVersion' 
+        - checkout: dfc-devops 
+          path: 's/' 
+        - task: AzurePowerShell@4 
+          displayName: 'Export-KeyVaultCertToPemFiles' 
+          inputs: 
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }} 
+            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1 
+            scriptArguments: '-CertificateSecretName ${{ parameters.DraftDatabaseCertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxDraftStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose' 
+            azurePowerShellVersion: 'latestVersion' 
+        - task: Kubernetes@1 
+          displayName: 'create storage account secret' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            secretType: generic 
+            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxDraftStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxDraftStorageAccountKey }} 
+            secretName: staxdraftsharedstr-account-secret 
+        - task: Kubernetes@1 
+          displayName: 'create neo4j default account passwordsecret' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            secretType: generic 
+            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
+            secretName: neo4j-account-secret 
+        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0 
+          displayName: 'Tokenization: file neo4jdraftescodb.yaml' 
+          inputs: 
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }} 
+            TargetFileNames: neo4jdraftescodb.yaml 
+        - task: Kubernetes@1 
+          displayName: 'Deploy manifest for PrimaryNeo4JEscoDB Draft' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            command: 'apply' 
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.DraftImageBaseName }}/neo4jdraftescodb.yaml'
+
 - deployment: DeploySecondaryNeo4JEscoDBDraftTo_${{ parameters.Environment }}
   pool:
     name: 'NCS - CI and CD'
-  displayName: "Deploy Secondary Neo4jEscoDB Draft"
-  environment: ${{ parameters.Environment }}
-  dependsOn:
-  - DeployPrimaryNeo4JEscoDBDraftTo_${{ parameters.Environment }}
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-        - task: AzurePowerShell@4
-            displayName: 'Set-CertficatesDirectoriesInFileShare'
-            inputs:
-            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
-            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxDraftStorageAccountName1 }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        - checkout: dfc-devops
-          path: 's/'
-        - task: AzurePowerShell@4
-	    	    displayName: 'Export-KeyVaultCertToPemFiles'
-            inputs:
-            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
-            scriptArguments: '-CertificateSecretName ${{ parameters.DraftDatabaseCertificateSecretName1 }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxDraftStorageAccountName1 }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        - task: Kubernetes@1
-	          displayName: 'create storage account secret'
-            inputs:
-            connectionType: Azure Resource Manager
-            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-            azureResourceGroup: ${{ parameters.AksResourceGroup }}
-            kubernetesCluster: ${{ parameters.KubernetesCluster }}
-            useClusterAdmin: true
-            namespace: 'default'
-            secretType: generic
-            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxDraftStorageAccountName1 }} --from-literal=azurestorageaccountkey=${{ parameters.StaxDraftStorageAccount1Key }}
-            secretName: staxdraftsharedstr1-account-secret
-        - task: Kubernetes@1
-	          displayName: 'create neo4j default account passwordsecret'
-            inputs:
-            connectionType: Azure Resource Manager
-            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-            azureResourceGroup: ${{ parameters.AksResourceGroup }}
-            kubernetesCluster: ${{ parameters.KubernetesCluster }}
-            useClusterAdmin: true
-            namespace: 'default'
-            secretType: generic
-            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }}
-	          secretName: neo4j-account-secret
-        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
-	          displayName: 'Tokenization: file neo4jdraftescodb-1.yaml'
-	          inputs:
-	          SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }}
-	          TargetFileNames: neo4jdraftescodb-1.yaml
-        - task: Kubernetes@1
-	          displayName: 'Deploy manifest for SecondaryNeo4JEscoDB Draft'
-	          inputs:
-	          connectionType: Azure Resource Manager
-	          azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-	          azureResourceGroup: ${{ parameters.AksResourceGroup }}
-	          kubernetesCluster: ${{ parameters.KubernetesCluster }}
-	          useClusterAdmin: true
-	          namespace: 'default'
-	          command: 'apply'
-            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.DraftImageBaseName }}/neo4jdraftescodb-1.yaml'
-
+  displayName: "Deploy Secondary Neo4jEscoDB Draft" 
+  environment: ${{ parameters.Environment }} 
+  dependsOn: 
+  - DeployPrimaryNeo4JEscoDBDraftTo_${{ parameters.Environment }} 
+  strategy: 
+    runOnce: 
+      deploy: 
+        steps: 
+        - task: AzurePowerShell@4 
+          displayName: 'Set-CertficatesDirectoriesInFileShare' 
+          inputs: 
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }} 
+            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1 
+            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxDraftStorageAccountName1 }} -Verbose' 
+            azurePowerShellVersion: 'latestVersion' 
+        - checkout: dfc-devops 
+          path: 's/' 
+        - task: AzurePowerShell@4 
+          displayName: 'Export-KeyVaultCertToPemFiles' 
+          inputs: 
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }} 
+            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1 
+            scriptArguments: '-CertificateSecretName ${{ parameters.DraftDatabaseCertificateSecretName1 }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxDraftStorageAccountName1 }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose' 
+            azurePowerShellVersion: 'latestVersion' 
+        - task: Kubernetes@1 
+          displayName: 'create storage account secret' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            secretType: generic 
+            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxDraftStorageAccountName1 }} --from-literal=azurestorageaccountkey=${{ parameters.StaxDraftStorageAccount1Key }} 
+            secretName: staxdraftsharedstr1-account-secret 
+        - task: Kubernetes@1 
+          displayName: 'create neo4j default account passwordsecret' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            secretType: generic 
+            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
+            secretName: neo4j-account-secret 
+        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0 
+          displayName: 'Tokenization: file neo4jdraftescodb-1.yaml' 
+          inputs: 
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }} 
+            TargetFileNames: neo4jdraftescodb-1.yaml 
+        - task: Kubernetes@1 
+          displayName: 'Deploy manifest for SecondaryNeo4JEscoDB Draft' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            command: 'apply' 
+            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.DraftImageBaseName }}/neo4jdraftescodb-1.yaml' 
+ 
 - deployment: DeployPrimaryNeo4JVisitsTo_${{ parameters.Environment }}
   pool:
-    name: 'NCS - CI and CD'
-  displayName: "Deploy Primary Neo4jVisits"
-  environment: ${{ parameters.Environment }}
-  dependsOn:
-  - DeploySecondaryNeo4JEscoDBDraftTo_${{ parameters.Environment }}
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-        - task: AzurePowerShell@4
-            displayName: 'Set-CertficatesDirectoriesInFileShare'
-            inputs:
-            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
-            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxVisitStorageAccountName }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        - checkout: dfc-devops
-          path: 's/'
-        - task: AzurePowerShell@4
-	    	    displayName: 'Export-KeyVaultCertToPemFiles'
-            inputs:
-            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
-            scriptArguments: '-CertificateSecretName ${{ parameters.VisitDatabaseCertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxVisitStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        - task: Kubernetes@1
-	          displayName: 'create storage account secret'
-            inputs:
-            connectionType: Azure Resource Manager
-            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-            azureResourceGroup: ${{ parameters.AksResourceGroup }}
-            kubernetesCluster: ${{ parameters.KubernetesCluster }}
-            useClusterAdmin: true
-            namespace: 'default'
-            secretType: generic
-            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxVisitStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxVisitStorageAccountKey }}
-            secretName: staxvisitsharedstr-account-secret
-        - task: Kubernetes@1
-	          displayName: 'create neo4j default account passwordsecret'
-            inputs:
-            connectionType: Azure Resource Manager
-            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-            azureResourceGroup: ${{ parameters.AksResourceGroup }}
-            kubernetesCluster: ${{ parameters.KubernetesCluster }}
-            useClusterAdmin: true
-            namespace: 'default'
-            secretType: generic
-            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }}
-	          secretName: neo4j-account-secret
-        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
-	          displayName: 'Tokenization: file neo4jvisit.yaml'
-	          inputs:
-	          SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }}
-	          TargetFileNames: neo4jvisit.yaml
-        - task: Kubernetes@1
-	          displayName: 'Deploy manifest for PrimaryNeo4j Visits'
-	          inputs:
-	          connectionType: Azure Resource Manager
-	          azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-	          azureResourceGroup: ${{ parameters.AksResourceGroup }}
-	          kubernetesCluster: ${{ parameters.KubernetesCluster }}
-	          useClusterAdmin: true
-	          namespace: 'default'
-	          command: 'apply'
-            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.VisitImageBaseName }}/neo4jvisit.yaml'
-
+    name: 'NCS - CI and CD' 
+  displayName: "Deploy Primary Neo4jVisits" 
+  environment: ${{ parameters.Environment }} 
+  dependsOn: 
+  - DeploySecondaryNeo4JEscoDBDraftTo_${{ parameters.Environment }} 
+  strategy: 
+    runOnce: 
+      deploy: 
+        steps: 
+        - task: AzurePowerShell@4 
+          displayName: 'Set-CertficatesDirectoriesInFileShare' 
+          inputs: 
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }} 
+            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1 
+            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxVisitStorageAccountName }} -Verbose' 
+            azurePowerShellVersion: 'latestVersion' 
+        - checkout: dfc-devops 
+          path: 's/' 
+        - task: AzurePowerShell@4 
+          displayName: 'Export-KeyVaultCertToPemFiles' 
+          inputs: 
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }} 
+            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1 
+            scriptArguments: '-CertificateSecretName ${{ parameters.VisitDatabaseCertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxVisitStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose' 
+            azurePowerShellVersion: 'latestVersion' 
+        - task: Kubernetes@1 
+          displayName: 'create storage account secret' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            secretType: generic 
+            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxVisitStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxVisitStorageAccountKey }} 
+            secretName: staxvisitsharedstr-account-secret 
+        - task: Kubernetes@1 
+          displayName: 'create neo4j default account passwordsecret' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            secretType: generic 
+            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
+            secretName: neo4j-account-secret 
+        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0 
+          displayName: 'Tokenization: file neo4jvisit.yaml' 
+          inputs: 
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }} 
+            TargetFileNames: neo4jvisit.yaml 
+        - task: Kubernetes@1 
+          displayName: 'Deploy manifest for PrimaryNeo4j Visits' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            command: 'apply' 
+            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.VisitImageBaseName }}/neo4jvisit.yaml' 
+ 
 - deployment: DeploySecondaryNeo4JVisitsTo_${{ parameters.Environment }}
   pool:
-    name: 'NCS - CI and CD'
-  displayName: "Deploy Secondary Neo4jVisits"
-  environment: ${{ parameters.Environment }}
-  dependsOn:
-  - DeployPrimaryNeo4JVisitsTo_${{ parameters.Environment }}
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-        - task: AzurePowerShell@4
-            displayName: 'Set-CertficatesDirectoriesInFileShare'
-            inputs:
-            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
-            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxVisitStorageAccountName1 }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        - checkout: dfc-devops
-          path: 's/'
-        - task: AzurePowerShell@4
-	    	    displayName: 'Export-KeyVaultCertToPemFiles'
-            inputs:
-            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
-            scriptArguments: '-CertificateSecretName ${{ parameters.VisitDatabaseCertificateSecretName1 }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxVisitStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
-            azurePowerShellVersion: 'latestVersion'
-        - task: Kubernetes@1
-	          displayName: 'create storage account secret'
-            inputs:
-            connectionType: Azure Resource Manager
-            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-            azureResourceGroup: ${{ parameters.AksResourceGroup }}
-            kubernetesCluster: ${{ parameters.KubernetesCluster }}
-            useClusterAdmin: true
-            namespace: 'default'
-            secretType: generic
-            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxVisitStorageAccountName1 }} --from-literal=azurestorageaccountkey=${{ parameters.StaxVisitStorageAccountKey }}
-            secretName: staxvisitsharedstr1-account-secret
-        - task: Kubernetes@1
-	          displayName: 'create neo4j default account passwordsecret'
-            inputs:
-            connectionType: Azure Resource Manager
-            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-            azureResourceGroup: ${{ parameters.AksResourceGroup }}
-            kubernetesCluster: ${{ parameters.KubernetesCluster }}
-            useClusterAdmin: true
-            namespace: 'default'
-            secretType: generic
-            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }}
-	          secretName: neo4j-account-secret
-        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
-	          displayName: 'Tokenization: file neo4jvisit-1.yaml'
-	          inputs:
-	          SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }}
-	          TargetFileNames: neo4jvisit-1.yaml
-        - task: Kubernetes@1
-	          displayName: 'Deploy manifest for Secondary Neo4jVisits'
-	        inputs:
-	          connectionType: Azure Resource Manager
-	          azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
-	          azureResourceGroup: ${{ parameters.AksResourceGroup }}
-	          kubernetesCluster: ${{ parameters.KubernetesCluster }}
-	          useClusterAdmin: true
-	          namespace: 'default'
-	          command: 'apply'
-            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.VisitImageBaseName }}/neo4jvisit-1.yaml'
+    name: 'NCS - CI and CD' 
+  displayName: "Deploy Secondary Neo4jVisits" 
+  environment: ${{ parameters.Environment }} 
+  dependsOn: 
+  - DeployPrimaryNeo4JVisitsTo_${{ parameters.Environment }} 
+  strategy: 
+    runOnce: 
+      deploy: 
+        steps: 
+        - task: AzurePowerShell@4 
+          displayName: 'Set-CertficatesDirectoriesInFileShare' 
+          inputs: 
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }} 
+            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1 
+            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxVisitStorageAccountName1 }} -Verbose' 
+            azurePowerShellVersion: 'latestVersion' 
+        - checkout: dfc-devops 
+          path: 's/' 
+        - task: AzurePowerShell@4 
+          displayName: 'Export-KeyVaultCertToPemFiles' 
+          inputs: 
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }} 
+            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1 
+            scriptArguments: '-CertificateSecretName ${{ parameters.VisitDatabaseCertificateSecretName1 }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxVisitStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose' 
+            azurePowerShellVersion: 'latestVersion' 
+        - task: Kubernetes@1 
+          displayName: 'create storage account secret' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            secretType: generic 
+            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxVisitStorageAccountName1 }} --from-literal=azurestorageaccountkey=${{ parameters.StaxVisitStorageAccountKey }} 
+            secretName: staxvisitsharedstr1-account-secret 
+        - task: Kubernetes@1 
+          displayName: 'create neo4j default account passwordsecret' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            secretType: generic 
+            secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
+            secretName: neo4j-account-secret 
+        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0 
+          displayName: 'Tokenization: file neo4jvisit-1.yaml' 
+          inputs: 
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }} 
+            TargetFileNames: neo4jvisit-1.yaml 
+        - task: Kubernetes@1 
+          displayName: 'Deploy manifest for Secondary Neo4jVisits' 
+          inputs: 
+            connectionType: Azure Resource Manager 
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }} 
+            azureResourceGroup: ${{ parameters.AksResourceGroup }} 
+            kubernetesCluster: ${{ parameters.KubernetesCluster }} 
+            useClusterAdmin: true 
+            namespace: 'default' 
+            command: 'apply' 
+            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.VisitImageBaseName }}/neo4jvisit-1.yaml' 
