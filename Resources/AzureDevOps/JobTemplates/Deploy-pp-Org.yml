@@ -36,8 +36,6 @@ parameters:
 
 jobs:
 - deployment: DeployARMTemplatesTo_${{ parameters.Environment }}
-  pool:
-    name: 'NCS - CI and CD'
   environment: ${{ parameters.Environment }}
   strategy:
     runOnce:
@@ -53,8 +51,6 @@ jobs:
             ServiceOfferingTag: ${{ parameters.ServiceOfferingTag }}
 
 - deployment: DeployPrimaryNeo4JEscoDBTo_${{ parameters.Environment }}
-  pool:
-    name: 'NCS - CI and CD'
   displayName: "Deploy Primary Neo4jEscoDB"
   environment: ${{ parameters.Environment }}
   dependsOn:
@@ -70,8 +66,10 @@ jobs:
             scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
             scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
+
         - checkout: dfc-devops
           path: 's/'
+
         - task: AzurePowerShell@4
           	displayName: 'Export-KeyVaultCertToPemFiles'
 	          inputs:
@@ -79,6 +77,7 @@ jobs:
 	            scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
 	            scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
               azurePowerShellVersion: 'latestVersion'
+
         - task: Kubernetes@1
 	        displayName: 'create storage account secret'
 	        inputs:
@@ -91,6 +90,7 @@ jobs:
 	          secretType: generic
 	          secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxSharedStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxSharedStorageAccountKey }}
 	          secretName: staxsharedstr-account-secret
+  
         - task: Kubernetes@1
 	        displayName: 'create neo4j default account passwordsecret'
 	        inputs:
@@ -103,11 +103,13 @@ jobs:
 	          secretType: generic
 	          secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }}
 	          secretName: neo4j-account-secret
+
         - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
 	        displayName: 'Tokenization: file neo4jescodb.yaml'
 	        inputs:
 	          SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }}
 	          TargetFileNames: neo4jescodb.yaml
+
         - task: Kubernetes@1
 	        displayName: 'Deploy manifest for Primary Neo4jEscoDB'
 	        inputs:
@@ -119,9 +121,8 @@ jobs:
 	          namespace: 'default'
 	          command: 'apply'
 	          arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb.yaml'
+
 - deployment: DeploySecondaryNeo4JEscoDBTo_${{ parameters.Environment }}
-  pool:
-    name: 'NCS - CI and CD'
   displayName: "Deploy Secondary Neo4jEscoDB"
   environment: ${{ parameters.Environment }}
   dependsOn:
@@ -188,8 +189,6 @@ jobs:
 	          arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb-1.yaml'
 
 - deployment: DeployPrimaryNeo4JEscoDBDraftTo_${{ parameters.Environment }}
-  pool:
-    name: 'NCS - CI and CD'
   displayName: "Deploy Primary Neo4jEscoDB Draft"
   environment: ${{ parameters.Environment }}
   dependsOn:
@@ -255,8 +254,6 @@ jobs:
 	          command: 'apply'
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.DraftImageBaseName }}/neo4jdraftescodb.yaml'
 - deployment: DeploySecondaryNeo4JEscoDBDraftTo_${{ parameters.Environment }}
-  pool:
-    name: 'NCS - CI and CD'
   displayName: "Deploy Secondary Neo4jEscoDB Draft"
   environment: ${{ parameters.Environment }}
   dependsOn:
@@ -323,8 +320,6 @@ jobs:
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.DraftImageBaseName }}/neo4jdraftescodb-1.yaml'
 
 - deployment: DeployPrimaryNeo4JVisitsTo_${{ parameters.Environment }}
-  pool:
-    name: 'NCS - CI and CD'
   displayName: "Deploy Primary Neo4jVisits"
   environment: ${{ parameters.Environment }}
   dependsOn:
@@ -391,8 +386,6 @@ jobs:
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.VisitImageBaseName }}/neo4jvisit.yaml'
 
 - deployment: DeploySecondaryNeo4JVisitsTo_${{ parameters.Environment }}
-  pool:
-    name: 'NCS - CI and CD'
   displayName: "Deploy Secondary Neo4jVisits"
   environment: ${{ parameters.Environment }}
   dependsOn:
