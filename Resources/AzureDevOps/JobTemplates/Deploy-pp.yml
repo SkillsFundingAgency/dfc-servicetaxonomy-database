@@ -34,9 +34,6 @@ parameters:
   StaxVisitStorageAccountName1: ''
   StaxSharedStorageAccountResourceGroup: ''
 
-pool:
-  name: 'NCS - CI and CD'
-
 jobs:
 - deployment: DeployARMTemplatesTo_${{ parameters.Environment }}
   environment: ${{ parameters.Environment }}
@@ -54,7 +51,7 @@ jobs:
             ServiceOfferingTag: ${{ parameters.ServiceOfferingTag }}
 
 - deployment: DeployPrimaryNeo4JEscoDBTo_${{ parameters.Environment }}
-  displayname: "Deploy Primary Neo4jEscoDB"
+  displayName: "Deploy Primary Neo4jEscoDB"
   environment: ${{ parameters.Environment }}
   dependsOn:
   - DeployARMTemplatesToTo_${{ parameters.Environment }}
@@ -120,7 +117,7 @@ jobs:
 	          arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb.yaml'
 
 - deployment: DeploySecondaryNeo4JEscoDBTo_${{ parameters.Environment }}
-  displayname: "Deploy Secondary Neo4jEscoDB"
+  displayName: "Deploy Secondary Neo4jEscoDB"
   environment: ${{ parameters.Environment }}
   dependsOn:
   - DeployPrimaryNeo4JEscoDBTo_${{ parameters.Environment }}
@@ -186,7 +183,7 @@ jobs:
 	          arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb-1.yaml'
 
 - deployment: DeployPrimaryNeo4JEscoDBDraftTo_${{ parameters.Environment }}
-  displayname: "Deploy Primary Neo4jEscoDB Draft"
+  displayName: "Deploy Primary Neo4jEscoDB Draft"
   environment: ${{ parameters.Environment }}
   dependsOn:
   - DeploySecondaryNeo4JEscoDBTo_${{ parameters.Environment }}
@@ -251,7 +248,7 @@ jobs:
 	          command: 'apply'
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.DraftImageBaseName }}/neo4jdraftescodb.yaml'
 - deployment: DeploySecondaryNeo4JEscoDBDraftTo_${{ parameters.Environment }}
-  displayname: "Deploy Secondary Neo4jEscoDB Draft"
+  displayName: "Deploy Secondary Neo4jEscoDB Draft"
   environment: ${{ parameters.Environment }}
   dependsOn:
   - DeployPrimaryNeo4JEscoDBDraftTo_${{ parameters.Environment }}
@@ -317,7 +314,7 @@ jobs:
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.DraftImageBaseName }}/neo4jdraftescodb-1.yaml'
 
 - deployment: DeployPrimaryNeo4JVisitsTo_${{ parameters.Environment }}
-  displayname: "Deploy Primary Neo4jVisits"
+  displayName: "Deploy Primary Neo4jVisits"
   environment: ${{ parameters.Environment }}
   dependsOn:
   - DeploySecondaryNeo4JEscoDBDraftTo_${{ parameters.Environment }}
@@ -383,7 +380,7 @@ jobs:
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.VisitImageBaseName }}/neo4jvisit.yaml'
 
 - deployment: DeploySecondaryNeo4JVisitsTo_${{ parameters.Environment }}
-  displayname: "Deploy Secondary Neo4jVisits"
+  displayName: "Deploy Secondary Neo4jVisits"
   environment: ${{ parameters.Environment }}
   dependsOn:
   - DeployPrimaryNeo4JVisitsTo_${{ parameters.Environment }}
