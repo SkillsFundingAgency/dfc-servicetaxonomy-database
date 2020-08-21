@@ -1,7 +1,7 @@
 parameters:
   ArmTemplateRoot: '$(Pipeline.Workspace)/Dfc.ServiceTaxonomy.Database.Resources.ArmTemplates'
   AksResourceGroup: ''
-  AzureSubscriptionEndpoint: ''
+  AzureSubscriptionEndpoint: 'SFA-DIG-PreProd (931bc9f6-359c-4f65-a753-1ee191a1fd6c)'
   CertificateSecretName: ''
   CertificateSecretName1: ''
   DraftDatabaseCertificateSecretName: ''
