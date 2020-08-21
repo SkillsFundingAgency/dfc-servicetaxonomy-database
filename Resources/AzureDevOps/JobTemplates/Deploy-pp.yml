@@ -71,7 +71,7 @@ jobs:
           path: 's/'
 
         - task: AzurePowerShell@4
-	        displayName: 'Export-KeyVaultCertToPemFiles'
+        	displayName: 'Export-KeyVaultCertToPemFiles'
 	        inputs:
 	          azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
 	          scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
