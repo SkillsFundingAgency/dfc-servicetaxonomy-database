@@ -67,7 +67,7 @@ jobs:
             scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
         - checkout: dfc-devops
-        path: 's/'
+            path: 's/'
         - task: AzurePowerShell@4
 	        displayName: 'Export-KeyVaultCertToPemFiles'
 	        inputs:
