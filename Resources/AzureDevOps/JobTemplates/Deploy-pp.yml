@@ -58,7 +58,7 @@ jobs:
   displayName: "Deploy Primary Neo4jEscoDB"
   environment: ${{ parameters.Environment }}
   dependsOn:
-  - DeployARMTemplatesToTo_${{ parameters.Environment }}
+  - DeployARMTemplatesTo_${{ parameters.Environment }}
   strategy:
     runOnce:
       deploy:
