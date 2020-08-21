@@ -418,7 +418,7 @@ jobs:
           inputs: 
             azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }} 
             scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1 
-            scriptArguments: '-CertificateSecretName ${{ parameters.VisitDatabaseCertificateSecretName1 }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxVisitStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose' 
+            scriptArguments: '-CertificateSecretName ${{ parameters.VisitDatabaseCertificateSecretName1 }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxVisitStorageAccountName1 }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose' 
             azurePowerShellVersion: 'latestVersion' 
         - task: Kubernetes@1 
           displayName: 'create storage account secret' 
