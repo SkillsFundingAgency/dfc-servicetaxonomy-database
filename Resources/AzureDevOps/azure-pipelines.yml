@@ -1,8 +1,11 @@
 variables:
   ArmTemplateRoot: '$(Build.SourcesDirectory)\Resources\ArmTemplates'
   ImageBaseName: NCS.ServiceTaxonomy.EscoDb
+  Image1BaseName: NCS.ServiceTaxonomy.EscoDb-1
   DraftImageBaseName: NCS.ServiceTaxonomy.DraftEscoDB
+  Draft1ImageBaseName: NCS.ServiceTaxonomy.DraftEscoDB-1
   VisitImageBaseName: NCS.ServiceTaxonomy.VisitDb
+  Visit1ImageBaseName: NCS.ServiceTaxonomy.VisitDb-1
   SolutionBaseName: DFC.ServiceTaxonomy.Database
 
 resources:
@@ -58,8 +61,11 @@ stages:
       DraftDockerfileName: 'neo4jDraftescodb.Dockerfile'
       VisitDockerfileName: 'neo4jVisit.Dockerfile'
       ImageBaseName: ${{ variables.ImageBaseName }}
+      Image1BaseName: ${{ variables.Image1BaseName }}
       DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+      Draft1ImageBaseName: ${{ variables.Draft1ImageBaseName }}
       VisitImageBaseName: ${{ variables.VisitImageBaseName }}
+      Visit1ImageBaseName: ${{ variables.Visit1ImageBaseName }}
       #TO DO: decide how to tag and publish image builds from branches
       ImageTag: $(Build.BuildNumber)
 
@@ -160,8 +166,11 @@ stages:
       Environment: PP_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
       ImageBaseName: ${{ variables.ImageBaseName }}
+      Image1BaseName: ${{ variables.Image1BaseName }}
       DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+      Draft1ImageBaseName: ${{ variables.Draft1ImageBaseName }}
       VisitImageBaseName: ${{ variables.VisitImageBaseName }}
+      Visit1ImageBaseName: ${{ variables.Visit1ImageBaseName }}
       KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)

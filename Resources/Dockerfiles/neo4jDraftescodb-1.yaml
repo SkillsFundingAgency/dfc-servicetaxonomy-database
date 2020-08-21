@@ -30,7 +30,7 @@ spec:
         "beta.kubernetes.io/os": linux
       containers:
       - name: neo4j-escodb-1
-        image: __ContainerRegistryAdminUser__.azurecr.io/ncs.servicetaxonomy.draftescodb:__DFCServiceTaxonomyDatabaseTag__
+        image: __ContainerRegistryAdminUser__.azurecr.io/ncs.servicetaxonomy.draftescodb-1:__DFCServiceTaxonomyDatabaseTag__
         env:
         - name: NEO4J_PWD
           valueFrom:
