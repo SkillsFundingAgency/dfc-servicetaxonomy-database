@@ -11,8 +11,11 @@ parameters:
   Environment: ''
   EnvironmentTag: ''
   ImageBaseName: ''
+  Image1BaseName: ''
   DraftImageBaseName: ''
+  Draft1ImageBaseName: ''
   VisitImageBaseName: ''
+  Visit1ImageBaseName: ''
   KeyVaultName: ''
   KubernetesCluster: ''
   Neo4jPassword: ''
@@ -172,7 +175,7 @@ jobs:
         - task: esfadevops.Tokenization.custom-build-task.Tokenization@0 
           displayName: 'Tokenization: file neo4jescodb-1.yaml' 
           inputs: 
-            SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }} 
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.Image1BaseName }} 
             TargetFileNames: neo4jescodb-1.yaml 
         - task: Kubernetes@1 
           displayName: 'Deploy manifest for Secondary Neo4jEscoDB' 
@@ -184,7 +187,7 @@ jobs:
             useClusterAdmin: true 
             namespace: 'default' 
             command: 'apply' 
-            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb-1.yaml' 
+            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.Image1BaseName }}/neo4jescodb-1.yaml' 
 
 - deployment: DeployPrimaryNeo4JEscoDBDraftTo_${{ parameters.Environment }}
   pool:
@@ -240,7 +243,7 @@ jobs:
         - task: esfadevops.Tokenization.custom-build-task.Tokenization@0 
           displayName: 'Tokenization: file neo4jdraftescodb.yaml' 
           inputs: 
-            SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }} 
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.DraftImageBaseName }} 
             TargetFileNames: neo4jdraftescodb.yaml 
         - task: Kubernetes@1 
           displayName: 'Deploy manifest for PrimaryNeo4JEscoDB Draft' 
@@ -308,7 +311,7 @@ jobs:
         - task: esfadevops.Tokenization.custom-build-task.Tokenization@0 
           displayName: 'Tokenization: file neo4jdraftescodb-1.yaml' 
           inputs: 
-            SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }} 
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.Draft1ImageBaseName }} 
             TargetFileNames: neo4jdraftescodb-1.yaml 
         - task: Kubernetes@1 
           displayName: 'Deploy manifest for SecondaryNeo4JEscoDB Draft' 
@@ -320,7 +323,7 @@ jobs:
             useClusterAdmin: true 
             namespace: 'default' 
             command: 'apply' 
-            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.DraftImageBaseName }}/neo4jdraftescodb-1.yaml' 
+            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.Draft1ImageBaseName }}/neo4jdraftescodb-1.yaml' 
  
 - deployment: DeployPrimaryNeo4JVisitsTo_${{ parameters.Environment }}
   pool:
@@ -376,7 +379,7 @@ jobs:
         - task: esfadevops.Tokenization.custom-build-task.Tokenization@0 
           displayName: 'Tokenization: file neo4jvisit.yaml' 
           inputs: 
-            SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }} 
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.VisitImageBaseName }} 
             TargetFileNames: neo4jvisit.yaml 
         - task: Kubernetes@1 
           displayName: 'Deploy manifest for PrimaryNeo4j Visits' 
@@ -444,7 +447,7 @@ jobs:
         - task: esfadevops.Tokenization.custom-build-task.Tokenization@0 
           displayName: 'Tokenization: file neo4jvisit-1.yaml' 
           inputs: 
-            SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }} 
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.Visit1ImageBaseName }} 
             TargetFileNames: neo4jvisit-1.yaml 
         - task: Kubernetes@1 
           displayName: 'Deploy manifest for Secondary Neo4jVisits' 
@@ -456,4 +459,4 @@ jobs:
             useClusterAdmin: true 
             namespace: 'default' 
             command: 'apply' 
-            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.VisitImageBaseName }}/neo4jvisit-1.yaml' 
+            arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.Visit1ImageBaseName }}/neo4jvisit-1.yaml' 
