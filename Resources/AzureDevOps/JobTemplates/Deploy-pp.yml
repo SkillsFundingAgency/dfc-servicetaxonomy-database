@@ -61,20 +61,23 @@ jobs:
         steps:
         - task: AzurePowerShell@4
           displayName: 'Set-CertficatesDirectoriesInFileShare'
-            inputs:
-              azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
-              scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
-              scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -Verbose'
-              azurePowerShellVersion: 'latestVersion'
+          inputs:
+            azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
+            scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Set-CertficatesDirectoriesInFileShare.ps1
+            scriptArguments: '-ResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -ShareName "certificates" -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -Verbose'
+            azurePowerShellVersion: 'latestVersion'
+
         - checkout: dfc-devops
           path: 's/'
+
         - task: AzurePowerShell@4
-	          displayName: 'Export-KeyVaultCertToPemFiles'
-	          inputs:
+	        displayName: 'Export-KeyVaultCertToPemFiles'
+	        inputs:
 	          azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
 	          scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
 	          scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
+
         - task: Kubernetes@1
 	        displayName: 'create storage account secret'
 	        inputs:
@@ -87,6 +90,7 @@ jobs:
 	          secretType: generic
 	          secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxSharedStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxSharedStorageAccountKey }}
 	          secretName: staxsharedstr-account-secret
+  
         - task: Kubernetes@1
 	        displayName: 'create neo4j default account passwordsecret'
 	        inputs:
@@ -99,11 +103,13 @@ jobs:
 	          secretType: generic
 	          secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }}
 	          secretName: neo4j-account-secret
+
         - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
 	        displayName: 'Tokenization: file neo4jescodb.yaml'
 	        inputs:
 	          SourcePath: $(Pipeline.Workspace)/${{ parameters.ImageBaseName }}
 	          TargetFileNames: neo4jescodb.yaml
+
         - task: Kubernetes@1
 	        displayName: 'Deploy manifest for Primary Neo4jEscoDB'
 	        inputs:
