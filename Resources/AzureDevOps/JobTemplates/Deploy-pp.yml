@@ -74,7 +74,7 @@ jobs:
           path: 's/'
         - task: AzurePowerShell@4
           displayName: 'Export-KeyVaultCertToPemFiles'
-	        inputs:
+          inputs:
 	          azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
 	          scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
 	          scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
