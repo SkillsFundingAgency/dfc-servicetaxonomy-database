@@ -11,7 +11,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.11.0
+    ref: refs/tags/v1.11.2
     endpoint: 'GitHub (ESFA)'
   - repository: dfc-servicetaxonomy-editor
     type: github
@@ -147,14 +147,21 @@ stages:
     - group: dfc-stax-shared-pp
     - template: VariableTemplates\PPEnvironmentVariables.yml
   jobs:
-  - template: JobTemplates/Deploy.yml
+  - template: JobTemplates/Deploy-pp.yml
     parameters:
       AksResourceGroup: $(sharedResourceGroup)
       AzureSubscriptionEndpoint: 'SFA-DIG-PreProd (931bc9f6-359c-4f65-a753-1ee191a1fd6c)'
       CertificateSecretName: $(DatabaseCertificateSecretName)
+      CertificateSecretName1: $(DatabaseCertificateSecretName1)
+      DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
+      DraftDatabaseCertificateSecretName1: $(DraftDatabaseCertificateSecretName1)
+      VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
+      VisitDatabaseCertificateSecretName1: $(VisitDatabaseCertificateSecretName1)
       Environment: PP_SERVICETAXONOMY
       EnvironmentTag: $(EnvironmentTag)
       ImageBaseName: ${{ variables.ImageBaseName }}
+      DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+      VisitImageBaseName: ${{ variables.VisitImageBaseName }}
       KeyVaultName: $(sharedKeyVaultName)
       KubernetesCluster: $(sharedAksCluster)
       Neo4jPassword: $(Neo4jPassword)
@@ -163,7 +170,17 @@ stages:
       ServiceOfferingTag: $(ServiceOffering)
       SolutionBaseName: ${{ variables.SolutionBaseName }}
       StaxSharedStorageAccountKey: $(dfcppstaxsharedstr)
+      StaxSharedStorageAccount1Key: $(dfcppstaxsharedstr1)
+      StaxDraftStorageAccountKey: $(dfcppstaxdraftsharedstr)
+      StaxDraftStorageAccount1Key: $(dfcppstaxdraftsharedstr1)
+      StaxVisitStorageAccountKey: $(dfcppstaxvisitsharedstr)
+      StaxVisitStorageAccount1Key: $(dfcppstaxvisitsharedstr1)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxSharedStorageAccountName1: $(StaxSharedStorageAccountName1)
+      StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
+      StaxDraftStorageAccountName1: $(StaxDraftStorageAccountName1)
+      StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
+      StaxVisitStorageAccountName1: $(StaxVisitStorageAccountName1)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 
