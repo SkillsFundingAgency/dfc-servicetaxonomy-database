@@ -11,10 +11,19 @@
         "storageAccountName": {
             "type": "string"
         },
+        "storageAccountName1": {
+            "type": "string"
+        },
         "draftstorageAccountName": {
             "type": "string"
         },
+        "draftstorageAccountName1": {
+            "type": "string"
+        },
         "visitstorageAccountName": {
+            "type": "string"
+        },
+        "visitstorageAccountName1": {
             "type": "string"
         },
         "storageAccountResourceGroup": {
@@ -63,6 +72,34 @@
             }
         },
         {
+            "condition": "[equals(parameters('environment'),'PP')]",
+            "name": "staxDatabasePublicIp1",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('aksNodesResourceGroup')]",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'public-ip.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "ipAddressName": {
+                        "value": "[concat(variables('publicIpAddressName'),'-1')]"
+                    },
+                    "ipAddressSku": {
+                        "value": "Basic"
+                    },
+                    "allocationMethod": {
+                        "value": "Static"
+                    },
+                    "publicDnsLabel": {
+                        "value": "[concat(variables('resourcePrefix'),'-1')]"
+                    }
+                }
+            }
+        },
+        {
             "name": "staxDraftDatabasePublicIp",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('aksNodesResourceGroup')]",
@@ -85,6 +122,34 @@
                     },
                     "publicDnsLabel": {
                         "value": "[variables('draftresourcePrefix')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('environment'),'PP')]",
+            "name": "staxDraftDatabasePublicIp1",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('aksNodesResourceGroup')]",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'public-ip.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "ipAddressName": {
+                        "value": "[concat(variables('draftpublicIpAddressName'),'-1')]"
+                    },
+                    "ipAddressSku": {
+                        "value": "Basic"
+                    },
+                    "allocationMethod": {
+                        "value": "Static"
+                    },
+                    "publicDnsLabel": {
+                        "value": "[concat(variables('draftresourcePrefix'),'-1')]"
                     }
                 }
             }
@@ -117,6 +182,34 @@
             }
         },
         {
+            "condition": "[equals(parameters('environment'),'PP')]",
+            "name": "visitDatabasePublicIp1",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('aksNodesResourceGroup')]",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'public-ip.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "ipAddressName": {
+                        "value": "[concat(variables('visitpublicIpAddressName'),'-1')]"
+                    },
+                    "ipAddressSku": {
+                        "value": "Basic"
+                    },
+                    "allocationMethod": {
+                        "value": "Static"
+                    },
+                    "publicDnsLabel": {
+                        "value": "[concat(variables('visitresourcePrefix'),'-1')]"
+                    }
+                }
+            }
+        },
+        {
             "name": "[concat(variables('fileShares')[copyIndex()], 'fileshare')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('storageAccountResourceGroup')]",
@@ -133,6 +226,32 @@
                     },
                     "storageAccountName": {
                         "value": "[parameters('storageAccountName')]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "fileSharesCopy",
+                "count": "[length(variables('fileShares'))]"
+            }
+        },
+        {
+            "condition": "[equals(parameters('environment'),'PP')]",
+            "name": "[concat(variables('fileShares')[copyIndex()], 'fileshare1')]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('storageAccountResourceGroup')]",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'Storage/storage-account-fileshare.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "fileShareName": {
+                        "value": "[variables('fileShares')[copyIndex()]]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('storageAccountName1')]"
                     }
                 }
             },
@@ -167,6 +286,32 @@
             }
         },
         {
+            "condition": "[equals(parameters('environment'),'PP')]",
+            "name": "[concat(variables('fileShares')[copyIndex()], 'draftfileshare1')]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('storageAccountResourceGroup')]",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'Storage/storage-account-fileshare.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "fileShareName": {
+                        "value": "[variables('fileShares')[copyIndex()]]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('draftstorageAccountName1')]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "fileSharesCopy",
+                "count": "[length(variables('fileShares'))]"
+            }
+        },
+        {
             "name": "[concat(variables('fileShares')[copyIndex(0)], 'visitfileshare')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('storageAccountResourceGroup')]",
@@ -183,6 +328,32 @@
                     },
                     "storageAccountName": {
                         "value": "[parameters('visitstorageAccountName')]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "fileSharesCopy",
+                "count": "[length(variables('fileShares'))]"
+            }
+        },
+        {
+            "condition": "[equals(parameters('environment'),'PP')]",
+            "name": "[concat(variables('fileShares')[copyIndex(0)], 'visitfileshare1')]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('storageAccountResourceGroup')]",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'Storage/storage-account-fileshare.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "fileShareName": {
+                        "value": "[variables('fileShares')[copyIndex(0)]]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('visitstorageAccountName1')]"
                     }
                 }
             },

@@ -9,12 +9,21 @@
             "value": "FOO"
         },
         "storageAccountName": {
-            "value": "dfcfoostaxsharedstr"
+            "value": "dfcfoostaxvisitstr"
+        },
+        "storageAccountName1": {
+            "value": "dfcfoostaxvisitstr"
         },
         "draftstorageAccountName": {
-            "value": "dfcfoostaxdraftstr"
+            "value": "dfcfoostaxvisitstr"
+        },
+        "draftstorageAccountName1": {
+            "value": "dfcfoostaxvisitstr"
         },
         "visitstorageAccountName": {
+            "value": "dfcfoostaxvisitstr"
+        },
+        "visitstorageAccountName1": {
             "value": "dfcfoostaxvisitstr"
         },
         "storageAccountResourceGroup": {

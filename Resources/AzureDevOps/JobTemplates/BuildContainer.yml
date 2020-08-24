@@ -8,8 +8,11 @@ parameters:
   DraftDockerfileName: ''
   VisitDockerfileName: ''
   ImageBaseName: ''
+  Image1BaseName: ''
   DraftImageBaseName: ''
+  Draft1ImageBaseName: ''
   VisitImageBaseName: ''
+  Visit1ImageBaseName: ''
   ImageTag: ''
 
 jobs:
@@ -49,6 +52,7 @@ jobs:
       ImageBaseName: ${{ parameters.VisitImageBaseName }}
       ImageTag: ${{ parameters.ImageTag }}
       ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jVisit.yaml'
+# Below Images are for Pre-Prod and Prod Env's, This needs refactoring
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
     parameters:
       ContainerRegistryAdminUser: ${{ parameters.PrdContainerRegistryAdminUser }}
@@ -58,5 +62,50 @@ jobs:
       ImageBaseName: ${{ parameters.ImageBaseName }}
       ImageTag: ${{ parameters.ImageTag }}
       ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jescodb.yaml'
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
+    parameters:
+      ContainerRegistryAdminUser: ${{ parameters.PrdContainerRegistryAdminUser }}
+      ContainerRegistryPassword: ${{ parameters.PrdContainerRegistryPassword }}
+      DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
+      DockerfileName: ${{ parameters.DockerfileName }}
+      ImageBaseName: ${{ parameters.Image1BaseName }}
+      ImageTag: ${{ parameters.ImageTag }}
+      ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jescodb-1.yaml'
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
+    parameters:
+      ContainerRegistryAdminUser: ${{ parameters.PrdContainerRegistryAdminUser }}
+      ContainerRegistryPassword: ${{ parameters.PrdContainerRegistryPassword }}
+      DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
+      DockerfileName: ${{ parameters.DraftDockerfileName }}
+      ImageBaseName: ${{ parameters.DraftImageBaseName }}
+      ImageTag: ${{ parameters.ImageTag }}
+      ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jDraftescodb.yaml'
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
+    parameters:
+      ContainerRegistryAdminUser: ${{ parameters.PrdContainerRegistryAdminUser }}
+      ContainerRegistryPassword: ${{ parameters.PrdContainerRegistryPassword }}
+      DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
+      DockerfileName: ${{ parameters.DraftDockerfileName }}
+      ImageBaseName: ${{ parameters.Draft1ImageBaseName }}
+      ImageTag: ${{ parameters.ImageTag }}
+      ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jDraftescodb-1.yaml'
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
+    parameters:
+      ContainerRegistryAdminUser: ${{ parameters.PrdContainerRegistryAdminUser }}
+      ContainerRegistryPassword: ${{ parameters.PrdContainerRegistryPassword }}
+      DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
+      DockerfileName: ${{ parameters.VisitDockerfileName }}
+      ImageBaseName: ${{ parameters.VisitImageBaseName }}
+      ImageTag: ${{ parameters.ImageTag }}
+      ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jVisit.yaml'
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-docker-publish-k8smanifest.yml@dfc-devops
+    parameters:
+      ContainerRegistryAdminUser: ${{ parameters.PrdContainerRegistryAdminUser }}
+      ContainerRegistryPassword: ${{ parameters.PrdContainerRegistryPassword }}
+      DockerfileContext: 'dfc-servicetaxonomy-database/${{ parameters.DockerfileContext }}'
+      DockerfileName: ${{ parameters.VisitDockerfileName }}
+      ImageBaseName: ${{ parameters.Visit1ImageBaseName }}
+      ImageTag: ${{ parameters.ImageTag }}
+      ManifestFilePath: 'dfc-servicetaxonomy-database/Resources/Dockerfiles/neo4jVisit-1.yaml'
  
         
