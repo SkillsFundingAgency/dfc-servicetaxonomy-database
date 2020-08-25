@@ -28,23 +28,17 @@ ENV NEO4J_dbms__jvm__additional=-Dunsupported.dbms.udc.source=docker
 ENV NEO4J_unsupported_dbms_tx__log_fail__on__corrupted__log__files=false
 
 # Install dependencies for Azure DevOps agent
-RUN apt-get update 
+RUN apt-get update
 # Required to install libicu55 on Ubuntu versions > 16.04, the base image of owasp/zap2docker-stable at the time of writing is later than 16.04
-#RUN apt-get install software-properties-common
-#RUN add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
-
 RUN apt-get install -y --no-install-recommends \
     ca-certificates \
-    jq \
     git \
-    iputils-ping \
-    libcurl4 \
-    libunwind8 \
-    netcat \
+    jq \
     supervisor
 # curl install returns broken package error if installed alongside other packages
-RUN apt-get install --no-install-recommends curl
+RUN apt-get install -y --no-install-recommends curl
 # Finished installing dependencies for Azure DevOps agent
+
 
 # install PowerShell
 RUN apt-get install wget

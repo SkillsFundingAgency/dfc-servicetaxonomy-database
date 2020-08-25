@@ -71,42 +71,42 @@ stages:
       #TO DO: decide how to tag and publish image builds from branches
       ImageTag: $(Build.BuildNumber)
 
-- stage: DeployToDev
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-  variables:
-    - group: dfc-shared-all
-    - group: dfc-stax-shared-all
-    - group: KeyVault - dfc-dev-shared-kv
-    - group: dfc-shared-dev
-    - group: dfc-stax-shared-dev
-    - template: VariableTemplates\DevEnvironmentVariables.yml
-  jobs:
-  - template: JobTemplates/Deploy.yml
-    parameters:
-      AksResourceGroup: $(sharedResourceGroup)
-      AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
-      CertificateSecretName: $(DatabaseCertificateSecretName)
-      DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
-      VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
-      Environment: DEV_SERVICETAXONOMY
-      EnvironmentTag: $(EnvironmentTag)
-      ImageBaseName: ${{ variables.ImageBaseName }}
-      DraftImageBaseName: ${{ variables.DraftImageBaseName }}
-      VisitImageBaseName: ${{ variables.VisitImageBaseName }}
-      KeyVaultName: $(sharedKeyVaultName)
-      KubernetesCluster: $(sharedAksCluster)
-      Neo4jPassword: $(Neo4jPassword)
-      ParentBusinessTag: $(ParentBusiness)
-      ResourceGroup: $(ResourceGroup)
-      ServiceOfferingTag: $(ServiceOffering)
-      SolutionBaseName: ${{ variables.SolutionBaseName }}
-      StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
-      StaxDraftStorageAccountKey: $(dfcdevstaxdraftsharedstr)
-      StaxVisitStorageAccountKey: $(dfcdevstaxvisitsharedstr)
-      StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
-      StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
-      StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
-      StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
+# - stage: DeployToDev
+#   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+#   variables:
+#     - group: dfc-shared-all
+#     - group: dfc-stax-shared-all
+#     - group: KeyVault - dfc-dev-shared-kv
+#     - group: dfc-shared-dev
+#     - group: dfc-stax-shared-dev
+#     - template: VariableTemplates\DevEnvironmentVariables.yml
+#   jobs:
+#   - template: JobTemplates/Deploy.yml
+#     parameters:
+#       AksResourceGroup: $(sharedResourceGroup)
+#       AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+#       CertificateSecretName: $(DatabaseCertificateSecretName)
+#       DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
+#       VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
+#       Environment: DEV_SERVICETAXONOMY
+#       EnvironmentTag: $(EnvironmentTag)
+#       ImageBaseName: ${{ variables.ImageBaseName }}
+#       DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+#       VisitImageBaseName: ${{ variables.VisitImageBaseName }}
+#       KeyVaultName: $(sharedKeyVaultName)
+#       KubernetesCluster: $(sharedAksCluster)
+#       Neo4jPassword: $(Neo4jPassword)
+#       ParentBusinessTag: $(ParentBusiness)
+#       ResourceGroup: $(ResourceGroup)
+#       ServiceOfferingTag: $(ServiceOffering)
+#       SolutionBaseName: ${{ variables.SolutionBaseName }}
+#       StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
+#       StaxDraftStorageAccountKey: $(dfcdevstaxdraftsharedstr)
+#       StaxVisitStorageAccountKey: $(dfcdevstaxvisitsharedstr)
+#       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+#       StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
+#       StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
+#       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 - stage: DeployToSit
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -145,33 +145,33 @@ stages:
       StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
-- stage: DeployToPP
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-  variables:
-    - group: dfc-shared-all
-    - group: dfc-stax-shared-all
-    - group: KeyVault - dfc-pp-shared-kv
-    - group: dfc-shared-pp
-    - group: dfc-stax-shared-pp
-    - template: VariableTemplates\PPEnvironmentVariables.yml
-  jobs:
-  - template: JobTemplates/Deploy.yml
-    parameters:
-      AksResourceGroup: $(sharedResourceGroup)
-      AzureSubscriptionEndpoint: 'SFA-DIG-PreProd (931bc9f6-359c-4f65-a753-1ee191a1fd6c)'
-      CertificateSecretName: $(DatabaseCertificateSecretName)
-      Environment: PP_SERVICETAXONOMY
-      EnvironmentTag: $(EnvironmentTag)
-      ImageBaseName: ${{ variables.ImageBaseName }}
-      KeyVaultName: $(sharedKeyVaultName)
-      KubernetesCluster: $(sharedAksCluster)
-      Neo4jPassword: $(Neo4jPassword)
-      ParentBusinessTag: $(ParentBusiness)
-      ResourceGroup: $(ResourceGroup)
-      ServiceOfferingTag: $(ServiceOffering)
-      SolutionBaseName: ${{ variables.SolutionBaseName }}
-      StaxSharedStorageAccountKey: $(dfcppstaxsharedstr)
-      StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
-      StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
+# - stage: DeployToPP
+#   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+#   variables:
+#     - group: dfc-shared-all
+#     - group: dfc-stax-shared-all
+#     - group: KeyVault - dfc-pp-shared-kv
+#     - group: dfc-shared-pp
+#     - group: dfc-stax-shared-pp
+#     - template: VariableTemplates\PPEnvironmentVariables.yml
+#   jobs:
+#   - template: JobTemplates/Deploy.yml
+#     parameters:
+#       AksResourceGroup: $(sharedResourceGroup)
+#       AzureSubscriptionEndpoint: 'SFA-DIG-PreProd (931bc9f6-359c-4f65-a753-1ee191a1fd6c)'
+#       CertificateSecretName: $(DatabaseCertificateSecretName)
+#       Environment: PP_SERVICETAXONOMY
+#       EnvironmentTag: $(EnvironmentTag)
+#       ImageBaseName: ${{ variables.ImageBaseName }}
+#       KeyVaultName: $(sharedKeyVaultName)
+#       KubernetesCluster: $(sharedAksCluster)
+#       Neo4jPassword: $(Neo4jPassword)
+#       ParentBusinessTag: $(ParentBusiness)
+#       ResourceGroup: $(ResourceGroup)
+#       ServiceOfferingTag: $(ServiceOffering)
+#       SolutionBaseName: ${{ variables.SolutionBaseName }}
+#       StaxSharedStorageAccountKey: $(dfcppstaxsharedstr)
+#       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+#       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 
