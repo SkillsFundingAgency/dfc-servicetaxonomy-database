@@ -36,14 +36,6 @@ pr:
 
 stages:
 
-- stage: Refresh
-  variables:
-    - group: dfc-shared-all
-    - group: dfc-shared-dev
-    - group: 'KeyVault - dfc-dev-shared-kv'
-  jobs:
-  - template: JobTemplates/RefreshEnvironment.yml
-
 - stage: Build
   variables:
     - group: dfc-shared-all
