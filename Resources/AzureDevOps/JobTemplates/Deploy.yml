@@ -3,6 +3,8 @@ parameters:
   AksResourceGroup: ''
   AzureSubscriptionEndpoint: ''
   CertificateSecretName: ''
+  DraftDatabaseCertificateSecretName: ''
+  VisitDatabaseCertificateSecretName: ''
   Environment: ''
   EnvironmentTag: ''
   ImageBaseName: ''
