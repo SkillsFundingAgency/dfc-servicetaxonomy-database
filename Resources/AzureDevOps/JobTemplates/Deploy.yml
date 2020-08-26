@@ -42,7 +42,7 @@ jobs:
             ServiceOfferingTag: ${{ parameters.ServiceOfferingTag }}
   
 
-        - template: StepTemplates/DeployNeo4j.yml
+        - template: ../StepTemplates/DeployNeo4j.yml
           parameters:
             AksResourceGroup: ${{ parameters.AksResourceGroup }}
             AzureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint}}
@@ -63,7 +63,7 @@ jobs:
             SecretName: staxsharedstr-account-secret
             ManifestFileName: neo4jescodb.yaml
 
-        - template: StepTemplates/DeployNeo4j.yml
+        - template: ../StepTemplates/DeployNeo4j.yml
           parameters:
             AksResourceGroup: ${{ parameters.AksResourceGroup }}
             AzureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint}}
@@ -84,7 +84,7 @@ jobs:
             SecretName: staxdraftsharedstr-account-secret 
             ManifestFileName: neo4jDraftescodb.yaml
 
-        - template: StepTemplates/DeployNeo4j.yml
+        - template: ../StepTemplates/DeployNeo4j.yml
           parameters:
             AksResourceGroup: ${{ parameters.AksResourceGroup }}
             AzureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint}}
