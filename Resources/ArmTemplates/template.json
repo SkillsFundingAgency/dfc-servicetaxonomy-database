@@ -72,7 +72,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('environment'),'PP''PRD')]",
+            "condition": "[or(equals(parameters('environment'), 'PP'), equals(parameters('Environment'), 'PRD'))]",
             "name": "staxDatabasePublicIp1",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('aksNodesResourceGroup')]",
@@ -127,7 +127,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('environment'),'PP''PRD')]",
+            "condition": "[or(equals(parameters('environment'), 'PP'), equals(parameters('Environment'), 'PRD'))]",
             "name": "staxDraftDatabasePublicIp1",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('aksNodesResourceGroup')]",
@@ -182,7 +182,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('environment'),'PP''PRD')]",
+            "condition": "[or(equals(parameters('environment'), 'PP'), equals(parameters('Environment'), 'PRD'))]",
             "name": "visitDatabasePublicIp1",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('aksNodesResourceGroup')]",
@@ -235,7 +235,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('environment'),'PP''PRD')]",
+            "condition": "[or(equals(parameters('environment'), 'PP'), equals(parameters('Environment'), 'PRD'))]",
             "name": "[concat(variables('fileShares')[copyIndex()], 'fileshare1')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('storageAccountResourceGroup')]",
@@ -286,7 +286,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('environment'),'PP''PRD')]",
+            "condition": "[or(equals(parameters('environment'), 'PP'), equals(parameters('Environment'), 'PRD'))]",
             "name": "[concat(variables('fileShares')[copyIndex()], 'draftfileshare1')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('storageAccountResourceGroup')]",
@@ -337,7 +337,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('environment'),'PP''PRD')]",
+            "condition": "[or(equals(parameters('environment'), 'PP'), equals(parameters('Environment'), 'PRD'))]",
             "name": "[concat(variables('fileShares')[copyIndex(0)], 'visitfileshare1')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('storageAccountResourceGroup')]",
