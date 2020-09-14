@@ -1,0 +1,9 @@
+variables:
+- name: DFCServiceTaxonomyDatabaseTag
+  value: $(Build.BuildNumber)
+- name: ReleaseEnvironmentName
+  value: PRD
+- name: ResourceGroup
+  value: dfc-prd-stax-database-rg
+- name: StaxDbPublicIpAddressResourceGroup
+  value: $(AksNodeResourceGroupName)

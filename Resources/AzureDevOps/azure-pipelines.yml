@@ -192,4 +192,52 @@ stages:
       StaxVisitStorageAccountName1: $(StaxVisitStorageAccountName1)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
+- stage: DeployToPRD
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  variables:
+    - group: dfc-shared-all
+    - group: dfc-stax-shared-all
+    - group: KeyVault - dfc-prd-shared-kv
+    - group: dfc-shared-prd
+    - group: dfc-stax-shared-prd
+    - template: VariableTemplates\PrdEnvironmentVariables.yml
+  jobs:
+  - template: JobTemplates/Deploy-prd.yml
+    parameters:
+      AksResourceGroup: $(sharedResourceGroup)
+      AzureSubscriptionEndpoint: 'SFA-DIG-Prod (6c93f7dc-6c36-4ea6-8de3-3f4574f88027)'
+      CertificateSecretName: $(DatabaseCertificateSecretName)
+      CertificateSecretName1: $(DatabaseCertificateSecretName1)
+      DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
+      DraftDatabaseCertificateSecretName1: $(DraftDatabaseCertificateSecretName1)
+      VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
+      VisitDatabaseCertificateSecretName1: $(VisitDatabaseCertificateSecretName1)
+      Environment: PRD_SERVICETAXONOMY
+      EnvironmentTag: $(EnvironmentTag)
+      ImageBaseName: ${{ variables.ImageBaseName }}
+      Image1BaseName: ${{ variables.Image1BaseName }}
+      DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+      Draft1ImageBaseName: ${{ variables.Draft1ImageBaseName }}
+      VisitImageBaseName: ${{ variables.VisitImageBaseName }}
+      Visit1ImageBaseName: ${{ variables.Visit1ImageBaseName }}
+      KeyVaultName: $(sharedKeyVaultName)
+      KubernetesCluster: $(sharedAksCluster)
+      Neo4jPassword: $(Neo4jPassword)
+      ParentBusinessTag: $(ParentBusiness)
+      ResourceGroup: $(ResourceGroup)
+      ServiceOfferingTag: $(ServiceOffering)
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
+      StaxSharedStorageAccountKey: $(dfcppstaxsharedstr)
+      StaxSharedStorageAccount1Key: $(dfcppstaxsharedstr1)
+      StaxDraftStorageAccountKey: $(dfcppstaxdraftsharedstr)
+      StaxDraftStorageAccount1Key: $(dfcppstaxdraftsharedstr1)
+      StaxVisitStorageAccountKey: $(dfcppstaxvisitsharedstr)
+      StaxVisitStorageAccount1Key: $(dfcppstaxvisitsharedstr1)
+      StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxSharedStorageAccountName1: $(StaxSharedStorageAccountName1)
+      StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
+      StaxDraftStorageAccountName1: $(StaxDraftStorageAccountName1)
+      StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
+      StaxVisitStorageAccountName1: $(StaxVisitStorageAccountName1)
+      StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
