@@ -10,11 +10,12 @@ spec:
     requests:
       storage: 5Gi
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: neo4j-escodb
 spec:
+  selector:
   replicas: 1
   strategy:
     rollingUpdate:
