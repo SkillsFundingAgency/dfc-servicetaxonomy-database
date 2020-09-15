@@ -16,7 +16,8 @@ metadata:
   name: neo4j-escodb
 spec:
   selector:
-    app: neo4j-escodb
+    matchLabels:
+     app: neo4j-escodb
   replicas: 1
   strategy:
     rollingUpdate:
