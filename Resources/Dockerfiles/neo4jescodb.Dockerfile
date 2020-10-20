@@ -5,7 +5,7 @@
 FROM neo4j:4.0.4
 
 #the esco file must be provisioned in a folder that is mounted to /var/lib/neo4j/import/
-ENV ESCOFILE esco_v1.0.3.ttl
+ENV ESCOFILE esco_v1.0.8.ttl
 ENV NEO4J_PWD escodb
 ENV NEO4J_AUTH neo4j/$NEO4J_PWD
 ENV NEO4J_dbms_allow__upgrade=true
