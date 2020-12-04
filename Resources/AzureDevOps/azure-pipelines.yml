@@ -72,7 +72,7 @@ stages:
       ImageTag: $(Build.BuildNumber)
 
 - stage: DeployToDev
-  condition: and(eq(dependencies.Build.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  condition: and(eq(dependencies.Build.result,'Succeeded'), eq(variables['Build.Reason'], 'PullRequest')), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   variables:
     - group: dfc-shared-all
     - group: dfc-stax-shared-all
