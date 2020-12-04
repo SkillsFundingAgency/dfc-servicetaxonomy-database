@@ -2,15 +2,19 @@
 
 #APOC plugin version must track the major.minor version of neo4j so the base image for this dockerfile is specified rather than using latest
 #https://github.com/neo4j-contrib/neo4j-apoc-procedures#version-compatibility-matrix
-FROM neo4j:4.0.4
+FROM neo4j:4.1.5
 
 #the esco file must be provisioned in a folder that is mounted to /var/lib/neo4j/import/
 ENV ESCOFILE esco_v1.0.3.ttl
 ENV NEO4J_PWD escodb
 ENV NEO4J_AUTH neo4j/$NEO4J_PWD
 ENV NEO4J_dbms_allow__upgrade=true
+ENV NEO4J_dbms_allow__single__automatic__upgrade=true
 ENV NEO4J_dbms_recovery_fail__on__missing__files=false
-ENV NEO4J_dbms_memory_pagecache_size=5600M
+ENV NEO4J_dbms_memory_pagecache_size=5G
+ENV NEO4J_dbms_memory_heap_initial__size=16G
+ENV NEO4J_dbms_memory_heap_max__size=16G
+ENV NEO4J_dbms_tx__log_rotation_retention__policy=7days
 ENV NEO4J_dbms_connector_bolt_address=0.0.0.0:7687
 ENV NEO4J_dbms_connector_bolt_enabled=true
 ENV NEO4J_dbms_connector_bolt_tls__level=OPTIONAL
@@ -33,5 +37,5 @@ RUN chmod -R 754 /scripts
 COPY --chown=neo4j:neo4j plugins /var/lib/neo4j/plugins
 #download jar files into plugins folder
 ADD --chown=neo4j:neo4j https://github.com/neo4j-labs/neosemantics/releases/download/4.0.0.1/neosemantics-4.0.0.1.jar plugins
-ADD --chown=neo4j:neo4j https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.0.0.12/apoc-4.0.0.12-all.jar plugins
+ADD --chown=neo4j:neo4j https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.1.0.4/apoc-4.1.0.4-all.jar plugins
 ENTRYPOINT ["/scripts/wrapper.sh"]
