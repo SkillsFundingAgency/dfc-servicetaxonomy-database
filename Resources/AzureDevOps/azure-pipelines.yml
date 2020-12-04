@@ -23,7 +23,8 @@ resources:
 
 trigger: 
   branches:
-    include: 
+    include:
+    - dev 
     - master
   paths: 
     include:
@@ -31,7 +32,8 @@ trigger:
 
 pr:
   branches:
-    include: 
+    include:
+    - dev  
     - master
   paths: 
     include:
@@ -70,7 +72,7 @@ stages:
       ImageTag: $(Build.BuildNumber)
 
 - stage: DeployToDev
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   variables:
     - group: dfc-shared-all
     - group: dfc-stax-shared-all
@@ -107,7 +109,7 @@ stages:
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 - stage: DeployToSit
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   variables:
     - group: dfc-shared-all
     - group: dfc-stax-shared-all
@@ -144,7 +146,7 @@ stages:
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 - stage: DeployToPP
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(eq(dependencies.Build.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
     - group: dfc-shared-all
     - group: dfc-stax-shared-all
@@ -193,7 +195,7 @@ stages:
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 - stage: DeployToPRD
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(eq(dependencies.DeployToPP.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
     - group: dfc-shared-all
     - group: dfc-stax-shared-all
