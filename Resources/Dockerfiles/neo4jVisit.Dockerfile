@@ -2,7 +2,7 @@
 
 #APOC plugin version must track the major.minor version of neo4j so the base image for this dockerfile is specified rather than using latest
 #https://github.com/neo4j-contrib/neo4j-apoc-procedures#version-compatibility-matrix
-FROM neo4j:4.1.5
+FROM neo4j:4.0.4
 
 #the esco file must be provisioned in a folder that is mounted to /var/lib/neo4j/import/
 ENV NEO4J_PWD escodb
