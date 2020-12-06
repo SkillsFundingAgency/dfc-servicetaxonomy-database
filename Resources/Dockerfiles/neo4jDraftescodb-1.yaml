@@ -85,10 +85,10 @@ spec:
         resources:
           requests:
             cpu: 1500m
-            memory: "12G"
+            memory: "8G"
           limits:
             cpu: 1500m
-            memory: "12G"
+            memory: "8G"
         volumeMounts:
         - name: certificates
           mountPath: /var/certificates
