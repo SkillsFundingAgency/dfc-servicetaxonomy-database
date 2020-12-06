@@ -11,7 +11,7 @@ ENV NEO4J_AUTH neo4j/$NEO4J_PWD
 ENV NEO4J_dbms_allow__upgrade=true
 #ENV NEO4J_dbms_allow__single__automatic__upgrade=true
 ENV NEO4J_dbms_recovery_fail__on__missing__files=false
-ENV NEO4J_dbms_memory_pagecache_size=5000m
+ENV NEO4J_dbms_memory_pagecache_size=5600m
 #ENV NEO4J_dbms_memory_heap_initial__size=5000m
 #ENV NEO4J_dbms_memory_heap_max__size=5000m
 #ENV NEO4J_dbms_tx__log_rotation_retention__policy=7days
