@@ -85,11 +85,11 @@ spec:
         - containerPort: 7687
         resources:
           requests:
-            cpu: 1500m
-            memory: "16G"
+            cpu: 1000m
+            memory: "8G"
           limits:
-            cpu: 1500m
-            memory: "16G"
+            cpu: 1000m
+            memory: "8G"
         volumeMounts:
         - name: certificates
           mountPath: /var/certificates
