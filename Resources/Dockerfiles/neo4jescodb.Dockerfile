@@ -9,7 +9,7 @@ ENV ESCOFILE esco_v1.0.3.ttl
 ENV NEO4J_PWD escodb
 ENV NEO4J_AUTH neo4j/$NEO4J_PWD
 ENV NEO4J_dbms_allow__upgrade=true
-#ENV NEO4J_dbms_allow__single__automatic__upgrade=true
+ENV NEO4J_dbms_allow__single__automatic__upgrade=true
 ENV NEO4J_dbms_recovery_fail__on__missing__files=false
 ENV NEO4J_dbms_memory_pagecache_size=5600m
 #ENV NEO4J_dbms_memory_heap_initial__size=5000m
