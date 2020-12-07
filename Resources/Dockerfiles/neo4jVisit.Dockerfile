@@ -8,10 +8,10 @@ FROM neo4j:4.1
 ENV NEO4J_PWD escodb
 ENV NEO4J_AUTH neo4j/$NEO4J_PWD
 ENV NEO4J_dbms_allow__upgrade=true
-ENV NEO4J_dbms_allow__single__automatic__upgrade=true
+#ENV NEO4J_dbms_allow__single__automatic__upgrade=true
 ENV NEO4J_dbms_recovery_fail__on__missing__files=false
 ENV NEO4J_dbms_memory_pagecache_size=1000m
-ENV NEO4J_dbms_tx__log_rotation_retention__policy=7
+#ENV NEO4J_dbms_tx__log_rotation_retention__policy=7
 ENV NEO4J_dbms_connector_bolt_address=0.0.0.0:7687
 ENV NEO4J_dbms_connector_bolt_enabled=true
 ENV NEO4J_dbms_connector_bolt_tls__level=OPTIONAL
@@ -36,5 +36,5 @@ RUN chmod -R 754 /scripts
 COPY --chown=neo4j:neo4j plugins /var/lib/neo4j/plugins
 #download jar files into plugins folder
 ADD --chown=neo4j:neo4j https://github.com/neo4j-labs/neosemantics/releases/download/4.1.0.1/neosemantics-4.1.0.1.jar plugins
-ADD --chown=neo4j:neo4j https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.1.0.4/apoc-4.1.0.4-all.jar plugins
+ADD --chown=neo4j:neo4j https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.2.0.0/apoc-4.2.0.0-all.jar plugins
 ENTRYPOINT ["/scripts/wrapperVisit.sh"]
