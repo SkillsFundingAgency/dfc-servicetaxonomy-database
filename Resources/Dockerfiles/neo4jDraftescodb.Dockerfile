@@ -2,7 +2,7 @@
 
 #APOC plugin version must track the major.minor version of neo4j so the base image for this dockerfile is specified rather than using latest
 #https://github.com/neo4j-contrib/neo4j-apoc-procedures#version-compatibility-matrix
-FROM neo4j:4.1
+FROM neo4j:4.0.10
 
 #the esco file must be provisioned in a folder that is mounted to /var/lib/neo4j/import/
 ENV ESCOFILE esco_v1.0.3.ttl
@@ -14,7 +14,7 @@ ENV NEO4J_dbms_recovery_fail__on__missing__files=false
 ENV NEO4J_dbms_memory_pagecache_size=5600m
 #ENV NEO4J_dbms_memory_heap_initial__size=5000m
 #ENV NEO4J_dbms_memory_heap_max__size=5000m
-#ENV NEO4J_dbms_tx__log_rotation_retention__policy=7days
+#ENV NEO4J_dbms_tx__log_rotation_retention__policy=7
 ENV NEO4J_dbms_connector_bolt_address=0.0.0.0:7687
 ENV NEO4J_dbms_connector_bolt_enabled=true
 ENV NEO4J_dbms_connector_bolt_tls__level=OPTIONAL
