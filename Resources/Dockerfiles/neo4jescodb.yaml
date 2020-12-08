@@ -111,7 +111,6 @@ spec:
         azureFile:
           secretName: staxsharedstr-account-secret
           shareName: esco-rdf-files
-          readOnly: true
 ---
 apiVersion: v1
 kind: Service
