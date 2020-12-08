@@ -12,7 +12,7 @@ do
     sleep 10
 done
 
-until cat /scripts/neo4j-rename-esco-occupation-hidden-label-to-alt-label | /var/lib/neo4j/bin/cypher-shell --format plain -u neo4j -p $NEO4J_PWD esco.log
+until cat /scripts/neo4j-rename-esco-occupation-hidden-label-to-alt-label | /var/lib/neo4j/bin/cypher-shell --format plain -u neo4j -p $NEO4J_PWD >> esco.log
 do
     echo "import failed, sleeping"
     sleep 10
