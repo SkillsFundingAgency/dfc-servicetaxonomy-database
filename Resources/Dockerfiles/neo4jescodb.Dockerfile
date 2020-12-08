@@ -38,4 +38,4 @@ COPY --chown=neo4j:neo4j plugins /var/lib/neo4j/plugins
 #download jar files into plugins folder
 ADD --chown=neo4j:neo4j https://github.com/neo4j-labs/neosemantics/releases/download/4.1.0.1/neosemantics-4.1.0.1.jar plugins
 ADD --chown=neo4j:neo4j https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.2.0.0/apoc-4.2.0.0-all.jar plugins
-ENTRYPOINT ["/scripts/wrapperNoImport.sh"]
+ENTRYPOINT ["/scripts/wrapperNoimport.sh"]
