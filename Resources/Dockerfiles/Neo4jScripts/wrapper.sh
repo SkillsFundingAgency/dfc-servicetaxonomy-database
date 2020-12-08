@@ -6,7 +6,7 @@
 set -m
 
 # Start the primary process and put it in the background
-/docker-entrypoint.sh
+/docker-entrypoint.sh neo4j &
 
 # Start the helper process
 /scripts/invoke-neo4j-import.sh
