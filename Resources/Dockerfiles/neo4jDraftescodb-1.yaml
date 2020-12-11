@@ -109,9 +109,8 @@ spec:
           claimName: neo4jdraft1-data-disk
       - name: esco-rdf-files
         azureFile:
-          secretName: staxdraftsharedstr1-account-secret
+          secretName: staxdraftsharedstr-account-secret
           shareName: esco-rdf-files
-          readOnly: true
 ---
 apiVersion: v1
 kind: Service
