@@ -46,22 +46,22 @@ stages:
     parameters:
       ArmTemplateRoot: ${{ variables.ArmTemplateRoot }}
       SolutionBaseName: ${{ variables.SolutionBaseName }}
-  - template: JobTemplates/BuildContainer.yml
-    parameters:
-      SolutionBaseName: ${{ variables.SolutionBaseName }}
-      DevSitContainerRegistryAdminUser: $(DevContainerRegistryAdminUser)
-      DevSitContainerRegistryPassword: $(DevContainerRegistryPassword)
-      PrdContainerRegistryAdminUser: $(PrdContainerRegistryAdminUser)
-      PrdContainerRegistryPassword: $(PrdContainerRegistryPassword)
-      DockerfileContext: 'Resources/Dockerfiles'
-      DockerfileName: 'neo4jescodb.Dockerfile'
-      DraftDockerfileName: 'neo4jDraftescodb.Dockerfile'
-      VisitDockerfileName: 'neo4jVisit.Dockerfile'
-      ImageBaseName: ${{ variables.ImageBaseName }}
-      DraftImageBaseName: ${{ variables.DraftImageBaseName }}
-      VisitImageBaseName: ${{ variables.VisitImageBaseName }}
-      #TO DO: decide how to tag and publish image builds from branches
-      ImageTag: $(Build.BuildNumber)
+  - template: JobTemplates/RefreshEnvironment.yml
+    # parameters:
+    #   SolutionBaseName: ${{ variables.SolutionBaseName }}
+    #   DevSitContainerRegistryAdminUser: $(DevContainerRegistryAdminUser)
+    #   DevSitContainerRegistryPassword: $(DevContainerRegistryPassword)
+    #   PrdContainerRegistryAdminUser: $(PrdContainerRegistryAdminUser)
+    #   PrdContainerRegistryPassword: $(PrdContainerRegistryPassword)
+    #   DockerfileContext: 'Resources/Dockerfiles'
+    #   DockerfileName: 'neo4jescodb.Dockerfile'
+    #   DraftDockerfileName: 'neo4jDraftescodb.Dockerfile'
+    #   VisitDockerfileName: 'neo4jVisit.Dockerfile'
+    #   ImageBaseName: ${{ variables.ImageBaseName }}
+    #   DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+    #   VisitImageBaseName: ${{ variables.VisitImageBaseName }}
+    #   #TO DO: decide how to tag and publish image builds from branches
+    #   ImageTag: $(Build.BuildNumber)
 
 # - stage: DeployToDev
 #   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -100,42 +100,42 @@ stages:
 #       StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
 #       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
-- stage: DeployToSit
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-  variables:
-    - group: dfc-shared-all
-    - group: dfc-stax-shared-all
-    - group: KeyVault - dfc-sit-shared-kv
-    - group: dfc-shared-sit
-    - group: dfc-stax-shared-sit
-    - template: VariableTemplates\SitEnvironmentVariables.yml
-  jobs:
-  - template: JobTemplates/Deploy.yml
-    parameters:
-      AksResourceGroup: $(sharedResourceGroup)
-      AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
-      CertificateSecretName: $(DatabaseCertificateSecretName)
-      DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
-      VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
-      Environment: SIT_SERVICETAXONOMY
-      EnvironmentTag: $(EnvironmentTag)
-      ImageBaseName: ${{ variables.ImageBaseName }}
-      DraftImageBaseName: ${{ variables.DraftImageBaseName }}
-      VisitImageBaseName: ${{ variables.VisitImageBaseName }}
-      KeyVaultName: $(sharedKeyVaultName)
-      KubernetesCluster: $(sharedAksCluster)
-      Neo4jPassword: $(Neo4jPassword)
-      ParentBusinessTag: $(ParentBusiness)
-      ResourceGroup: $(ResourceGroup)
-      ServiceOfferingTag: $(ServiceOffering)
-      SolutionBaseName: ${{ variables.SolutionBaseName }}
-      StaxSharedStorageAccountKey: $(dfcsitstaxsharedstr)
-      StaxDraftStorageAccountKey: $(dfcsitstaxdraftsharedstr)
-      StaxVisitStorageAccountKey: $(dfcsitstaxvisitsharedstr)
-      StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
-      StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
-      StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
-      StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
+# - stage: DeployToSit
+#   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+#   variables:
+#     - group: dfc-shared-all
+#     - group: dfc-stax-shared-all
+#     - group: KeyVault - dfc-sit-shared-kv
+#     - group: dfc-shared-sit
+#     - group: dfc-stax-shared-sit
+#     - template: VariableTemplates\SitEnvironmentVariables.yml
+#   jobs:
+#   - template: JobTemplates/Deploy.yml
+#     parameters:
+#       AksResourceGroup: $(sharedResourceGroup)
+#       AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+#       CertificateSecretName: $(DatabaseCertificateSecretName)
+#       DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
+#       VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
+#       Environment: SIT_SERVICETAXONOMY
+#       EnvironmentTag: $(EnvironmentTag)
+#       ImageBaseName: ${{ variables.ImageBaseName }}
+#       DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+#       VisitImageBaseName: ${{ variables.VisitImageBaseName }}
+#       KeyVaultName: $(sharedKeyVaultName)
+#       KubernetesCluster: $(sharedAksCluster)
+#       Neo4jPassword: $(Neo4jPassword)
+#       ParentBusinessTag: $(ParentBusiness)
+#       ResourceGroup: $(ResourceGroup)
+#       ServiceOfferingTag: $(ServiceOffering)
+#       SolutionBaseName: ${{ variables.SolutionBaseName }}
+#       StaxSharedStorageAccountKey: $(dfcsitstaxsharedstr)
+#       StaxDraftStorageAccountKey: $(dfcsitstaxdraftsharedstr)
+#       StaxVisitStorageAccountKey: $(dfcsitstaxvisitsharedstr)
+#       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+#       StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
+#       StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
+#       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
 
 # - stage: DeployToPP
 #   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))

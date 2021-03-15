@@ -1,6 +1,6 @@
 jobs:
-- job: TestAndPublishArmTemplates
-  displayName: Test and Publish Arm Templates
+- job:  DropStaxEditorSqlTables
+  displayName: Drop STAX editor sql tables
   pool: 'NCS - CI and CD'
   steps:
   - task: SqlAzureDacpacDeployment@1
@@ -13,7 +13,7 @@ jobs:
       sqlUsername: 'dfc_sqladmin' # Required when authenticationType == Server
       sqlPassword: $(dfc-dev-shared-sql) # Required when authenticationType == Server
       deployType: 'sqlTask' # Options: dacpacTask, sqlTask, inlineSqlTask
-      sqlFile: '$(Build.SourcesDirectory)/Sql/DropSampleTables.sql' # Required when deployType == SqlTask
+      sqlFile: '$(Build.SourcesDirectory)/Sql/DropAllStaxTables.sql' # Required when deployType == SqlTask
       #additionalArguments: # Optional
       #sqlAdditionalArguments: # Optional
       #inlineAdditionalArguments: # Optional
