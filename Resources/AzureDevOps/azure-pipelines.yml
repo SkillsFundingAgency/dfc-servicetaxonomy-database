@@ -46,7 +46,7 @@ stages:
     parameters:
       ArmTemplateRoot: ${{ variables.ArmTemplateRoot }}
       SolutionBaseName: ${{ variables.SolutionBaseName }}
-  - template: JobTemplates/RefreshEnvironment.yml
+  # - template: JobTemplates/RefreshEnvironment.yml
     # parameters:
     #   SolutionBaseName: ${{ variables.SolutionBaseName }}
     #   DevSitContainerRegistryAdminUser: $(DevContainerRegistryAdminUser)
