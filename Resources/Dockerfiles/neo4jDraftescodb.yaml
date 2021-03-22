@@ -8,7 +8,7 @@ spec:
   storageClassName: managed-premium
   resources:
     requests:
-      storage: 5Gi
+      storage: 10Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -84,8 +84,8 @@ spec:
         - containerPort: 7687
         resources:
           requests:
-            cpu: 1500m
-            memory: "16G"
+            cpu: 1000m
+            memory: "12G"
           limits:
             cpu: 1500m
             memory: "16G"
