@@ -211,7 +211,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }}
             kubernetesCluster: ${{ parameters.KubernetesCluster }}
             useClusterAdmin: true
-            namespace: 'Neo4jVisitNamespace'
+            namespace: '${{ parameters.Neo4jVisitNamespace }}'
             secretType: generic
             secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxVisitStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxVisitStorageAccountKey }}
             secretName: staxvisitsharedstr-account-secret
@@ -224,7 +224,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }}
             kubernetesCluster: ${{ parameters.KubernetesCluster }}
             useClusterAdmin: true
-            namespace: 'Neo4jVisitNamespace'
+            namespace: '${{ parameters.Neo4jVisitNamespace }}'
             secretType: generic
             secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }}
             secretName: neo4j-account-secret
@@ -242,6 +242,6 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }}
             kubernetesCluster: ${{ parameters.KubernetesCluster }}
             useClusterAdmin: true
-            namespace: 'Neo4jVisitNamespace'
+            namespace: '${{ parameters.Neo4jVisitNamespace }}'
             command: 'apply'
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.VisitImageBaseName }}/neo4jvisit.yaml'
