@@ -107,6 +107,9 @@ stages:
       StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
       StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
+      Neo4jNamespace: $(neo4j-namespace)
+      Neo4jDraftNamespace: $(neo4j-draft-namespace)
+      Neo4jVisitNamespace: $(neo4j-visit-namespace)
 
 - stage: DeployToSit
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
