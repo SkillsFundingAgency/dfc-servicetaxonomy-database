@@ -7,3 +7,9 @@ variables:
   value: dfc-prd-stax-database-rg
 - name: StaxDbPublicIpAddressResourceGroup
   value: $(AksNodeResourceGroupName)
+- name: neo4j-namespace
+  value: neo4j
+- name: neo4j-draft-namespace
+  value: neo4j-draft
+- name: neo4j-visit-namespace
+  value: neo4j-visit
