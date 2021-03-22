@@ -64,21 +64,21 @@ jobs:
             azurePowerShellVersion: 'latestVersion'
         - checkout: dfc-devops
           path: 's/'
-        - task: AzurePowerShell@4
+#        - task: AzurePowerShell@4
           displayName: 'Azure PowerShell script: Export-KeyVaultCertToPemFiles'
           inputs:
             azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
             scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Export-KeyVaultCertToPemFiles.ps1
             scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
-        - task: AzurePowerShell@4
+#        - task: AzurePowerShell@4
           displayName: 'Azure PowerShell script: Export-KeyVaultCertToPemFiles'
           inputs:
             azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
             scriptPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.PSScripts/Export-KeyVaultCertToPemFiles.ps1
             scriptArguments: '-CertificateSecretName ${{ parameters.DraftDatabaseCertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxDraftStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
             azurePowerShellVersion: 'latestVersion'
-        - task: AzurePowerShell@4
+#        - task: AzurePowerShell@4
           displayName: 'Azure PowerShell script: Export-KeyVaultCertToPemFiles'
           inputs:
             azureSubscription: ${{ parameters.AzureSubscriptionEndpoint }}
