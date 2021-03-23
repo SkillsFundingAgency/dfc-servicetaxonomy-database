@@ -101,7 +101,7 @@ function New-PfxFileFromKeyVaultSecret {
         [Parameter(Mandatory=$true)]
         [Object]$KeyVaultSecret,
         [Parameter(Mandatory=$true)]
-        [String]$Password,
+        [SecureString]$Password,
         [Parameter(Mandatory=$true)]
         [String]$PfxFilePath
     )
