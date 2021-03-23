@@ -107,7 +107,7 @@ function New-PfxFileFromKeyVaultSecret {
     )
 
     Write-Verbose "Converting certificate secret to pfx file"
-    $kvSecretBytes = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($KeyVaultSecret.SecretValueText))
+    $kvSecretBytes = [System.Convert]::FromBase64String($KeyVaultSecret.SecretValueText)
     $jsonCert = ConvertFrom-Json($kvSecretBytes)
     Write-Verbose "Converting certificate secret to pfx file $jsonCert"
     Write-Verbose "Password $($jsonCert.Password)"
