@@ -101,20 +101,22 @@ function New-PfxFileFromKeyVaultSecret {
         [Parameter(Mandatory=$true)]
         [Object]$KeyVaultSecret,
         [Parameter(Mandatory=$true)]
-        [SecureString]$Password,
+        [String]$Password,
         [Parameter(Mandatory=$true)]
         [String]$PfxFilePath
     )
 
     Write-Verbose "Converting certificate secret to pfx file"
-    $CertBytes = [System.Convert]::FromBase64String($jsonCert.data)
-    $kvSecretBytes = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($Cert.SecretValueText))
+    $kvSecretBytes = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($KeyVaultSecret.SecretValueText))
     $jsonCert = ConvertFrom-Json($kvSecretBytes)
+    Write-Verbose "Converting certificate secret to pfx file $jsonCert"
+    Write-Verbose "Password $($jsonCert.Password)"
+
+    #$CertBytes = [System.Convert]::FromBase64String($KeyVaultSecret.SecretValueText)
     $CertCollection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection
-    $CertCollection.Import($CertBytes,$jsonCert.password,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
+    $CertCollection.Import($kvSecretBytes,$jsonCert.Password,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
 
-
-    $ProtectedCertificateBytes = $CertCollection.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12, $securePassword)
+    $ProtectedCertificateBytes = $CertCollection.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12, $Password)
     Write-Verbose "Writing certificate to pfx file $PfxFilePath"
     [System.IO.File]::WriteAllBytes($PfxFilePath, $ProtectedCertificateBytes)
 }
@@ -139,9 +141,8 @@ Write-Verbose "Getting $CertificateSecretName from $KeyVaultName"
 $Cert = Get-AzKeyVaultSecret -VaultName $KeyVaultName -Name $CertificateSecretName
 
 $Password = New-Password -Length 20
-$securePassword = ConvertTo-SecureString $Password -asplaintext -force
 $PfxFilePath = "$PSScriptRoot\PsExportedPfx.pfx"
-New-PfxFileFromKeyVaultSecret -KeyVaultSecret $Cert -Password $securePassword -PfxFilePath $PfxFilePath
+New-PfxFileFromKeyVaultSecret -KeyVaultSecret $Cert -Password $Password -PfxFilePath $PfxFilePath
 
 Write-Warning "This script will export certificate $CertificateSecretName in an insecure format.  Ensure that the $FileShare is adequately secured."
 $CertTempFile = "$PSScriptRoot\cert.pem"
