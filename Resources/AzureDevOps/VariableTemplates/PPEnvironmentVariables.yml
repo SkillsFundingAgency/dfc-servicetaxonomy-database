@@ -13,3 +13,9 @@ variables:
   value: neo4j-draft
 - name: neo4j-visit-namespace
   value: neo4j-visit
+- name: neo4j-1-namespace
+  value: neo4j-1
+- name: neo4j-draft-1-namespace
+  value: neo4j-draft-1
+- name: neo4j-visit-1-namespace
+  value: neo4j-visit-1

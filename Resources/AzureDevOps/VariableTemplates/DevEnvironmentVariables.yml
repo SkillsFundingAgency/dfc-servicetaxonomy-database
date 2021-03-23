@@ -8,7 +8,7 @@ variables:
 - name: StaxDbPublicIpAddressResourceGroup
   value: $(AksNodeResourceGroupName)
 - name: neo4j-namespace
-  value: neo4j
+  value: neo4j-1
 - name: neo4j-draft-namespace
   value: neo4j-draft
 - name: neo4j-visit-namespace
