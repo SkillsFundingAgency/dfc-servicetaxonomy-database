@@ -21,6 +21,12 @@ resources:
     name: SkillsFundingAgency/dfc-servicetaxonomy-editor
     endpoint: 'GitHub (ESFA)'
 
+pool:
+  name: NCS - CI and CD
+  demands:
+    - msbuild
+    - visualstudio
+
 trigger: 
   branches:
     include:
