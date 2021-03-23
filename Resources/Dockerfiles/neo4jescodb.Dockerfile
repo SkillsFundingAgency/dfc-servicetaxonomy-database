@@ -11,9 +11,9 @@ ENV NEO4J_AUTH neo4j/$NEO4J_PWD
 ENV NEO4J_dbms_allow__upgrade=true
 #ENV NEO4J_dbms_allow__single__automatic__upgrade=true
 ENV NEO4J_dbms_recovery_fail__on__missing__files=false
-ENV NEO4J_dbms_memory_pagecache_size=8G
-ENV NEO4J_dbms_memory_heap_initial__size=5G
-ENV NEO4J_dbms_memory_heap_max__size=10G
+ENV NEO4J_dbms_memory_pagecache_size=8000m
+ENV NEO4J_dbms_memory_heap_initial__size=8000m
+ENV NEO4J_dbms_memory_heap_max__size=10000m
 ENV NEO4J_dbms_connector_bolt_address=0.0.0.0:7687
 ENV NEO4J_dbms_connector_bolt_enabled=true
 ENV NEO4J_dbms_connector_bolt_tls__level=OPTIONAL
