@@ -36,6 +36,12 @@ parameters:
   StaxVisitStorageAccountName: ''
   StaxVisitStorageAccountName1: ''
   StaxSharedStorageAccountResourceGroup: ''
+  Neo4jNamespace: ''
+  Neo4jDraftNamespace: ''
+  Neo4jVisitNamespace: ''
+  Neo4jNamespace1: ''
+  Neo4jDraftNamespace1: ''
+  Neo4jVisitNamespace1: ''  
 
 jobs:
 - deployment: DeployARMTemplatesTo_${{ parameters.Environment }}
@@ -82,6 +88,13 @@ jobs:
             scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1
             scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose'
             azurePowerShellVersion: 'latestversion'
+        #Create Namespace for neo4j
+        - template: AzureDevOpsTemplates\Deploy\StepTemplates\dfc-kubernetes-create-namespace.yml@dfc-devops
+          parameters:
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
+            AksResourceGroup: ${{ parameters.AksResourceGroup }}
+            kubernetesCluster: ${{ parameters.KubernetesCluster }}
+            Namespace: ${{ parameters.Neo4jNamespace }}    
         - task: Kubernetes@1 
           displayName: 'create storage account secret' 
           inputs: 
@@ -90,7 +103,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jNamespace }}' 
             secretType: generic 
             secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxSharedStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxSharedStorageAccountKey }} 
             secretName: staxsharedstr-account-secret 
@@ -102,7 +115,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jNamespace }}' 
             secretType: generic 
             secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
             secretName: neo4j-account-secret 
@@ -119,7 +132,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jNamespace }}' 
             command: 'apply' 
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.ImageBaseName }}/neo4jescodb.yaml'
  
@@ -148,6 +161,13 @@ jobs:
             scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1 
             scriptArguments: '-CertificateSecretName ${{ parameters.CertificateSecretName1 }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxSharedStorageAccountName1 }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose' 
             azurePowerShellVersion: 'latestVersion' 
+        #Create Namespace for neo4j-1
+        - template: AzureDevOpsTemplates\Deploy\StepTemplates\dfc-kubernetes-create-namespace.yml@dfc-devops
+          parameters:
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
+            AksResourceGroup: ${{ parameters.AksResourceGroup }}
+            kubernetesCluster: ${{ parameters.KubernetesCluster }}
+            Namespace: ${{ parameters.Neo4jNamespace1 }}            
         - task: Kubernetes@1 
           displayName: 'create storage account secret' 
           inputs: 
@@ -156,7 +176,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jNamespace1 }}' 
             secretType: generic 
             secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxSharedStorageAccountName1 }} --from-literal=azurestorageaccountkey=${{ parameters.StaxSharedStorageAccount1Key }} 
             secretName: staxsharedstr1-account-secret 
@@ -168,7 +188,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jNamespace1 }}' 
             secretType: generic 
             secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
             secretName: neo4j-account-secret 
@@ -185,7 +205,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jNamespace1 }}' 
             command: 'apply' 
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.Image1BaseName }}/neo4jescodb-1.yaml' 
 
@@ -216,6 +236,13 @@ jobs:
             scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1 
             scriptArguments: '-CertificateSecretName ${{ parameters.DraftDatabaseCertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxDraftStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose' 
             azurePowerShellVersion: 'latestVersion' 
+        #Create Namespace for neo4j draft
+        - template: AzureDevOpsTemplates\Deploy\StepTemplates\dfc-kubernetes-create-namespace.yml@dfc-devops
+          parameters:
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
+            AksResourceGroup: ${{ parameters.AksResourceGroup }}
+            kubernetesCluster: ${{ parameters.KubernetesCluster }}
+            Namespace: ${{ parameters.Neo4jDraftNamespace }}              
         - task: Kubernetes@1 
           displayName: 'create storage account secret' 
           inputs: 
@@ -224,7 +251,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jDraftNamespace }}' 
             secretType: generic 
             secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxDraftStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxDraftStorageAccountKey }} 
             secretName: staxdraftsharedstr-account-secret 
@@ -236,7 +263,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jDraftNamespace }}' 
             secretType: generic 
             secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
             secretName: neo4j-account-secret 
@@ -253,7 +280,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jDraftNamespace }}' 
             command: 'apply' 
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.DraftImageBaseName }}/neo4jdraftescodb.yaml'
 
@@ -284,6 +311,13 @@ jobs:
             scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1 
             scriptArguments: '-CertificateSecretName ${{ parameters.DraftDatabaseCertificateSecretName1 }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxDraftStorageAccountName1 }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose' 
             azurePowerShellVersion: 'latestVersion' 
+        #Create Namespace for neo4j Draft -1
+        - template: AzureDevOpsTemplates\Deploy\StepTemplates\dfc-kubernetes-create-namespace.yml@dfc-devops
+          parameters:
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
+            AksResourceGroup: ${{ parameters.AksResourceGroup }}
+            kubernetesCluster: ${{ parameters.KubernetesCluster }}
+            Namespace: ${{ parameters.Neo4jDraftNamespace1 }}             
         - task: Kubernetes@1 
           displayName: 'create storage account secret' 
           inputs: 
@@ -292,7 +326,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jDraftNamespace1 }}' 
             secretType: generic 
             secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxDraftStorageAccountName1 }} --from-literal=azurestorageaccountkey=${{ parameters.StaxDraftStorageAccount1Key }} 
             secretName: staxdraftsharedstr1-account-secret 
@@ -304,7 +338,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jDraftNamespace1 }}' 
             secretType: generic 
             secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
             secretName: neo4j-account-secret 
@@ -321,7 +355,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jDraftNamespace1 }}' 
             command: 'apply' 
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.Draft1ImageBaseName }}/neo4jdraftescodb-1.yaml' 
  
@@ -352,6 +386,13 @@ jobs:
             scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1 
             scriptArguments: '-CertificateSecretName ${{ parameters.VisitDatabaseCertificateSecretName }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxVisitStorageAccountName }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose' 
             azurePowerShellVersion: 'latestVersion' 
+        #Create Namespace for neo4j Visits
+        - template: AzureDevOpsTemplates\Deploy\StepTemplates\dfc-kubernetes-create-namespace.yml@dfc-devops
+          parameters:
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
+            AksResourceGroup: ${{ parameters.AksResourceGroup }}
+            kubernetesCluster: ${{ parameters.KubernetesCluster }}
+            Namespace: ${{ parameters.Neo4jVisitNamespace }}              
         - task: Kubernetes@1 
           displayName: 'create storage account secret' 
           inputs: 
@@ -360,7 +401,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jVisitNamespace }}' 
             secretType: generic 
             secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxVisitStorageAccountName }} --from-literal=azurestorageaccountkey=${{ parameters.StaxVisitStorageAccountKey }} 
             secretName: staxvisitsharedstr-account-secret 
@@ -372,7 +413,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jVisitNamespace }}' 
             secretType: generic 
             secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
             secretName: neo4j-account-secret 
@@ -389,7 +430,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jVisitNamespace }}' 
             command: 'apply' 
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.VisitImageBaseName }}/neo4jvisit.yaml' 
  
@@ -420,6 +461,13 @@ jobs:
             scriptPath: $(Build.SourcesDirectory)/PSCoreScripts/Export-KeyVaultCertToPemFiles.ps1 
             scriptArguments: '-CertificateSecretName ${{ parameters.VisitDatabaseCertificateSecretName1 }} -FileShare "certificates" -FullChainOutputDirectories @("default","default\trusted") -KeyVaultName ${{ parameters.KeyVaultName }} -PrivKeyOutputDirectories @("default") -StorageAccountName ${{ parameters.StaxVisitStorageAccountName1 }} -StorageResourceGroupName ${{ parameters.StaxSharedStorageAccountResourceGroup }} -Verbose' 
             azurePowerShellVersion: 'latestVersion' 
+        #Create Namespace for neo4j Visits - 1
+        - template: AzureDevOpsTemplates\Deploy\StepTemplates\dfc-kubernetes-create-namespace.yml@dfc-devops
+          parameters:
+            azureSubscriptionEndpoint: ${{ parameters.AzureSubscriptionEndpoint }}
+            AksResourceGroup: ${{ parameters.AksResourceGroup }}
+            kubernetesCluster: ${{ parameters.KubernetesCluster }}
+            Namespace: ${{ parameters.Neo4jVisitNamespace1 }}            
         - task: Kubernetes@1 
           displayName: 'create storage account secret' 
           inputs: 
@@ -428,7 +476,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jVisitNamespace1 }}' 
             secretType: generic 
             secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxVisitStorageAccountName1 }} --from-literal=azurestorageaccountkey=${{ parameters.StaxVisitStorageAccountKey }} 
             secretName: staxvisitsharedstr1-account-secret 
@@ -440,7 +488,7 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jVisitNamespace1 }}' 
             secretType: generic 
             secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
             secretName: neo4j-account-secret 
@@ -457,6 +505,6 @@ jobs:
             azureResourceGroup: ${{ parameters.AksResourceGroup }} 
             kubernetesCluster: ${{ parameters.KubernetesCluster }} 
             useClusterAdmin: true 
-            namespace: 'default' 
+            namespace: '${{ parameters.Neo4jVisitNamespace1 }}' 
             command: 'apply' 
             arguments: '--filename=$(Pipeline.Workspace)/${{ parameters.Visit1ImageBaseName }}/neo4jvisit-1.yaml' 
