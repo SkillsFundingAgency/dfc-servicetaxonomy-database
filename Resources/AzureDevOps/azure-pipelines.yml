@@ -106,9 +106,9 @@ stages:
       ResourceGroup: $(ResourceGroup)
       ServiceOfferingTag: $(ServiceOffering)
       SolutionBaseName: ${{ variables.SolutionBaseName }}
-      StaxSharedStorageAccountKey: $(dfcdevstaxsharedstr)
-      StaxDraftStorageAccountKey: $(dfcdevstaxdraftsharedstr)
-      StaxVisitStorageAccountKey: $(dfcdevstaxvisitsharedstr)
+      StaxSharedStorageAccountKey: $(dfclabstaxsharedstr)
+      StaxDraftStorageAccountKey: $(dfclabstaxdraftsharedstr)
+      StaxVisitStorageAccountKey: $(dfclabstaxvisitsharedstr)
       StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
       StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
       StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)

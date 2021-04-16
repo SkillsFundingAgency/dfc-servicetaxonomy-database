@@ -31,6 +31,7 @@ spec:
     spec:
       nodeSelector:
         "beta.kubernetes.io/os": linux
+        kubernetes.io/hostname: __Neo4JVisitNodeSelector__
       containers:
       - name: neo4j-visit
         image: __ContainerRegistryAdminUser__.azurecr.io/ncs.servicetaxonomy.visitdb:__DFCServiceTaxonomyDatabaseTag__
