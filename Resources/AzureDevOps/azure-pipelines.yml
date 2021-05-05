@@ -21,6 +21,12 @@ resources:
     name: SkillsFundingAgency/dfc-servicetaxonomy-editor
     endpoint: 'GitHub (ESFA)'
 
+pool:
+  name: NCS - CI and CD
+  demands:
+    - msbuild
+    - visualstudio
+
 trigger: 
   branches:
     include:
@@ -71,6 +77,46 @@ stages:
       #TO DO: decide how to tag and publish image builds from branches
       ImageTag: $(Build.BuildNumber)
 
+- stage: DeployToLab
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  variables:
+    - group: dfc-shared-all
+    - group: dfc-stax-shared-all
+    - group: KeyVault - dfc-lab-shared-kv
+    - group: dfc-shared-lab
+    - group: dfc-stax-shared-lab
+    - template: VariableTemplates\LabEnvironmentVariables.yml
+  jobs:
+  - template: JobTemplates/Deploy.yml
+    parameters:
+      AksResourceGroup: $(sharedResourceGroup)
+      AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      CertificateSecretName: $(DatabaseCertificateSecretName)
+      DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
+      VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
+      Environment: LAB_SERVICETAXONOMY
+      EnvironmentTag: $(EnvironmentTag)
+      ImageBaseName: ${{ variables.ImageBaseName }}
+      DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+      VisitImageBaseName: ${{ variables.VisitImageBaseName }}
+      KeyVaultName: $(sharedKeyVaultName)
+      KubernetesCluster: $(sharedAksCluster)
+      Neo4jPassword: $(Neo4jPassword)
+      ParentBusinessTag: $(ParentBusiness)
+      ResourceGroup: $(ResourceGroup)
+      ServiceOfferingTag: $(ServiceOffering)
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
+      StaxSharedStorageAccountKey: $(dfclabstaxsharedstr)
+      StaxDraftStorageAccountKey: $(dfclabstaxdraftsharedstr)
+      StaxVisitStorageAccountKey: $(dfclabstaxvisitsharedstr)
+      StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
+      StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
+      StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
+      Neo4jNamespace: $(neo4j-namespace)
+      Neo4jDraftNamespace: $(neo4j-draft-namespace)
+      Neo4jVisitNamespace: $(neo4j-visit-namespace)
+
 - stage: DeployToDev
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   variables:
@@ -107,6 +153,9 @@ stages:
       StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
       StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
+      Neo4jNamespace: $(neo4j-namespace)
+      Neo4jDraftNamespace: $(neo4j-draft-namespace)
+      Neo4jVisitNamespace: $(neo4j-visit-namespace)
 
 - stage: DeployToSit
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -144,6 +193,10 @@ stages:
       StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
       StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
+      Neo4jNamespace: $(neo4j-namespace)
+      Neo4jDraftNamespace: $(neo4j-draft-namespace)
+      Neo4jVisitNamespace: $(neo4j-visit-namespace)
+
 
 - stage: DeployToPP
   condition: and(eq(dependencies.Build.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
@@ -193,6 +246,12 @@ stages:
       StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
       StaxVisitStorageAccountName1: $(StaxVisitStorageAccountName1)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
+      Neo4jNamespace: $(neo4j-namespace)
+      Neo4jDraftNamespace: $(neo4j-draft-namespace)
+      Neo4jVisitNamespace: $(neo4j-visit-namespace)
+      Neo4jNamespace1: $(neo4j-1-namespace)
+      Neo4jDraftNamespace1: $(neo4j-draft-1-namespace)
+      Neo4jVisitNamespace1: $(neo4j-visit-1-namespace)
 
 - stage: DeployToPRD
   condition: and(eq(dependencies.DeployToPP.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
@@ -242,4 +301,10 @@ stages:
       StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
       StaxVisitStorageAccountName1: $(StaxVisitStorageAccountName1)
       StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
+      Neo4jNamespace: $(neo4j-namespace)
+      Neo4jDraftNamespace: $(neo4j-draft-namespace)
+      Neo4jVisitNamespace: $(neo4j-visit-namespace)
+      Neo4jNamespace1: $(neo4j-1-namespace)
+      Neo4jDraftNamespace1: $(neo4j-draft-1-namespace)
+      Neo4jVisitNamespace1: $(neo4j-visit-1-namespace)
 

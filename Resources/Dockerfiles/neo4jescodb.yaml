@@ -8,7 +8,7 @@ spec:
   storageClassName: managed-premium
   resources:
     requests:
-      storage: 5Gi
+      storage: 10Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -31,6 +31,7 @@ spec:
     spec:
       nodeSelector:
         "beta.kubernetes.io/os": linux
+        kubernetes.io/hostname: __Neo4JPrimaryNodeSelector__
       containers:
       - name: neo4j-escodb
         image: __ContainerRegistryAdminUser__.azurecr.io/ncs.servicetaxonomy.escodb:__DFCServiceTaxonomyDatabaseTag__
@@ -85,10 +86,10 @@ spec:
         resources:
           requests:
             cpu: 1500m
-            memory: "16G"
+            memory: "20G"
           limits:
             cpu: 1500m
-            memory: "16G"
+            memory: "20G"
         volumeMounts:
         - name: certificates
           mountPath: /var/certificates
