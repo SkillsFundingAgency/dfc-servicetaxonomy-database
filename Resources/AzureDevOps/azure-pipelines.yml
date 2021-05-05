@@ -77,6 +77,46 @@ stages:
       #TO DO: decide how to tag and publish image builds from branches
       ImageTag: $(Build.BuildNumber)
 
+- stage: DeployToLab
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  variables:
+    - group: dfc-shared-all
+    - group: dfc-stax-shared-all
+    - group: KeyVault - dfc-lab-shared-kv
+    - group: dfc-shared-lab
+    - group: dfc-stax-shared-lab
+    - template: VariableTemplates\LabEnvironmentVariables.yml
+  jobs:
+  - template: JobTemplates/Deploy.yml
+    parameters:
+      AksResourceGroup: $(sharedResourceGroup)
+      AzureSubscriptionEndpoint: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      CertificateSecretName: $(DatabaseCertificateSecretName)
+      DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
+      VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
+      Environment: LAB_SERVICETAXONOMY
+      EnvironmentTag: $(EnvironmentTag)
+      ImageBaseName: ${{ variables.ImageBaseName }}
+      DraftImageBaseName: ${{ variables.DraftImageBaseName }}
+      VisitImageBaseName: ${{ variables.VisitImageBaseName }}
+      KeyVaultName: $(sharedKeyVaultName)
+      KubernetesCluster: $(sharedAksCluster)
+      Neo4jPassword: $(Neo4jPassword)
+      ParentBusinessTag: $(ParentBusiness)
+      ResourceGroup: $(ResourceGroup)
+      ServiceOfferingTag: $(ServiceOffering)
+      SolutionBaseName: ${{ variables.SolutionBaseName }}
+      StaxSharedStorageAccountKey: $(dfclabstaxsharedstr)
+      StaxDraftStorageAccountKey: $(dfclabstaxdraftsharedstr)
+      StaxVisitStorageAccountKey: $(dfclabstaxvisitsharedstr)
+      StaxSharedStorageAccountName: $(StaxSharedStorageAccountName)
+      StaxDraftStorageAccountName: $(StaxDraftStorageAccountName)
+      StaxVisitStorageAccountName: $(StaxVisitStorageAccountName)
+      StaxSharedStorageAccountResourceGroup: $(StaxSharedResourceGroup)
+      Neo4jNamespace: $(neo4j-namespace)
+      Neo4jDraftNamespace: $(neo4j-draft-namespace)
+      Neo4jVisitNamespace: $(neo4j-visit-namespace)
+
 - stage: DeployToDev
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   variables:

@@ -31,6 +31,7 @@ spec:
     spec:
       nodeSelector:
         "beta.kubernetes.io/os": linux
+        kubernetes.io/hostname: __Neo4JDraftNodeSelector__
       containers:
       - name: neo4j-escodb
         image: __ContainerRegistryAdminUser__.azurecr.io/ncs.servicetaxonomy.draftescodb:__DFCServiceTaxonomyDatabaseTag__
