@@ -23,6 +23,8 @@ resources:
 
 pool:
   name: NCS - CI and CD
+  workspace:
+    clean: all
   demands:
     - msbuild
     - visualstudio
@@ -46,12 +48,10 @@ pr:
     - Resources/Dockerfiles
 
 stages:
-
 - stage: Build
   variables:
     - group: dfc-shared-all
     - group: dfc-shared-dev
-
   jobs:
   - template: JobTemplates/BuildResources.yml
     parameters:
@@ -199,7 +199,7 @@ stages:
 
 
 - stage: DeployToPP
-  #condition: and(eq(dependencies.Build.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(eq(dependencies.Build.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
     - group: dfc-shared-all
     - group: dfc-stax-shared-all
