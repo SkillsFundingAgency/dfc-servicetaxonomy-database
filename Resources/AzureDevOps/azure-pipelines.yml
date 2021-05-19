@@ -94,7 +94,7 @@ stages:
       CertificateSecretName: $(DatabaseCertificateSecretName)
       DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
       VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
-      Environment: LAB_SERVICETAXONOMY
+      Environment: LAB_NEO4J
       EnvironmentTag: $(EnvironmentTag)
       ImageBaseName: ${{ variables.ImageBaseName }}
       DraftImageBaseName: ${{ variables.DraftImageBaseName }}
@@ -134,7 +134,7 @@ stages:
       CertificateSecretName: $(DatabaseCertificateSecretName)
       DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
       VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
-      Environment: DEV_SERVICETAXONOMY
+      Environment: DEV_NEO4J
       EnvironmentTag: $(EnvironmentTag)
       ImageBaseName: ${{ variables.ImageBaseName }}
       DraftImageBaseName: ${{ variables.DraftImageBaseName }}
@@ -174,7 +174,7 @@ stages:
       CertificateSecretName: $(DatabaseCertificateSecretName)
       DraftDatabaseCertificateSecretName: $(DraftDatabaseCertificateSecretName)
       VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
-      Environment: SIT_SERVICETAXONOMY
+      Environment: SIT_NEO4J
       EnvironmentTag: $(EnvironmentTag)
       ImageBaseName: ${{ variables.ImageBaseName }}
       DraftImageBaseName: ${{ variables.DraftImageBaseName }}
@@ -218,7 +218,7 @@ stages:
       DraftDatabaseCertificateSecretName1: $(DraftDatabaseCertificateSecretName1)
       VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
       VisitDatabaseCertificateSecretName1: $(VisitDatabaseCertificateSecretName1)
-      Environment: PP_SERVICETAXONOMY
+      Environment: PP_NEO4J
       EnvironmentTag: $(EnvironmentTag)
       ImageBaseName: ${{ variables.ImageBaseName }}
       Image1BaseName: ${{ variables.Image1BaseName }}
@@ -273,7 +273,7 @@ stages:
       DraftDatabaseCertificateSecretName1: $(DraftDatabaseCertificateSecretName1)
       VisitDatabaseCertificateSecretName: $(VisitDatabaseCertificateSecretName)
       VisitDatabaseCertificateSecretName1: $(VisitDatabaseCertificateSecretName1)
-      Environment: PRD_SERVICETAXONOMY
+      Environment: PRD_NEO4J
       EnvironmentTag: $(EnvironmentTag)
       ImageBaseName: ${{ variables.ImageBaseName }}
       Image1BaseName: ${{ variables.Image1BaseName }}
