@@ -2,9 +2,9 @@ variables:
 - name: DFCServiceTaxonomyDatabaseTag
   value: $(Build.BuildNumber)
 - name: ReleaseEnvironmentName
-  value: SIT
+  value: LAB
 - name: ResourceGroup
-  value: dfc-sit-stax-database-rg
+  value: dfc-lab-stax-database-rg
 - name: StaxDbPublicIpAddressResourceGroup
   value: $(AksNodeResourceGroupName)
 - name: neo4j-namespace

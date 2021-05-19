@@ -60,7 +60,7 @@
                         "value": "[variables('publicIpAddressName')]"
                     },
                     "ipAddressSku": {
-                        "value": "Basic"
+                        "value": "Standard"
                     },
                     "allocationMethod": {
                         "value": "Static"
@@ -88,7 +88,7 @@
                         "value": "[concat(variables('publicIpAddressName'),'-1')]"
                     },
                     "ipAddressSku": {
-                        "value": "Basic"
+                        "value": "Standard"
                     },
                     "allocationMethod": {
                         "value": "Static"
@@ -115,7 +115,7 @@
                         "value": "[variables('draftpublicIpAddressName')]"
                     },
                     "ipAddressSku": {
-                        "value": "Basic"
+                        "value": "Standard"
                     },
                     "allocationMethod": {
                         "value": "Static"
@@ -143,7 +143,7 @@
                         "value": "[concat(variables('draftpublicIpAddressName'),'-1')]"
                     },
                     "ipAddressSku": {
-                        "value": "Basic"
+                        "value": "Standard"
                     },
                     "allocationMethod": {
                         "value": "Static"
@@ -170,7 +170,7 @@
                         "value": "[variables('visitpublicIpAddressName')]"
                     },
                     "ipAddressSku": {
-                        "value": "Basic"
+                        "value": "Standard"
                     },
                     "allocationMethod": {
                         "value": "Static"
@@ -198,7 +198,7 @@
                         "value": "[concat(variables('visitpublicIpAddressName'),'-1')]"
                     },
                     "ipAddressSku": {
-                        "value": "Basic"
+                        "value": "Standard"
                     },
                     "allocationMethod": {
                         "value": "Static"
