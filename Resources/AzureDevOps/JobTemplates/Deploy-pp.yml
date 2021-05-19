@@ -48,6 +48,8 @@ jobs:
   pool:
     name: 'NCS - CI and CD'
   environment: ${{ parameters.Environment }}
+  workspace:
+    clean: all
   strategy:
     runOnce:
       deploy:
@@ -66,6 +68,8 @@ jobs:
     name: 'NCS - CI and CD'
   displayName: "Deploy Primary Neo4jEscoDB"
   environment: ${{ parameters.Environment }}
+  workspace:
+    clean: all
   dependsOn:
   - DeployARMTemplatesTo_${{ parameters.Environment }}
   strategy:
@@ -138,7 +142,9 @@ jobs:
  
 - deployment: DeploySecondaryNeo4JEscoDBTo_${{ parameters.Environment }} 
   displayName: "Deploy Secondary Neo4jEscoDB" 
-  environment: ${{ parameters.Environment }} 
+  environment: ${{ parameters.Environment }}
+  workspace:
+    clean: all 
   dependsOn: 
   - DeployPrimaryNeo4JEscoDBTo_${{ parameters.Environment }} 
   strategy: 
@@ -213,7 +219,9 @@ jobs:
   pool:
     name: 'NCS - CI and CD'
   displayName: "Deploy Primary Neo4jEscoDB Draft" 
-  environment: ${{ parameters.Environment }} 
+  environment: ${{ parameters.Environment }}
+  workspace:
+    clean: all 
   dependsOn: 
   - DeploySecondaryNeo4JEscoDBTo_${{ parameters.Environment }} 
   strategy: 
@@ -288,7 +296,9 @@ jobs:
   pool:
     name: 'NCS - CI and CD'
   displayName: "Deploy Secondary Neo4jEscoDB Draft" 
-  environment: ${{ parameters.Environment }} 
+  environment: ${{ parameters.Environment }}
+  workspace:
+    clean: all 
   dependsOn: 
   - DeployPrimaryNeo4JEscoDBDraftTo_${{ parameters.Environment }} 
   strategy: 
@@ -363,7 +373,9 @@ jobs:
   pool:
     name: 'NCS - CI and CD' 
   displayName: "Deploy Primary Neo4jVisits" 
-  environment: ${{ parameters.Environment }} 
+  environment: ${{ parameters.Environment }}
+  workspace:
+    clean: all 
   dependsOn: 
   - DeploySecondaryNeo4JEscoDBDraftTo_${{ parameters.Environment }} 
   strategy: 
@@ -438,7 +450,9 @@ jobs:
   pool:
     name: 'NCS - CI and CD' 
   displayName: "Deploy Secondary Neo4jVisits" 
-  environment: ${{ parameters.Environment }} 
+  environment: ${{ parameters.Environment }}
+  workspace:
+    clean: all
   dependsOn: 
   - DeployPrimaryNeo4JVisitsTo_${{ parameters.Environment }} 
   strategy: 
