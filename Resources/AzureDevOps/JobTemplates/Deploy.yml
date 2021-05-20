@@ -31,6 +31,8 @@ jobs:
   pool:
     name: 'NCS - CI and CD'
   environment: ${{ parameters.Environment }}
+  workspace:
+    clean: all
   strategy:
     runOnce:
       deploy:
