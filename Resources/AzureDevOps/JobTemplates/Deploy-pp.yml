@@ -492,7 +492,7 @@ jobs:
             useClusterAdmin: true 
             namespace: '${{ parameters.Neo4jVisitNamespace1 }}' 
             secretType: generic 
-            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxVisitStorageAccountName1 }} --from-literal=azurestorageaccountkey=${{ parameters.StaxVisitStorageAccountKey }} 
+            secretArguments: --from-literal=azurestorageaccountname=${{ parameters.StaxVisitStorageAccountName1 }} --from-literal=azurestorageaccountkey=${{ parameters.StaxVisitStorageAccount1Key }} 
             secretName: staxvisitsharedstr1-account-secret 
         - task: Kubernetes@1 
           displayName: 'create neo4j default account passwordsecret' 
