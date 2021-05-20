@@ -19,6 +19,8 @@ jobs:
 - job: BuildNCSServiceTaxonomyEscoDbContainer
   displayName: Build and publish NCS.ServiceTaxonomy.EscoDb container
   pool: 'NCS - Docker'
+  workspace:
+    clean: all
   steps:
   - checkout: self
   - checkout: dfc-servicetaxonomy-editor
