@@ -199,7 +199,7 @@ stages:
 
 
 - stage: DeployToPP
-  condition: and(eq(dependencies.Build.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  #condition: and(eq(dependencies.Build.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
     - group: dfc-shared-all
     - group: dfc-stax-shared-all
