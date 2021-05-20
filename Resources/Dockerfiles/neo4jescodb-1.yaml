@@ -106,6 +106,10 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: neo4j1-data-disk
+      - name: esco-rdf-files
+        azureFile:
+          secretName: staxsharedstr1-account-secret
+          shareName: esco-rdf-files         
 ---
 apiVersion: v1
 kind: Service
