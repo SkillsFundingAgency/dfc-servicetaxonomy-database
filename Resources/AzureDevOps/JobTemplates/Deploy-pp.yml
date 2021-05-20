@@ -198,11 +198,10 @@ jobs:
             secretType: generic 
             secretArguments: --from-literal=username=neo4j --from-literal=password=${{ parameters.Neo4jPassword }} --from-literal=auth=neo4j/${{ parameters.Neo4jPassword }} 
             secretName: neo4j-account-secret 
-        - task: FileTransform@1
+        - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
           displayName: 'Tokenization: file neo4jescodb-1.yaml' 
           inputs: 
-            folderPath: $(Pipeline.Workspace)/${{ parameters.Image1BaseName }} 
-            filetype: json
+            SourcePath: $(Pipeline.Workspace)/${{ parameters.Image1BaseName }}
             TargetFileNames: neo4jescodb-1.yaml
         - task: Kubernetes@1 
           displayName: 'Deploy manifest for Secondary Neo4jEscoDB' 

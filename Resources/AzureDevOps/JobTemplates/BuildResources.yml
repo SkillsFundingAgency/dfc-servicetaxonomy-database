@@ -6,6 +6,8 @@ jobs:
 - job: TestAndPublishArmTemplates
   displayName: Test and Publish Arm Templates
   pool: 'NCS - CI and CD'
+  workspace:
+    clean: all
   steps:
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-arm-build.yml@dfc-devops
     parameters:
