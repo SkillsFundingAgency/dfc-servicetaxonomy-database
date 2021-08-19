@@ -85,11 +85,11 @@ spec:
         - containerPort: 7687
         resources:
           requests:
-            cpu: 1500m
-            memory: "20G"
+            cpu: __Neo4jPublishedCpuRequest__
+            memory: "__Neo4jPublishedMemoryRequest__"
           limits:
-            cpu: 1500m
-            memory: "20G"
+            cpu: __Neo4jPublishedCpuLimit__
+            memory: "__Neo4jPublishedMemoryLimit__"
         volumeMounts:
         - name: certificates
           mountPath: /var/certificates
