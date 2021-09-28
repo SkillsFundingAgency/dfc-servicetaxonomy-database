@@ -18,7 +18,7 @@ parameters:
 jobs:
 - job: BuildNCSServiceTaxonomyEscoDbContainer
   displayName: Build and publish NCS.ServiceTaxonomy.EscoDb container
-  pool: 'NCS - Docker'
+  pool: 'Hosted Ubuntu 1604'
   workspace:
     clean: all
   steps:
