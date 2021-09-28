@@ -85,6 +85,7 @@ stages:
     - group: KeyVault - dfc-lab-shared-kv
     - group: dfc-shared-lab
     - group: dfc-stax-shared-lab
+    - group: dfc-neo4j-config-lab
     - template: VariableTemplates\LabEnvironmentVariables.yml
   jobs:
   - template: JobTemplates/Deploy.yml
@@ -125,6 +126,7 @@ stages:
     - group: KeyVault - dfc-dev-shared-kv
     - group: dfc-shared-dev
     - group: dfc-stax-shared-dev
+    - group: dfc-neo4j-config-dev
     - template: VariableTemplates\DevEnvironmentVariables.yml
   jobs:
   - template: JobTemplates/Deploy.yml
@@ -165,6 +167,7 @@ stages:
     - group: KeyVault - dfc-sit-shared-kv
     - group: dfc-shared-sit
     - group: dfc-stax-shared-sit
+    - group: dfc-neo4j-config-sit
     - template: VariableTemplates\SitEnvironmentVariables.yml
   jobs:
   - template: JobTemplates/Deploy.yml
@@ -206,6 +209,7 @@ stages:
     - group: KeyVault - dfc-pp-shared-kv
     - group: dfc-shared-pp
     - group: dfc-stax-shared-pp
+    - group: dfc-neo4j-config-pp
     - template: VariableTemplates\PPEnvironmentVariables.yml
   jobs:
   - template: JobTemplates/Deploy-pp.yml
@@ -261,6 +265,7 @@ stages:
     - group: KeyVault - dfc-prd-shared-kv
     - group: dfc-shared-prd
     - group: dfc-stax-shared-prd
+    - group: dfc-neo4j-config-prd
     - template: VariableTemplates\PrdEnvironmentVariables.yml
   jobs:
   - template: JobTemplates/Deploy-prd.yml
