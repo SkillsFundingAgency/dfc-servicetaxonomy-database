@@ -160,7 +160,8 @@ stages:
       Neo4jVisitNamespace: $(neo4j-visit-namespace)
 
 - stage: DeployToSit
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+#  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   variables:
     - group: dfc-shared-all
     - group: dfc-stax-shared-all
